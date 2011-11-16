@@ -14,6 +14,8 @@ module Uploadcare::Rails::Inject
   end
   
   def self.try_inject
+    require 'uploadcare' unless defined? Uploadcare::Uploadcare
     ActiveRecord::Base.send(:include, Uploadcare::Rails::ActiveRecord)
+    ActionView::Helpers::FormBuilder.send(:include, Uploadcare::Rails::FormBuilder)
   end
 end
