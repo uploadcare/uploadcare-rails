@@ -13,8 +13,7 @@ Also, it can validate uploads by size.
 
 ### Compatibility 
 
-At the moment, gem only compatible with Rails 2.3.* but we're working on compatibility with Rails 3 and Sinatra.
-It will be ready in December.
+At the moment, gem only compatible with Rails 2.3.* and 3.*. We're working on compatibility with Sinatra.
 
 ### Testing
 
