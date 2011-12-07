@@ -1,4 +1,5 @@
 class Uploadcare::Rails::Upload
+  SERVICES_URL = 'http://services.uploadcare.com'
   attr_reader :uuid
   
   def initialize(field_method, options, instance)
@@ -11,7 +12,11 @@ class Uploadcare::Rails::Upload
   end
   
   def exist?
-    !@uuid.blank?
+    !@uuid.blank? && info_loaded? && !removed?
+  end
+  
+  def removed?
+    !@_file_info["removed"].blank? && @_file_info["removed"]
   end
   
   def valid_upload?
@@ -22,13 +27,39 @@ class Uploadcare::Rails::Upload
     !@_file_info.blank?
   end
   
+  def url
+    @_file_info["url"]
+  end
+  
+  def resized_url(to = '640x480')
+    url = [SERVICES_URL].push('resizer').push(@uuid).push(to).join('/')
+    url
+  end
+  
+  def crop_url(to = '640x480')
+    url = [self.resized_url(to)].push('crop').join('/')
+    url
+  end
+  
+  def original_url
+    @_file_info["original_file_url"]
+  end
+  
   def size
     @_file_info["size"].blank? ? 0 : @_file_info["size"]
   end
   
+  def keep?
+    !@_file_info["last_keep_claim"].blank?
+  end
+  
   def assign_uuid(new_uuid)
     @_instance.send("#{self.uuid_column_name}=", new_uuid) if @_instance.respond_to?(self.uuid_column_name)
-    self.reload unless new_uuid.blank?
+    if @_options[:auto_keep]
+      self.keep 
+    else
+      self.reload unless new_uuid.blank?
+    end
   end
   
   def uuid_value
@@ -37,6 +68,12 @@ class Uploadcare::Rails::Upload
 
   def uuid_column_name
     @_options[:uuid_column]
+  end
+  
+  def keep
+    f = self.get_file_instance
+    f.keep
+    self.reload
   end
   
   def load_file_info(remote_fetch = true)
@@ -51,6 +88,14 @@ class Uploadcare::Rails::Upload
   def reload
     @_file_info = self.get_file_info
     @_instance.send("#{@_options[:file_info_column]}=", @_file_info)
+    @_instance.save(false)
+  end
+  
+  def remove
+    self.get_file_instance.remove
+    @_file_info["removed"] = true
+    @_instance.send("#{@_options[:file_info_column]}=", @_file_info)
+    @_instance.save(false)
   end
   
   protected

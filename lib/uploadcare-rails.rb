@@ -2,7 +2,6 @@ require "uploadcare-rails/version"
 require "uploadcare-rails/exception"
 require "uploadcare-rails/install"
 require "uploadcare-rails/inject"
-require "uploadcare-rails/file"
 require "uploadcare-rails/upload"
 
 module Uploadcare
@@ -149,6 +148,12 @@ module Uploadcare
       def self.included(base)
         base.send(:include, InstanceMethods)
       end
+    end
+  end
+  
+  class File
+    def remove
+      @ucare.make_request('DELETE', api_uri).parsed_response
     end
   end
 end
