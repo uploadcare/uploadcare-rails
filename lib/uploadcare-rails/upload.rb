@@ -1,5 +1,6 @@
 class Uploadcare::Rails::Upload
   SERVICES_URL = 'http://services.uploadcare.com'
+  IMAGE_MIMES = ['jpeg', 'jpg', 'png', 'gif', 'tiff'].map!{|x| "image/#{x}"}
   attr_reader :uuid
   
   def initialize(field_method, options, instance)
@@ -17,6 +18,10 @@ class Uploadcare::Rails::Upload
   
   def removed?
     !@_file_info["removed"].blank? && @_file_info["removed"]
+  end
+  
+  def image?
+    IMAGE_MIMES.include?(@_file_info["mime_type"])
   end
   
   def valid_upload?
@@ -76,6 +81,7 @@ class Uploadcare::Rails::Upload
     self.reload
   end
   
+  # TODO: Direct saving to model
   def load_file_info(remote_fetch = true)
     @_file_info = @_instance.send("#{@_options[:file_info_column]}")
     
