@@ -54,6 +54,6 @@ module Uploadcare::Rails::Install
     else
       # Try relative path
       "config/#{filename}"
-    #end
+    end
   end
 end
