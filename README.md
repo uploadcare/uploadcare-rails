@@ -100,4 +100,3 @@ end
 
 [UploadCare service]: http://uploadcare.com
 [careful-uploaders]: https://github.com/uploadcare/careful-uploaders
-
