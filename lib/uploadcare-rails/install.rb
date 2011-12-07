@@ -49,11 +49,11 @@ module Uploadcare::Rails::Install
   end
   
   def self.get_location(filename)
-    if defined? Rails
+    if defined? Rails && !Rails.root.blank?
       Rails.root.join("config", filename)
     else
       # Try relative path
       "config/#{filename}"
-    end
+    #end
   end
 end

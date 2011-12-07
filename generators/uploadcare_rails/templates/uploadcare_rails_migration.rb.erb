@@ -6,7 +6,7 @@ class <%= migration_name %> < ActiveRecord::Migration
   end
 
   def self.down
-	<% fields.keys.each do |name| %>
+	<% fields.keys.each do |name, type| %>
     	remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= name %>
 	<% end %>
   end

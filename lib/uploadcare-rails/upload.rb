@@ -1,3 +1,5 @@
+require 'uploadcare'
+
 class Uploadcare::Rails::Upload
   SERVICES_URL = 'http://services.uploadcare.com'
   IMAGE_MIMES = ['jpeg', 'jpg', 'png', 'gif', 'tiff'].map!{|x| "image/#{x}"}
@@ -94,14 +96,14 @@ class Uploadcare::Rails::Upload
   def reload
     @_file_info = self.get_file_info
     @_instance.send("#{@_options[:file_info_column]}=", @_file_info)
-    @_instance.save(false)
+    save_instance
   end
   
   def remove
     self.get_file_instance.remove
     @_file_info["removed"] = true
     @_instance.send("#{@_options[:file_info_column]}=", @_file_info)
-    @_instance.save(false)
+    save_instance
   end
   
   protected
@@ -124,5 +126,13 @@ class Uploadcare::Rails::Upload
     def load_api_client
       self.load_config if @_config.nil?
       @_api_client = ::Uploadcare.new(@_config["public_key"], @_config["private_key"])
+    end
+    
+    def save_instance
+      if Rails.version > "3"
+        @_instance.save(:validate => false)
+      else
+        @_instance.save(false)
+      end
     end
 end

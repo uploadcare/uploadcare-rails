@@ -39,7 +39,7 @@ module Uploadcare
         serialize :"#{options[:file_info_column]}", Hash
         
         unless self.column_names.include?(options[:uuid_column])
-          raise DatabaseError, "UUID column not found in columns list, please run 'uploadcare-rails' generator to generate migration and 'rake db:migrate' to apply changes to database.", caller
+          raise DatabaseError, "UUID column not found in columns list, please run 'uploadcare_rails' generator to generate migration and 'rake db:migrate' to apply changes to database.", caller
         end
         
         define_method name do
@@ -158,5 +158,8 @@ module Uploadcare
   end
 end
 
-Uploadcare::Rails.install unless Uploadcare::Rails.installed?
+unless Rails.root.blank?
+  Uploadcare::Rails.install unless Uploadcare::Rails.installed?
+end
+
 Uploadcare::Rails::Inject.try_inject
