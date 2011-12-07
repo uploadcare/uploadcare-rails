@@ -25,7 +25,7 @@ class Uploadcare::Rails::Upload
   end
   
   def valid_upload?
-    !@uuid.blank? && self.info_loaded?
+    exist?
   end
   
   def info_loaded?
