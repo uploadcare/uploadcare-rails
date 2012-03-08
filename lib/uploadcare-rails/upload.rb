@@ -70,7 +70,7 @@ class Uploadcare::Rails::Upload
   end
   
   def uuid_value
-    @_instance.new_record? ? @_instance.send("#{@_field_method.to_s}_before_type_cast") : @_instance.send(self.uuid_column_name)
+    (@_instance.new_record? || @_instance.send(self.uuid_column_name).blank?) ? @_instance.send("#{@_field_method.to_s}_before_type_cast") : @_instance.send(self.uuid_column_name)
   end
 
   def uuid_column_name
