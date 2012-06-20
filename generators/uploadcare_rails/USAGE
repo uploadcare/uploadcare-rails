@@ -1,5 +1,0 @@
-Usage:
-
-  script/generate uploadcare-rails Class
-
-This will create a migration that will add the proper columns to your class's table.

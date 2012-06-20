@@ -1,68 +1,77 @@
-# UploadCare Ruby gem
+# Uploadcare ruby gem
 
 ## Trivia
 
 ### What is it?
 
-`uploadcare-rails` is a Ruby gem to use [UploadCare service] with [careful-uploaders] library in your Rails projects with ease.
+`uploadcare-rails` is a Ruby gem to use [Uploadcare service] with [careful-uploaders] library in your Rails projects with ease.
 
 ### What it can do?
 
-It handles your UploadCare uploads using UploadCare API and store all the required information about uploaded file.
-Also, it can validate uploads by size.
+It handles your uploads utilizing Uploadcare REST API and stores uploaded file UUIDs for future use.
+Also, it can validate your uploads by size, presence etc.
 
-### Compatibility 
+### Disclaimer
 
-At the moment, gem only compatible with Rails 2.3.* and 3.*. We're working on compatibility with Sinatra.
-
-### Testing
-
-Currently the gem is not covered with test, so __use this gem at your own risk__. On the other hand, it's pretty simple to work just fine without any problems.
+At this moment gem is not covered with test, so __use it at your own risk__. On the other hand, it's pretty simple to work just fine without any problems.
 
 ## Installing
 
-### Rails 2.3.*
+### Rails 2
 
-Include the gem to your dependencies.
-In `config/environment.rb`:
+Since version 0.0.3, `uploadcare-rails` doesn't support Rails 2. See branch `gem-0.0.2` for installation instructions.
 
-```ruby
-Rails::Initializer.run do |config|
-  config.gem 'uploadcare', :version => '0.1.0'
-  config.gem 'uploadcare-rails', :version => '0.0.1'
-end
-```
+### Rails 3
 
-And then run `rake gems:install`.
-
-Or, if your project uses `bundler`, put this code in your `Gemfile`:
+Add gem to your Gemfile:
 
 ```ruby
-gem "uploadcare", "~> 0.1.0"
-gem "uploadcare-rails", "~> 0.0.1"
+gem "uploadcare-rails", ">= 0.0.3"
 ```
 
 And then run `bundle install`.
 
-## Using with Rails
+## Using with Rails application
 
 ### Preparations
 
-At first, run a generator to create some fields for model that will keep the information about uploads:
+You must complete following steps:
+
+* Generate (and run) a migration to add a text field that will be used to store UUIDs of your uploaded files:
+
 ```
-script/generate uploadcare_rails BlogPost
+~$ rails generate migration AddFileFieldToOrders file:string
+~$ bundle exec rake db:migrate
 ```
 
-It will create two fields — `uploadcare_file_uuid` and `uploadcare_file_info`. The first one handles file id to access to file instance via API. 
-The second one respectively stores file information to avoid frequent remote API calls.
+* Add one line to your model:
 
-Run pending migration with `rake db:migrate` and follow the next step.
+```ruby
+class Order < ActiveRecord::Base
+  # somewhere around validators
+  has_uploadcare_file :file
+end
+```
+
+* Put a form helper into your views:
+
+```erb
+<%- form_for(@order) do |f| %>
+  ...
+  <%= f.uploadcare_field :file %>
+  ...
+<%- end %>
+```
+
+* (Re)start your application and modify `config/uploadcare.yml` file in accordance with your access keys and widget type.
+
+That's all. 
 
 ### Configuration files
 
-On first run gem will create `config/uploadcare.yml` file. Just put your values for corresponding params.
+On first application run (after gem installation) a `config/uploadcare.yml` file will be created. Just modify it to match your Uploadcare data.
 
-### Models
+### Available validators
 
 ```ruby
 class BlogPost < ActiveRecord::Base
@@ -73,22 +82,21 @@ class BlogPost < ActiveRecord::Base
 end
 ```
 
-### Views
-```erb
-<% form_for @blog_post do |f| %>
-	<%= f.error_messages %>
-	<%= f.uploadcare_field :upload %>
-	<%= f.submit %>
-<% end %>
-```
+### Available configuration
+
+* `:autokeep`. Defines whether uploaded file will be kept forcibly. Must be a boolean.
+* `:file_column`. By default, gem will be trying to use first passed parameter (e.g. `:upload` if you look at upper example) as table column. Pass `:file_column => :your_column` to override this behaviour and to set your custom column. Can be string or symbol.
 
 ### Controllers 
+
+Gem designed to be clear as much as possible, so it doesn't affect controllers code:
+
 ```ruby
 class BlogPostsController < ApplicationController
   def create
     @blog_post = BlogPost.new(params[:blog_post])
     if @blog_post.save
-      # call blog_post.upload.keep if you set :autokeep to false
+      # call blog_post.upload.keep if you set :autokeep to false and need to save file.
       redirect_to :action => :index
     else
       render :action => :new
@@ -97,5 +105,19 @@ class BlogPostsController < ApplicationController
 end
 ```
 
-[UploadCare service]: http://uploadcare.com
-[careful-uploaders]: https://github.com/uploadcare/careful-uploadersп
+## Roadmap
+
+We're looking into possibility to drop third preparation step to save you from messing with views, but it will be done a bit later.
+
+## Contributing
+
+Fork a repo, make changes, create pull request. Just like everywhere else.
+
+## Questions?
+
+Don't hesitate to contact me via e-mail, specified in my GitHub profile, or write a letter to az@uploadcare.com, and I will reply you for sure.
+
+Good luck!
+
+[Uploadcare service]: http://uploadcare.com
+[careful-uploaders]: https://github.com/uploadcare/careful-uploaders
