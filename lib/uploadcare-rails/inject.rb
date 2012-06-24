@@ -7,6 +7,7 @@ module Uploadcare::Rails::Inject
     class Railtie < Rails::Railtie
       initializer 'uploadcare.insert_into_active_record' do
         ActiveSupport.on_load :active_record do
+          Uploadcare::Rails.install unless Uploadcare::Rails.installed?
           Uploadcare::Rails::Inject.try_inject
         end
       end

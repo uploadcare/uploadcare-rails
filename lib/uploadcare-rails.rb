@@ -1,3 +1,4 @@
+require "uploadcare-rails/engine"
 require "uploadcare-rails/version"
 require "uploadcare-rails/exception"
 require "uploadcare-rails/install"
@@ -32,15 +33,15 @@ module Uploadcare
       def has_uploadcare_file(name, options = {})
         include InstanceMethods
         
-        options[:uuid_column]      ||= "uploadcare_file_uuid"
-        options[:file_info_column] ||= "uploadcare_file_info"
+        options[:file_column]      ||= "uploadcare_file"
+        #options[:file_info_column] ||= "uploadcare_file_info"
         options[:auto_keep]        ||= true
         
         serialize :"#{options[:file_info_column]}", Hash
         
-        unless self.column_names.include?(options[:uuid_column])
-          raise DatabaseError, "UUID column not found in columns list, please run 'uploadcare_rails' generator to generate migration and 'rake db:migrate' to apply changes to database.", caller
-        end
+        #unless self.column_names.include?(options[:uuid_column])
+        #  raise DatabaseError, "UUID column not found in columns list, please run 'uploadcare_rails' generator to generate migration and 'rake db:migrate' to apply changes to database.", caller
+        #end
         
         define_method name do
           upload_for name, options
@@ -158,8 +159,9 @@ module Uploadcare
   end
 end
 
-unless Rails.root.blank?
-  Uploadcare::Rails.install unless Uploadcare::Rails.installed?
-end
+#unless Rails.root.blank?
+#  raise 'here'
+  
+#end
 
-Uploadcare::Rails::Inject.try_inject
+#Uploadcare::Rails::Inject.try_inject
