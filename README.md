@@ -1,4 +1,4 @@
-v# Uploadcare ruby gem
+# Uploadcare ruby gem
 
 ## Trivia
 
