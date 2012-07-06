@@ -16,9 +16,8 @@ Gem::Specification.new do |s|
   s.post_install_message = <<-EOS
   ==================================================
   Thank you for installing Uploadcare.com Rails gem.
-  Make sure you completed following steps:
-
-
+  Make sure you completed steps described in the
+  gem README.
   ==================================================
   EOS
 end

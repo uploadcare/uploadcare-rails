@@ -1,4 +1,4 @@
-# Uploadcare ruby gem
+v# Uploadcare ruby gem
 
 ## Trivia
 
@@ -71,7 +71,7 @@ That's all.
 
 On first application run (after gem installation) a `config/uploadcare.yml` file will be created. Just modify it to match your Uploadcare data.
 
-### Available validators
+<!-- ### Available validators
 
 ```ruby
 class BlogPost < ActiveRecord::Base
@@ -80,7 +80,7 @@ class BlogPost < ActiveRecord::Base
   validates_upload_presence :upload 
   validates_upload_size :upload, :max => 50000, :min => 123 # or you can simple use :in => 123..50000
 end
-```
+``` -->
 
 ### Available configuration
 
