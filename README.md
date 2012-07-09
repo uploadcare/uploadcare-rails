@@ -19,14 +19,14 @@ At this moment gem is not covered with test, so __use it at your own risk__. On 
 
 ### Rails 2
 
-Since version 0.0.3, `uploadcare-rails` doesn't support Rails 2. See branch `gem-0.0.2` for installation instructions.
+Since version 0.1.0, `uploadcare-rails` doesn't support Rails 2. See branch `gem-0.0.2` for installation instructions.
 
 ### Rails 3
 
 Add gem to your Gemfile:
 
 ```ruby
-gem "uploadcare-rails", ">= 0.0.3"
+gem "uploadcare-rails", ">= 0.1.0"
 ```
 
 And then run `bundle install`.
