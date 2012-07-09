@@ -84,7 +84,7 @@ On first application run (after gem installation) a `config/uploadcare.yml` file
 
 ```ruby
 class BlogPost < ActiveRecord::Base
-  has_uploadcare_file :upload # You can use :autokeep option to define whether keep upload automatically or manually
+  has_uploadcare_file :upload # You can use :auto_keep option to define whether keep upload automatically or manually
   
   validates_upload_presence :upload 
   validates_upload_presence :photo, :message => "must be selected"
