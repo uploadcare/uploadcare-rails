@@ -81,17 +81,17 @@ module Uploadcare
     #     end
     #   end
       
-    #   def validates_upload_presence(name, options = {})
-    #     message = options[:message] || "must be present"
-    #     validates_each :"#{name}" do |record, attr, value|
-    #       if_clause_passed = options[:if].nil? || (options[:if].respond_to?(:call) ? options[:if].call(record) != false : record.send(options[:if]))
-    #       unless_clause_passed = options[:unless].nil? || (options[:unless].respond_to?(:call) ? !!options[:unless].call(record) == false : !record.send(options[:unless]))
-    #       if if_clause_passed && unless_clause_passed && !value.valid_upload?
-    #         record.errors.add("#{name}", message)
-    #       end
-    #     end
-    #   end
-    
+      def validates_upload_presence name, options = {}
+        message = options[:message] || "must be present"
+        validates_each :"#{name}" do |record, attr, value|
+          upload = record.send :"#{name}"
+          unless upload.uuid_value =~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/
+            record.errors.add "#{name}", message
+          end
+        end
+      end
+
+
     end
     
     module InstanceMethods
@@ -136,10 +136,3 @@ module Uploadcare
     end
   end
 end
-
-#unless Rails.root.blank?
-#  raise 'here'
-  
-#end
-
-#Uploadcare::Rails::Inject.try_inject

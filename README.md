@@ -63,6 +63,15 @@ end
 <%- end %>
 ```
 
+* Require a widget library in your `application.js` file:
+
+```javascript
+//= require jquery
+//= require jquery_ujs
+//= require_tree .
+//= require uploadcare.min
+```
+
 * (Re)start your application and modify `config/uploadcare.yml` file in accordance with your access keys and widget type.
 
 That's all. 
@@ -71,16 +80,16 @@ That's all.
 
 On first application run (after gem installation) a `config/uploadcare.yml` file will be created. Just modify it to match your Uploadcare data.
 
-<!-- ### Available validators
+### Available validators
 
 ```ruby
 class BlogPost < ActiveRecord::Base
   has_uploadcare_file :upload # You can use :autokeep option to define whether keep upload automatically or manually
   
   validates_upload_presence :upload 
-  validates_upload_size :upload, :max => 50000, :min => 123 # or you can simple use :in => 123..50000
+  validates_upload_presence :photo, :message => "must be selected"
 end
-``` -->
+```
 
 ### Available configuration
 
@@ -103,6 +112,24 @@ class BlogPostsController < ApplicationController
     end
   end
 end
+```
+
+### Accessing uploaded file 
+
+```ruby
+record = BlogPost.find(5)
+record.upload # => #<Uploadcare::Rails::Upload:0x....>
+record.upload.kept? # => true (because of :auto_keep => true)
+record.upload.file_info # => {"size"=>127893, "upload_date"=>"2012-07-09T03:38:38.613"...}
+record.upload.url
+record.upload.resized_url("640x480")
+record.upload.resized_url("640x")
+record.upload.resized_url("x480")
+record.upload.crop_url("640x480")
+record.upload.size
+record.upload.image?
+record.upload.removed?
+record.upload.keep # to force keep or to keep it manually with delayed_job etc.
 ```
 
 ## Roadmap

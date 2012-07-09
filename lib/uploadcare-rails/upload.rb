@@ -101,10 +101,6 @@ class Uploadcare::Rails::Upload
     end
     
     def save_instance
-      if Rails.version > "3"
-        @_instance.save(:validate => false)
-      else
-        @_instance.save(false)
-      end
+      @_instance.save unless self.uuid_value.blank?
     end
 end
