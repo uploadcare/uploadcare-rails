@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png)](http://travis-ci.org/uploadcare/uploadcare-rails)
+
 Here is a rails gem for using uploadcare.com service.
 
 * Add gem in your gemfile: `gem uploadcare-rails`
