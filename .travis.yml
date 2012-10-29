@@ -1,6 +1,6 @@
 language: ruby
 rvm: "1.9.3"
 script:
-  - RAILS_ENV=test bundle exec rake db:migrate
-  - bundle exec rake db:test:prepare
+  - RAILS_ENV=test bundle exec rake db:migrate -f spec/dummy/Rakefile 
+  - bundle exec rake db:test:prepare -f spec/dummy/Rakefile 
   - bundle exec rspec spec/
