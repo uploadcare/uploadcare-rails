@@ -1,17 +1,17 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 # Maintain your gem's version:
-require "uploadcare-rails/version"
+require "uploadcare/rails/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "uploadcare-rails"
   s.version     = Uploadcare::Rails::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of UploadcareRails."
-  s.description = "TODO: Description of UploadcareRails."
+  s.authors     = ["Vadim Rastyagaev"]
+  s.email       = ["abc@oktoberliner.ru"]
+  s.homepage    = "http://uploadcare.com"
+  s.summary     = "Rails gem for uploadcare.com service."
+  s.description = "Rails gem for uploadcare.com service."
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
 

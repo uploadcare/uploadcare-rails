@@ -1,5 +1,4 @@
-require 'uploadcare-rails/settings'
-require 'uploadcare-rails/action_view'
+require 'uploadcare/rails/settings'
 
 module Uploadcare
   module Rails
@@ -14,11 +13,12 @@ module Uploadcare
 
       initializer 'uploadcare_rails.load' do
         ActiveSupport.on_load :active_record do
-          require 'uploadcare-rails/active_record'
+          require 'uploadcare/rails/active_record'
         end
 
         ActiveSupport.on_load(:action_view) do
-          require 'uploadcare-rails/simple_form' if defined?(SimpleForm)
+          require 'uploadcare/rails/action_view'
+          require 'uploadcare/rails/simple_form' if defined?(SimpleForm)
         end
       end
     end
