@@ -25,6 +25,10 @@ module Uploadcare
       def make_api
         @api = Uploadcare::Api.new(get_settings)
       end
+
+      def make_uploader
+        @uploader = Uploadcare::Uploader.new(get_settings)
+      end
     end
   end
 end

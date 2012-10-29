@@ -1,17 +1,10 @@
 PATH
   remote: .
   specs:
-    uploadcare-rails (0.2.1)
+    uploadcare-rails (0.2.2)
       rails (~> 3.2)
-      uploadcare-api
+      uploadcare-api (= 0.0.2)
       uploadcare-widget
-
-PATH
-  remote: ../ruby-uploadcare-api
-  specs:
-    uploadcare-api (0.0.1)
-      faraday
-      multipart-post
 
 GEM
   remote: http://rubygems.org/
@@ -147,6 +140,9 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.34)
+    uploadcare-api (0.0.2)
+      faraday
+      multipart-post
     uploadcare-widget (0.3.1)
       bourbon
       coffee-rails
@@ -164,5 +160,4 @@ DEPENDENCIES
   rspec-rails
   simple_form
   sqlite3
-  uploadcare-api!
   uploadcare-rails!

@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "rails", "~> 3.2"
-  s.add_dependency "uploadcare-api"
+  s.add_dependency "uploadcare-api", "0.0.2"
   s.add_dependency "uploadcare-widget"
   # s.add_dependency "jquery-rails"
 

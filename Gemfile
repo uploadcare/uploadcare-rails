@@ -16,5 +16,4 @@ gem "jquery-rails"
 # To use debugger
 # gem 'debugger'
 
-gem 'uploadcare-api', path: '../ruby-uploadcare-api'
 gem 'simple_form'

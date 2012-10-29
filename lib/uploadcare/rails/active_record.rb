@@ -19,11 +19,13 @@ module Uploadcare
           end
         end
 
-        after_create "store_#{attribute}" if opts[:autostore]
+        if opts[:autostore]
+          after_create "store_#{attribute}" 
 
-        define_method "store_#{attribute}" do
-          if send(attribute).present?
-            send(attribute).store
+          define_method "store_#{attribute}" do
+            if send(attribute).present?
+              send(attribute).store
+            end
           end
         end
       end
