@@ -1,5 +1,3 @@
-= Uploadcare Rails
-
 Here is a rails gem for using uploadcare.com service.
 
 * Add gem in your gemfile: `gem uploadcare-rails`
