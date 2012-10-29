@@ -1,0 +1,12 @@
+plain html:
+<%= uploadcare_uploader_tag :attachment %>
+
+<%= form_for Resume.new, url: root_path do |f| %>
+  form for:
+  <%= f.uploadcare_uploader_field :attachment %>
+<% end %>
+
+<%= simple_form_for Resume.new, url: root_path do |f| %>
+  simple_form:
+  <%= f.input :attachment, as: :uploadcare_uploader %>
+<% end %>

@@ -2,8 +2,16 @@ PATH
   remote: .
   specs:
     uploadcare-rails (0.0.1)
-      rails (~> 3.2.8)
+      rails (~> 3.2)
       uploadcare-api
+      uploadcare-widget
+
+PATH
+  remote: ../ruby-uploadcare-api
+  specs:
+    uploadcare-api (0.0.1)
+      faraday
+      multipart-post
 
 GEM
   remote: http://rubygems.org/
@@ -36,14 +44,29 @@ GEM
       i18n (~> 0.6)
       multi_json (~> 1.0)
     arel (3.0.2)
+    bourbon (2.1.1)
+      sass (>= 3.1)
     builder (3.0.4)
     coderay (1.0.8)
+    coffee-rails (3.2.2)
+      coffee-script (>= 2.2.0)
+      railties (~> 3.2.0)
+    coffee-script (2.2.0)
+      coffee-script-source
+      execjs
+    coffee-script-source (1.4.0)
     diff-lcs (1.1.3)
+    ejs (1.1.1)
     erubis (2.7.0)
+    execjs (1.4.0)
+      multi_json (~> 1.0)
     faraday (0.8.4)
       multipart-post (~> 1.1)
     hike (1.2.1)
     i18n (0.6.1)
+    inline-blocks (0.0.3)
+      sass
+      sass-rails
     journey (1.0.4)
     jquery-rails (2.1.3)
       railties (>= 3.1.0, < 5.0)
@@ -102,7 +125,17 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.11.0)
+    sass (3.2.1)
+    sass-rails (3.2.5)
+      railties (~> 3.2.0)
+      sass (>= 3.1.10)
+      tilt (~> 1.3)
+    simple_form (2.0.4)
+      actionpack (~> 3.0)
+      activemodel (~> 3.0)
     slop (3.3.3)
+    spans (0.0.7)
+      inline-blocks (= 0.0.3)
     sprockets (2.1.3)
       hike (~> 1.2)
       rack (~> 1.0)
@@ -113,10 +146,14 @@ GEM
     treetop (1.4.11)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.33)
-    uploadcare-api (0.0.1)
-      faraday
-      multipart-post
+    tzinfo (0.3.34)
+    uploadcare-widget (0.3.1)
+      bourbon
+      coffee-rails
+      ejs
+      jquery-rails
+      sass-rails
+      spans (= 0.0.7)
 
 PLATFORMS
   ruby
@@ -125,5 +162,7 @@ DEPENDENCIES
   jquery-rails
   pry-rails
   rspec-rails
+  simple_form
   sqlite3
+  uploadcare-api!
   uploadcare-rails!
