@@ -10,6 +10,16 @@ Here is a rails gem for using uploadcare.com service. To install it, add it in y
 
 This gem provides ability to attach Uploadcare files to your models. To do that, you need a string field in your model, which is going to hold an Uploadcare file's id.
 
+The first thing is to add configuration for Uploadcare. Create a file `config/initializers/uploadcare.rb`:
+
+    Uploadcare::Rails::Engine.configure do
+      config.uploadcare.public_key = 'demopublickey'
+      config.uploadcare.private_key = 'demoprivatekey'
+    end
+
+(These are our *demo* keys. You can use them to try things out. Don't forget to change them to your own keys before building anything serious).
+    
+
 Add such an attribute to your model. First, create and run a migration:
 
     rails generate migration AddFileToPost file:string
