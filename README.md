@@ -19,9 +19,9 @@ Edit your model to indicate what this field is used for Uploadcare files:
 
 
     class Post < ActiveRecord::Base
-      attr_accessible :content, :name, :title
+      attr_accessible :content, :name, :title, :file     # don't forget to make this attribute accessible
 
-      is_uploadcare_file :file                    # this is a line you want to add
+      is_uploadcare_file :file                           # this is a line you want to add
     end
 
 To use a widget, its client-side code must be compiled along with all of your other code. Add `require` directives for that:
@@ -29,18 +29,17 @@ To use a widget, its client-side code must be compiled along with all of your ot
     # in application.css
     /*= require uploadcare/widget */
         
-        # in application.js
-        //= require uploadcare/widget
+    # in application.js
+    //= require uploadcare/widget
 
-As the assets are here, we can use a widget. 
+As the assets are here, we can use a widget in our forms:
 
-        # for regular form
-        <%= f.uploadcare_uploader_field :file %>
+    <%= f.uploadcare_uploader_field :file %>
         
-        # for simple_form
-        <%= form.input :file, as: :uploadcare_uploader %>
+    # or, if you use `simple_form`
+    <%= form.input :file, as: :uploadcare_uploader %>
 
-* Use attribute in your code:
+Uploadcare-rails gem takes care of storing files on saving a model, so as soon as you add a field to your form, everything should work, and you'll be able to show an image just like that:
 
-        @my_model.attribute.public_url('crop/200x200')
+    <%= image_tag @post.file.public_url("scale_crop/500x200", "effect/grayscale/") %>
 
