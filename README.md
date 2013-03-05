@@ -41,6 +41,14 @@ To display nice widgets for file upload, include the script for desired widget v
 <%= uploadcare_include_tag '0.6.4.2' %>
 ```
 
+This will include the widget script from Uploadcare CDN via a tag, which is the preferred way to do it. In some circumstances, however, you'd want to run the script code through the asset pipeline, or work offline. To do this, instead of using `uploadcare_include_tag` just add it to your assets:
+
+```javascript
+// = require uploadcare
+```
+
+This will add the widget script to the pipeline, whichever version of it ships with the version of uploadcare-rails you're using.
+
 Now we can use the Uploadcare widget in our forms:
 
 ```erb
