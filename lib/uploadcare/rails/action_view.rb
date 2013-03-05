@@ -1,7 +1,8 @@
 module Uploadcare::Rails::ActionView
   module Helpers
     def uploadcare_include_tag(version, options = {})
-      url = "https://ucarecdn.com/widget/#{version}/uploadcare/uploadcare-#{version}#{options[:min] ? '.min' : ''}.js"
+      min = options[:min].nil? || options[:min]
+      url = "https://ucarecdn.com/widget/#{version}/uploadcare/uploadcare-#{version}#{'.min' if min}.js"
       javascript_include_tag(url)
     end
 
