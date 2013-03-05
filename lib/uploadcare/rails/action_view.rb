@@ -1,5 +1,10 @@
 module Uploadcare::Rails::ActionView
-  module FormHelper
+  module Helpers
+    def uploadcare_include_tag(version, options = {})
+      url = "https://ucarecdn.com/widget/#{version}/uploadcare/uploadcare-#{version}#{options[:min] ? '.min' : ''}.js"
+      javascript_include_tag(url)
+    end
+
     def uploadcare_uploader_tag(name)
       hidden_field_tag name, nil, role: 'uploadcare-uploader'
     end
@@ -24,4 +29,4 @@ module Uploadcare::Rails::ActionView
   end
 end
 
-ActionView::Base.send :include, Uploadcare::Rails::ActionView::FormHelper
+ActionView::Base.send :include, Uploadcare::Rails::ActionView::Helpers
