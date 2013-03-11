@@ -13,6 +13,9 @@ module Uploadcare
       
 
       def initialize(settings = {})
+        settings = {
+          :widget_version => '0.6.4.2'
+        }.update(settings)
         self.class.keys.each do |key|
           send "#{key}=", settings[key] if settings[key].present?
         end

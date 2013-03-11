@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 3.2"
   s.add_dependency "uploadcare-api", "0.0.2"
-  s.add_dependency "uploadcare-widget"
   # s.add_dependency "jquery-rails"
 
   s.add_development_dependency "sqlite3"
