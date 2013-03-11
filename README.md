@@ -16,6 +16,7 @@ The first thing is to configure stuff for Uploadcare. Create a file `config/init
 Uploadcare::Rails::Engine.configure do
   config.uploadcare.public_key = 'demopublickey'
   config.uploadcare.private_key = 'demoprivatekey'
+  config.uploadcare.widget_version = '0.6.4.2'
 end
 ```
 
@@ -41,7 +42,9 @@ To display nice widgets for file upload, include the script for desired widget v
 <%= uploadcare_include_tag '0.6.4.2' %>
 ```
 
-This will include the widget script from Uploadcare CDN via a tag, which is the preferred way to do it. In some circumstances, however, you'd want to run the script code through the asset pipeline, or work offline. To do this, instead of using `uploadcare_include_tag` just add it to your assets:
+This will include the widget script from Uploadcare CDN via a tag, which is the preferred way to do it. If you omit the version argument (which is fine), the value from `config/initializers/uploadcare.rb` will be used.
+
+In some circumstances, however, you'd want to run the script code through the asset pipeline, or work offline. To do this, instead of using `uploadcare_include_tag` just add it to your assets:
 
 ```javascript
 // = require uploadcare
