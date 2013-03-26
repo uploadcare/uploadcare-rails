@@ -2,10 +2,12 @@
 <html>
 <head>
   <title>Dummy</title>
-  <%= uploadcare_include_tag %>
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
+
+  <script>UPLOADCARE_PUBLIC_KEY = 'demopublickey';</script>
+  <%= uploadcare_include_tag %>
 </head>
 <body>
 

@@ -8,14 +8,18 @@ module Uploadcare::Rails::ActionView
     end
 
     def uploadcare_uploader_tag(name)
-      hidden_field_tag name, nil, role: 'uploadcare-uploader'
+      hidden_field_tag name, nil, {
+        :role => "uploadcare-uploader",
+        :data => {:path_value => true}
+      }
     end
 
     def uploadcare_uploader_field(object_name, method, options = {})
       options.symbolize_keys!
-      role = "#{options[:role]} uploadcare-uploader"
-      options.update(role: "#{options[:role]} uploadcare-uploader")
-
+      options.update({
+        :role => "#{options[:role]} uploadcare-uploader",
+        :data => {:path_value => true}
+      })
       hidden_field(object_name, method, options)
     end
 
@@ -23,7 +27,7 @@ module Uploadcare::Rails::ActionView
       ActionView::Helpers::FormBuilder.send(:include, Uploadcare::Rails::ActionView::FormBuilder)
     end
   end
-  
+
   module FormBuilder
     def uploadcare_uploader_field(method, options = {})
       @template.uploadcare_uploader_field(@object_name, method, objectify_options(options))
