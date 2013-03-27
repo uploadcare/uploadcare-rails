@@ -14,7 +14,7 @@ module Uploadcare
       def initialize(settings = {})
         settings = {
           :public_key => 'demopublickey',
-          :private_key => 'demoprivate_key',
+          :private_key => 'demoprivatekey',
           :widget_version => '0.6.8'
         }.update(settings)
         @@keys.each do |key|
