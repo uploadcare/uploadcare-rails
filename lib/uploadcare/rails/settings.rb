@@ -10,19 +10,18 @@ module Uploadcare
 
       keys.each { |key| attr_accessor key }
       attr_reader :api, :uploader
-      
 
       def initialize(settings = {})
         settings = {
           :widget_version => '0.6.8'
         }.update(settings)
-        self.class.keys.each do |key|
+        @@keys.each do |key|
           send "#{key}=", settings[key] if settings[key].present?
         end
       end
 
       def get_settings
-        Hash[self.class.keys.select{|k| send(k).present? }.map{|k| [k, send(k)]}]
+        Hash[@@keys.select{|k| send(k).present? }.map{|k| [k, send(k)]}]
       end
 
       def make_api
