@@ -39,7 +39,7 @@ end
 To display nice widgets for file upload, include the script for desired widget version (here we use 0.6.4.2) in your layout.
 
 ```erb
-<%= uploadcare_include_tag '0.6.4.2' %>
+<%= uploadcare_include_tag version: '0.6.4.2' %>
 ```
 
 This will include the widget script from Uploadcare CDN via a tag, which is the preferred way to do it. If you omit the version argument (which is fine), the value from `config/initializers/uploadcare.rb` will be used.
