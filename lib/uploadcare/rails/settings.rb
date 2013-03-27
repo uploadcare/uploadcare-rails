@@ -13,6 +13,8 @@ module Uploadcare
 
       def initialize(settings = {})
         settings = {
+          :public_key => 'demopublickey',
+          :private_key => 'demoprivate_key',
           :widget_version => '0.6.8'
         }.update(settings)
         @@keys.each do |key|
@@ -22,6 +24,26 @@ module Uploadcare
 
       def get_settings
         Hash[@@keys.select{|k| send(k).present? }.map{|k| [k, send(k)]}]
+      end
+
+      @@widget_keys = {
+        # Excluded
+        :api_url_base => false,
+        :api_version => false,
+        :private_key => false,
+        :widget_version => false,
+
+        # Renamed
+        :static_url_base => :cdn_base,
+        :upload_url_base => :url_base
+      }
+
+      def get_widget_settings
+        Hash[
+          @@keys
+            .reject{|k| @@widget_keys[k] == false }
+            .map{|k| [@@widget_keys[k] || k, send(k)]}
+        ]
       end
 
       def make_api
