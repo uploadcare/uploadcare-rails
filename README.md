@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png)](http://travis-ci.org/uploadcare/uploadcare-rails)
+[![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png?branch=master)](http://travis-ci.org/uploadcare/uploadcare-rails)
 
 # Installation
 
