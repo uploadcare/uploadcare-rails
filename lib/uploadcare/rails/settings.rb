@@ -1,29 +1,16 @@
 module Uploadcare
   module Rails
-    class Settings
-      @@keys = [
-        :public_key, :private_key, :upload_url_base,
-        :api_url_base, :static_url_base, :api_version,
-        :widget_version
-      ]
-      cattr_reader :keys
-
-      keys.each { |key| attr_accessor key }
-      attr_reader :api, :uploader
-
-      def initialize(settings = {})
+    class Settings < OpenStruct
+      def initialize(settings = {}, *args)
+        super(*args)
         settings = {
           :public_key => 'demopublickey',
           :private_key => 'demoprivatekey',
           :widget_version => '0.6.8'
         }.update(settings)
-        @@keys.each do |key|
-          send "#{key}=", settings[key] if settings[key].present?
+        settings.each do |k, v|
+          send "#{k}=", v
         end
-      end
-
-      def get_settings
-        Hash[@@keys.select{|k| send(k).present? }.map{|k| [k, send(k)]}]
       end
 
       @@widget_keys = {
@@ -40,18 +27,32 @@ module Uploadcare
 
       def get_widget_settings
         Hash[
-          @@keys
+          marshal_dump
             .reject{|k| @@widget_keys[k] == false }
-            .map{|k| [@@widget_keys[k] || k, send(k)]}
+            .keys.map{|k| [@@widget_keys[k] || k, send(k)]}
         ]
       end
 
-      def make_api
-        @api = Uploadcare::Api.new(get_settings)
+      @@client_keys = [
+        :public_key, :private_key, :upload_url_base,
+        :api_url_base, :static_url_base, :api_version,
+        :widget_version
+      ]
+
+      def get_settings(keys)
+        marshal_dump.select{|k| keys.include? k}
       end
 
-      def make_uploader
-        @uploader = Uploadcare::Uploader.new(get_settings)
+      def get_client_settings
+        get_settings(@@client_keys)
+      end
+
+      def api
+        @api ||= Uploadcare::Api.new(get_client_settings)
+      end
+
+      def uploader
+        @uploader ||= Uploadcare::Uploader.new(get_client_settings)
       end
     end
   end

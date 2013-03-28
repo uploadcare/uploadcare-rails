@@ -8,8 +8,8 @@ module Uploadcare
       end
 
       initializer 'uploadcare_rails.make_api' do |app|
-        app.config.uploadcare.make_api
-        app.config.uploadcare.make_uploader
+        app.config.uploadcare.api
+        app.config.uploadcare.uploader
       end
 
       initializer 'uploadcare_rails.load' do
