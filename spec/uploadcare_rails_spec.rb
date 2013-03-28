@@ -16,26 +16,19 @@ describe Uploadcare::Rails do
   end
 
   it 'should be configurable' do
-    settings = Rails.application.config.uploadcare.get_settings
-
-    Uploadcare::Rails::Engine.configure do
-      Uploadcare::Rails::Settings.keys.each do |key|
-        config.uploadcare.send("#{key}=", 'test')
-      end
+    settings = Uploadcare::Rails::Settings.new
+    keys = settings.get_client_settings.keys
+    keys.each do |key|
+      settings.send("#{key}=", 'test')
     end
-    Rails.application.config.uploadcare.make_api
-    Rails.application.config.uploadcare.make_uploader
 
-    Uploadcare::Rails::Settings.keys.each do |key|
-      Rails.application.config.uploadcare.api.options[key].should == 'test'
+    Rails.application.config.uploadcare.configure_api
+    keys.each do |key|
+      settings.api.options[key].should == 'test'
     end
-    Rails.application.config.uploadcare = Uploadcare::Rails::Settings.new(settings)
-    Rails.application.config.uploadcare.make_api
-    Rails.application.config.uploadcare.make_uploader
   end
 
   it 'should add uploadcare support by is_uploadcare_file method' do
-    
     @resume = Resume.create!(
       description: 'description',
       name: 'Ivan Navi',

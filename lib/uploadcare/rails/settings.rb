@@ -47,12 +47,24 @@ module Uploadcare
         get_settings(@@client_keys)
       end
 
+
+
       def api
-        @api ||= Uploadcare::Api.new(get_client_settings)
+        @api ||= configure_api
       end
 
       def uploader
-        @uploader ||= Uploadcare::Uploader.new(get_client_settings)
+        @uploader ||= configure_uploader
+      end
+
+
+
+      def configure_api
+        @api = Uploadcare::Api.new(get_client_settings)
+      end
+
+      def configure_uploader
+        @uploader = Uploadcare::Uploader.new(get_client_settings)
       end
     end
   end
