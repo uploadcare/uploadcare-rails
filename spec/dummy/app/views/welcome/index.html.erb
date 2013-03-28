@@ -1,5 +1,5 @@
 plain html:
-<%= uploadcare_uploader_tag :attachment %>
+<%= uploadcare_uploader_tag :attachment, data: {crop: ''} %>
 
 <%= form_for Resume.new, url: root_path do |f| %>
   form for:

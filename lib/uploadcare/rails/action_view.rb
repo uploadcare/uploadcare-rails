@@ -17,19 +17,20 @@ module Uploadcare::Rails::ActionView
       settings_code + include_code
     end
 
-    def uploadcare_uploader_tag(name)
-      hidden_field_tag name, nil, {
-        :role => "uploadcare-uploader",
-        :data => {:path_value => true}
-      }
-    end
-
-    def uploadcare_uploader_field(object_name, method, options = {})
-      options.symbolize_keys!
-      options.update({
+    def uploadcare_uploader_options(options)
+      options.symbolize_keys.deep_merge({
         :role => "#{options[:role]} uploadcare-uploader",
         :data => {:path_value => true}
       })
+    end
+
+    def uploadcare_uploader_tag(name, options = {})
+      options = uploadcare_uploader_options(options)
+      hidden_field_tag(name, nil, options)
+    end
+
+    def uploadcare_uploader_field(object_name, method, options = {})
+      options = uploadcare_uploader_options(options)
       hidden_field(object_name, method, options)
     end
 
