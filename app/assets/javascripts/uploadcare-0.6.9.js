@@ -1,7 +1,7 @@
 /*
- * Uploadcare (0.6.8)
- * Date: 2013-03-26 14:37:09 +0400
- * Rev: b0b1ebe003
+ * Uploadcare (0.6.9)
+ * Date: 2013-04-02 16:47:15 +0300
+ * Rev: 70b6ed62d0
  */
 ;(function(uploadcare){(function() {
 
@@ -16947,6 +16947,18 @@ var _require = (function() {
     ns.defer = function(fn) {
       return setTimeout(fn, 0);
     };
+    ns.once = function(fn) {
+      var called, result;
+      called = false;
+      result = null;
+      return function() {
+        if (!called) {
+          result = fn.apply(this, arguments);
+          called = true;
+        }
+        return result;
+      };
+    };
     ns.bindAll = function(source, methods) {
       var method, target, _fn, _i, _len;
       target = {};
@@ -16994,7 +17006,7 @@ var _require = (function() {
       return url.replace(/\/+$/, '');
     };
     ns.buildSettings = function(settings) {
-      var crop, key, ratio, size, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var crop, key, ratio, size, value, _i, _j, _len, _len1, _ref, _ref1;
       settings = $.extend({}, uploadcare.defaults, settings || {});
       if ($.type(settings.tabs) === "string") {
         settings.tabs = settings.tabs.split(' ');
@@ -17005,18 +17017,12 @@ var _require = (function() {
         key = _ref[_i];
         settings[key] = ns.normalizeUrl(settings[key]);
       }
-      _ref1 = ['multiple', 'imagesOnly', 'pathValue'];
+      _ref1 = ['previewStep', 'multiple', 'imagesOnly', 'pathValue'];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         key = _ref1[_j];
-        if (settings[key] !== false) {
-          settings[key] = settings[key] != null;
-        }
-      }
-      _ref2 = ['previewStep'];
-      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-        key = _ref2[_k];
         if (typeof settings[key] === 'string') {
-          settings[key] = settings[key] !== 'false';
+          value = $.trim(settings[key]).toLowerCase();
+          settings[key] = !(value === 'false' || value === 'disabled');
         } else {
           settings[key] = !!settings[key];
         }
@@ -17025,6 +17031,9 @@ var _require = (function() {
         console.log('Sorry, the multiupload is not working now');
         settings.multiple = false;
       }
+      if (settings.multiple) {
+        settings.crop = 'disabled';
+      }
       settings.__cropParsed = {
         enabled: true,
         scale: false,
@@ -17032,7 +17041,7 @@ var _require = (function() {
         preferedSize: null
       };
       crop = '' + settings.crop;
-      if (crop.match(/disabled/i)) {
+      if (crop.match(/(disabled|false)/i)) {
         crop = 'disabled';
         settings.__cropParsed.enabled = false;
       } else if (ratio = crop.match(/[0-9]+\:[0-9]+/)) {
@@ -17051,9 +17060,8 @@ var _require = (function() {
         crop = '';
       }
       settings.crop = crop;
-      if (settings.__cropParsed.enabled && settings.previewStep === false) {
+      if (settings.__cropParsed.enabled || settings.multiple) {
         settings.previewStep = true;
-        console.log('"Preview step" can\'t be disabled when "crop" is enabled.');
       }
       return settings;
     };
@@ -17125,11 +17133,11 @@ var _require = (function() {
     cdnBase: window.UPLOADCARE_CDN_BASE || 'https://ucarecdn.com',
     live: window.UPLOADCARE_LIVE != null ? window.UPLOADCARE_LIVE : true,
     tabs: window.UPLOADCARE_TABS || 'file url facebook dropbox gdrive instagram',
-    multiple: false,
-    imagesOnly: void 0,
     crop: window.UPLOADCARE_CROP != null ? window.UPLOADCARE_CROP : 'disabled',
-    previewStep: window.UPLOADCARE_PREVIEW_STEP != null ? window.UPLOADCARE_PREVIEW_STEP : false,
-    pathValue: false
+    multiple: !!window.UPLOADCARE_MULTIPLE,
+    previewStep: !!window.UPLOADCARE_PREVIEW_STEP,
+    imagesOnly: !!window.UPLOADCARE_IMAGES_ONLY,
+    pathValue: !!window.UPLOADCARE_PATH_VALUE
   };
 
 }).call(this);
@@ -17558,21 +17566,25 @@ var _require = (function() {
 
 }).call(this);
 (function() {
+  var $, css, style, tpl;
 
-  uploadcare.jQuery(function() {
-    var $, css, style, tpl;
-    $ = uploadcare.jQuery;
-    tpl = uploadcare.templates.tpl;
-    css = tpl('styles');
-    style = document.createElement('style');
-    style.setAttribute('type', 'text/css');
-    if (style.styleSheet != null) {
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-    return $('head').append(style);
-  });
+  $ = uploadcare.jQuery;
+
+  tpl = uploadcare.templates.tpl;
+
+  css = tpl('styles');
+
+  style = document.createElement('style');
+
+  style.setAttribute('type', 'text/css');
+
+  if (style.styleSheet != null) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+
+  $('head').append(style);
 
 }).call(this);
 /**
@@ -19348,8 +19360,8 @@ var _require = (function() {
 
       CropWidget.prototype.croppedImageUrl = function(originalUrl) {
         var _this = this;
-        return this.croppedImageModifiers(originalUrl).pipe(function(modifiers) {
-          return _this.__url + modifiers;
+        return this.croppedImageModifiers(originalUrl).pipe(function(opts) {
+          return _this.__url + opts.modifiers;
         });
       };
 
@@ -19369,17 +19381,29 @@ var _require = (function() {
           };
         }
         return this.croppedImageCoords(originalUrl, previousCoords).pipe(function(coords) {
-          var modifiers, pWidth, size, topLeft;
+          var modifiers, opts, scale, sh, size, sw, topLeft;
           size = "" + coords.w + "x" + coords.h;
           topLeft = "" + coords.x + "," + coords.y;
           modifiers = "-/crop/" + size + "/" + topLeft + "/";
+          opts = {
+            crop: $.extend({}, coords),
+            modifiers: modifiers
+          };
           if (_this.__options.scale) {
-            pWidth = _this.__options.preferedSize.split('x')[0];
-            if (coords.w > pWidth || _this.__options.upscale) {
+            scale = _this.__options.preferedSize.split('x');
+            if (scale[0]) {
+              sw = scale[0] - 0;
+            }
+            if (scale[1]) {
+              sh = scale[1] - 0;
+            }
+            if (coords.w > sw || _this.__options.upscale) {
+              opts.crop.sw = sw;
+              opts.crop.sh = sh;
               modifiers += "-/resize/" + _this.__options.preferedSize + "/";
             }
           }
-          return modifiers;
+          return opts;
         });
       };
 
@@ -19595,7 +19619,15 @@ var _require = (function() {
     return ns.BaseFile = (function() {
 
       function BaseFile(settings) {
+        this.__resolveApi = __bind(this.__resolveApi, this);
+
+        this.__rejectApi = __bind(this.__rejectApi, this);
+
+        this.__notifyApi = __bind(this.__notifyApi, this);
+
         this.__extendPromise = __bind(this.__extendPromise, this);
+
+        this.__preview = __bind(this.__preview, this);
 
         this.__cancel = __bind(this.__cancel, this);
 
@@ -19613,15 +19645,17 @@ var _require = (function() {
         this.cdnUrlModifiers = null;
         this.previewUrl = null;
         this.isImage = null;
-        this.upload = null;
         this.__uploadDf = $.Deferred();
         this.__infoDf = $.Deferred();
-        this.__promise = null;
         this.__progressState = 'uploading';
         this.__progress = 0;
         this.__uploadDf.fail(function(error) {
           return _this.__infoDf.reject(error, _this);
+        }).done(function() {
+          return _this.__requestInfo();
         });
+        this.__initApi();
+        this.__notifyApi();
       }
 
       BaseFile.prototype.__startUpload = function() {
@@ -19669,7 +19703,8 @@ var _require = (function() {
         return {
           state: this.__progressState,
           uploadProgress: this.__progress,
-          progress: this.__progressState === 'ready' ? 1 : this.__progress * 0.9
+          progress: this.__progressState === 'ready' ? 1 : this.__progress * 0.9,
+          incompleteFileInfo: this.__fileInfo()
         };
       };
 
@@ -19680,7 +19715,7 @@ var _require = (function() {
           size: this.fileSize,
           isStored: this.isStored,
           isImage: this.isImage,
-          cdnUrl: "" + (this.settings.pathValue ? '' : this.settings.cdnBase) + this.cdnUrl,
+          cdnUrl: "" + this.settings.cdnBase + "/" + this.fileId + "/" + (this.cdnUrlModifiers || ''),
           cdnUrlModifiers: this.cdnUrlModifiers,
           previewUrl: this.previewUrl
         };
@@ -19690,15 +19725,50 @@ var _require = (function() {
         return this.__uploadDf.reject('user', this);
       };
 
+      BaseFile.prototype.__preview = function(p, selector) {
+        var _this = this;
+        return p.done(function(info) {
+          var img, opts;
+          if (!info.crop) {
+            return $(selector).empty();
+          }
+          opts = info.crop;
+          img = new Image();
+          img.src = _this.previewUrl;
+          return img.onload = function() {
+            var el, sh, sw, sx, sy;
+            if (opts.sw || opts.sh) {
+              sw = opts.sw || opts.sh * opts.w / opts.h;
+              sh = opts.sh || opts.sw * opts.h / opts.w;
+            } else {
+              sw = opts.w;
+              sh = opts.h;
+            }
+            sx = sw / opts.w;
+            sy = sh / opts.h;
+            el = $('<div>').css({
+              position: 'relative',
+              overflow: 'hidden',
+              width: sw,
+              height: sh
+            }).append($(img).css({
+              position: 'absolute',
+              left: opts.x * -sx,
+              top: opts.y * -sy,
+              width: img.width * sx,
+              height: img.height * sy
+            }));
+            return $(selector).html(el);
+          };
+        });
+      };
+
       BaseFile.prototype.__extendPromise = function(p) {
-        var __pipe, __progress, __then,
+        var __pipe, __then,
           _this = this;
         p.cancel = this.__cancel;
-        p.current = this.__fileInfo;
-        __progress = p.progress;
-        p.progress = function(fns) {
-          $.Callbacks().add(fns).fire(_this.__progressInfo());
-          return __progress.call(p, fns);
+        p.preview = function(selector) {
+          return _this.__preview(p, selector);
         };
         __pipe = p.pipe;
         p.pipe = function() {
@@ -19711,37 +19781,46 @@ var _require = (function() {
         return p;
       };
 
-      BaseFile.prototype.promise = function() {
-        var df,
-          _this = this;
-        if (this.__promise != null) {
-          return this.__promise;
-        }
-        df = $.Deferred();
-        this.__promise = this.__extendPromise(df.promise());
+      BaseFile.prototype.__notifyApi = function() {
+        return this.apiDeferred.notify(this.__progressInfo());
+      };
+
+      BaseFile.prototype.__rejectApi = function(err) {
+        return this.apiDeferred.reject(err, this.__fileInfo());
+      };
+
+      BaseFile.prototype.__resolveApi = function() {
+        return this.apiDeferred.resolve(this.__fileInfo());
+      };
+
+      BaseFile.prototype.__initApi = function() {
+        var _this = this;
+        this.apiDeferred = $.Deferred();
+        this.apiPromise = this.__extendPromise(this.apiDeferred.promise());
         this.__uploadDf.progress(function(progress) {
           _this.__progress = progress;
-          return df.notify(_this.__progressInfo());
+          return _this.__notifyApi();
         });
         this.__uploadDf.done(function() {
           _this.__progressState = 'uploaded';
           _this.__progress = 1;
-          df.notify(_this.__progressInfo());
-          return _this.__requestInfo();
+          return _this.__notifyApi();
         });
         this.__infoDf.done(function() {
           _this.__progressState = 'ready';
-          df.notify(_this.__progressInfo());
-          return df.resolve(_this.__fileInfo());
+          _this.__notifyApi();
+          return _this.__resolveApi();
         });
-        this.__infoDf.fail(function(err) {
-          return df.reject(err, _this.__fileInfo());
-        });
-        this.__uploadDf.fail(function(err) {
-          return df.reject(err, _this.__fileInfo());
-        });
-        this.__startUpload();
-        return this.__promise;
+        this.__infoDf.fail(this.__rejectApi);
+        return this.__uploadDf.fail(this.__rejectApi);
+      };
+
+      BaseFile.prototype.promise = function() {
+        if (!this.__uploadStarted) {
+          this.__uploadStarted = true;
+          this.__startUpload();
+        }
+        return this.apiPromise;
       };
 
       return BaseFile;
@@ -19769,6 +19848,7 @@ var _require = (function() {
         this.fileSize = this.__file.size;
         this.fileName = this.__file.name;
         this.previewUrl = utils.createObjectUrl(this.__file);
+        this.__notifyApi();
       }
 
       EventFile.prototype.__startUpload = function() {
@@ -19854,6 +19934,7 @@ var _require = (function() {
         InputFile.__super__.constructor.apply(this, arguments);
         this.fileId = utils.uuid();
         this.fileName = $(this.__input).val().split('\\').pop();
+        this.__notifyApi();
       }
 
       InputFile.prototype.__startUpload = function() {
@@ -19928,6 +20009,7 @@ var _require = (function() {
         this.previewUrl = this.__url;
         this.__tmpFinalPreviewUrl = this.__url;
         this.fileName = utils.parseUrl(this.__url).pathname.split('/').pop() || null;
+        this.__notifyApi();
       }
 
       UrlFile.prototype.__startUpload = function() {
@@ -20124,8 +20206,8 @@ var _require = (function() {
           modifiers = utils.cdnUrlModifiersRegex.exec(fileIdOrUrl);
           if (modifiers) {
             this.cdnUrlModifiers = modifiers;
-            this.cdnUrl = "/" + this.fileId + "/" + (this.cdnUrlModifiers || '');
           }
+          this.cdnUrl = "" + this.settings.cdnBase + "/" + this.fileId + "/" + (this.cdnUrlModifiers || '');
           this.__buildPreviewUrl();
           this.__uploadDf.resolve(this);
         } else {
@@ -20980,11 +21062,14 @@ var _require = (function() {
       };
 
       PreviewTab.prototype.__setState = function(state, data) {
-        data = $.extend({
-          file: this.file.current()
-        }, data);
-        this.content.empty().append(tpl("tab-preview-" + state, data));
-        return this.__afterRender(state);
+        var _this = this;
+        return this.file.progress(utils.once(function(progressInfo) {
+          data = $.extend({
+            file: progressInfo.incompleteFileInfo
+          }, data);
+          _this.content.empty().append(tpl("tab-preview-" + state, data));
+          return _this.__afterRender(state);
+        }));
       };
 
       PreviewTab.prototype.__afterRender = function(state) {
@@ -21006,7 +21091,7 @@ var _require = (function() {
       PreviewTab.prototype.__initCrop = function() {
         var _this = this;
         return setTimeout((function() {
-          var container, doneButton, img, prefix, widget;
+          var container, doneButton, img, widget;
           img = _this.content.find(PREFIX + 'image');
           container = img.parent();
           doneButton = _this.content.find(PREFIX + 'done');
@@ -21014,12 +21099,14 @@ var _require = (function() {
             container: container,
             controls: false
           }));
-          prefix = _this.settings.pathValue ? '' : _this.settings.cdnBase;
           _this.file.done(function(info) {
-            return widget.croppedImageModifiers(img.attr('src'), info.cdnUrlModifiers).done(function(modifiers) {
+            return widget.croppedImageModifiers(img.attr('src'), info.cdnUrlModifiers).done(function(opts) {
               return _this.file = _this.file.then(function(info) {
-                info.cdnUrlModifiers = modifiers;
-                info.cdnUrl = "" + prefix + "/" + info.uuid + "/" + (modifiers || '');
+                var prefix;
+                prefix = _this.settings.cdnBase;
+                info.cdnUrlModifiers = opts.modifiers;
+                info.cdnUrl = "" + prefix + "/" + info.uuid + "/" + (opts.modifiers || '');
+                info.crop = opts.crop;
                 return info;
               });
             });
@@ -21151,7 +21238,7 @@ var _require = (function() {
         file = this.currentFile;
         return this.currentFile.done(function(info) {
           if (file === _this.currentFile) {
-            return _this.__setValue(info.cdnUrlModifiers ? info.cdnUrl : _this.settings.pathValue ? "/" + info.uuid + "/" : info.uuid);
+            return _this.__setValue(info.cdnUrlModifiers || _this.settings.pathValue ? info.cdnUrl : info.uuid);
           }
         });
       };
@@ -21366,7 +21453,7 @@ var _require = (function() {
   var expose, key,
     __hasProp = {}.hasOwnProperty;
 
-  uploadcare.version = '0.6.8';
+  uploadcare.version = '0.6.9';
 
   expose = uploadcare.expose;
 
