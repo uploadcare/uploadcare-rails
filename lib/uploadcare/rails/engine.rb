@@ -7,11 +7,6 @@ module Uploadcare
         app.config.uploadcare = Uploadcare::Rails::Settings.new
       end
 
-      initializer 'uploadcare_rails.make_api' do |app|
-        app.config.uploadcare.make_api
-        app.config.uploadcare.make_uploader
-      end
-
       initializer 'uploadcare_rails.load' do
         ActiveSupport.on_load :active_record do
           require 'uploadcare/rails/active_record'
