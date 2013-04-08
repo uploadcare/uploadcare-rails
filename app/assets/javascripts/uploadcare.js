@@ -1,1 +1,1 @@
-// = require ./uploadcare-0.6.8
+// = require ./uploadcare-0.6.9.2

@@ -1,7 +1,7 @@
 /*
- * Uploadcare (0.6.9)
- * Date: 2013-04-02 16:47:15 +0300
- * Rev: 70b6ed62d0
+ * Uploadcare (0.6.9.2)
+ * Date: 2013-04-08 15:46:19 +0300
+ * Rev: 5b86155f5a
  */
 ;(function(uploadcare){(function() {
 
@@ -16998,7 +16998,7 @@ var _require = (function() {
     };
     ns.uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
     ns.fullUuidRegex = new RegExp("^" + ns.uuidRegex.source + "$", 'i');
-    ns.cdnUrlModifiersRegex = /(?:-\/(?:[a-z0-9_]+\/)+)+/i;
+    ns.cdnUrlModifiersRegex = /(?:-\/(?:[a-z0-9_,]+\/)+)+/i;
     ns.normalizeUrl = function(url) {
       if (!url.match(/^([a-z][a-z0-9+\-\.]*:)?\/\//i)) {
         url = "https://" + url;
@@ -17214,24 +17214,24 @@ var _require = (function() {
             error: {
               "default": {
                 title: 'Uploading failed',
-                line1: 'Something went wrong during uploading.',
+                line1: 'Something went wrong during the upload.',
                 line2: 'Please try again.'
               },
               image: {
                 title: 'Images only',
-                line1: 'Only image files can be accepted.',
+                line1: 'Only image files are accepted.',
                 line2: 'Please try again with another file.'
               },
               size: {
                 title: 'Size limit',
-                line1: 'The file you selected exceed the 100MB limit.',
+                line1: 'The file you selected exceeds the 100 MB limit.',
                 line2: 'Please try again with another file.'
               }
             }
           }
         },
         footer: {
-          text: 'Uploading, Storing and Processing files by',
+          text: 'Uploading, storing and processing files by',
           link: 'Uploadcare.com'
         }
       },
@@ -17247,6 +17247,120 @@ var _require = (function() {
 
   uploadcare.namespace('uploadcare.locale.pluralize', function(ns) {
     return ns.en = function(n) {
+      if (n === 1) {
+        return 'one';
+      }
+      return 'other';
+    };
+  });
+
+}).call(this);
+(function() {
+
+  uploadcare.namespace('uploadcare.locale.translations', function(ns) {
+    return ns.es = {
+      ready: 'Subir desde',
+      uploading: 'Subiendo... Por favor espere.',
+      loadingInfo: 'Cargando Información...',
+      errors: {
+        "default": 'Error',
+        baddata: 'Valor incorrecto',
+        size: 'Demasiado grande',
+        upload: 'No se ha podido subir',
+        user: 'Subida cancelada',
+        info: 'No se pudo cargar la información',
+        image: 'Sólo se permiten imagenes'
+      },
+      draghere: 'Arrastra los archivos hasta aquí',
+      file: {
+        one: '1 archivo',
+        other: '%1 archivos'
+      },
+      buttons: {
+        cancel: 'Cancelar',
+        remove: 'Eliminar',
+        file: 'Computadora'
+      },
+      dialog: {
+        tabs: {
+          file: {
+            drag: 'Arrastra una archivo aquí',
+            nodrop: 'Sube fotos desde tu computadora',
+            or: 'o',
+            button: 'Elige un archivo desde tu computadora',
+            also: 'Tambien puedes seleccionarlo de',
+            tabNames: {
+              facebook: 'Facebook',
+              dropbox: 'Dropbox',
+              gdrive: 'Google Drive',
+              instagram: 'Instagram',
+              url: 'Una dirección cualquiera'
+            }
+          },
+          url: {
+            title: 'Archivos de la web',
+            line1: 'Selecciona cualquier archivo de la web.',
+            line2: 'Sólo danos el link.',
+            input: 'Copia tu link aquí...',
+            button: 'Subir'
+          },
+          preview: {
+            unknownName: 'desconocido',
+            change: 'Cancelar',
+            back: 'Atras',
+            done: 'Subir',
+            unknown: {
+              title: 'Subiendo. Por favor espera para una vista previa.',
+              done: 'Saltar vista previa y aceptar'
+            },
+            regular: {
+              title: '¿Quieres subir este archivo?',
+              line1: 'Estás por subir el archivo de arriba.',
+              line2: 'Confirma por favor.'
+            },
+            image: {
+              title: '¿Quieres subir esta imagen?',
+              change: 'Cancelar'
+            },
+            crop: {
+              title: 'Cortar y subir esta imagen'
+            },
+            error: {
+              "default": {
+                title: 'La subida falló',
+                line1: 'Algo salio mal durante la subida.',
+                line2: 'Por favor, trata de nuevo.'
+              },
+              image: {
+                title: 'Sólo imagenes',
+                line1: 'Sólo se aceptan archivos de imagenes.',
+                line2: 'Por favor, trata de nuevo con otro archivo.'
+              },
+              size: {
+                title: 'Límite de tamaño',
+                line1: 'El archivo que has seleccinado sobrepasa el límite de los 100MB.',
+                line2: 'Por favor trata de nuevo con otro archivo.'
+              }
+            }
+          }
+        },
+        footer: {
+          text: 'Los archivos ha sido subidos, gestionados y procesados por',
+          link: 'Uploadcare.com'
+        }
+      },
+      crop: {
+        error: {
+          title: 'Error',
+          text: 'No se pudo cargar la imangen'
+        },
+        done: 'Listo'
+      }
+    };
+  });
+
+  uploadcare.namespace('uploadcare.locale.pluralize', function(ns) {
+    return ns.es = function(n) {
       if (n === 1) {
         return 'one';
       }
@@ -17370,8 +17484,14 @@ var _require = (function() {
     return ns.ru = {
       ready: 'Выберите файл',
       uploading: 'Идет загрузка',
+      loadingInfo: 'Загрузка информации...',
       errors: {
         "default": 'Ошибка',
+        baddata: 'Некорректные данные',
+        size: 'Слишком большой файл',
+        upload: 'Ошибка при загрузке',
+        user: 'Загрузка прервана',
+        info: 'Ошибка при загрузке информации',
         image: 'Разрешены только изображения'
       },
       draghere: 'Перетащите файл сюда',
@@ -17387,20 +17507,20 @@ var _require = (function() {
         file: 'Компьютер'
       },
       dialog: {
-        title: 'Загрузите что угодно, откуда угодно',
-        poweredby: 'Предоставлено',
-        support: {
-          images: 'Изображения',
-          audio: 'Аудио',
-          video: 'Видео',
-          documents: 'Документы'
-        },
         tabs: {
           file: {
-            title: 'Мой компьютер',
-            line1: 'Загрузите любой файл со своего компьютера.',
-            line2: 'Выберите его через окно поиска или перетащите.',
-            button: 'Поиск файлов'
+            drag: 'Перетащите файл сюда',
+            nodrop: 'Загрузка файлов с вашего компьютера',
+            or: 'или',
+            button: 'Выбрать файлы',
+            also: 'Вы также можете загрузить файлы используя',
+            tabNames: {
+              facebook: 'Facebook',
+              dropbox: 'Dropbox',
+              gdrive: 'Google Drive',
+              instagram: 'Instagram',
+              url: 'Внешнюю ссылку'
+            }
           },
           url: {
             title: 'Файлы с других сайтов',
@@ -17408,8 +17528,58 @@ var _require = (function() {
             line2: '',
             input: 'Укажите здесь ссылку...',
             button: 'Загрузить'
+          },
+          preview: {
+            unknownName: 'неизвестно',
+            change: 'Отмена',
+            back: 'Назад',
+            done: 'Загрузить',
+            unknown: {
+              title: 'Загрузка. Пожалуйста подождите.',
+              done: 'Пропустить предварительный просмотр'
+            },
+            regular: {
+              title: 'Загрузить этот файл?',
+              line1: 'Вы собираетесь загрузить представленный файл.',
+              line2: 'Пожалуйста, подтвердите.'
+            },
+            image: {
+              title: 'Загрузить это изображение?',
+              change: 'Отмена'
+            },
+            crop: {
+              title: 'Обрезать и загрузить это изображение'
+            },
+            error: {
+              "default": {
+                title: 'Ошибка загрузки',
+                line1: 'Что-то пошло не так во время загрузки.',
+                line2: 'Пожалуйста, попробуйте ещё раз.'
+              },
+              image: {
+                title: 'Только изображения',
+                line1: 'Можно загружать только изображения.',
+                line2: 'Попробуйте загрузить другой файл.'
+              },
+              size: {
+                title: 'Файл слишком большой',
+                line1: 'Размер выбранного файла превышает 100 Мб.',
+                line2: 'Попробуйте загрузить другой файл.'
+              }
+            }
           }
+        },
+        footer: {
+          text: 'Для загрузки, хранения и обработки файлов используется',
+          link: 'Uploadcare.com'
         }
+      },
+      crop: {
+        error: {
+          title: 'Ошибка',
+          text: 'Изображение не удалось загрузить'
+        },
+        done: 'ОК'
       }
     };
   });
@@ -20205,7 +20375,7 @@ var _require = (function() {
           this.fileId = id[0];
           modifiers = utils.cdnUrlModifiersRegex.exec(fileIdOrUrl);
           if (modifiers) {
-            this.cdnUrlModifiers = modifiers;
+            this.cdnUrlModifiers = modifiers[0];
           }
           this.cdnUrl = "" + this.settings.cdnBase + "/" + this.fileId + "/" + (this.cdnUrlModifiers || '');
           this.__buildPreviewUrl();
@@ -21313,7 +21483,11 @@ var _require = (function() {
       Widget.prototype.__openDialogWithFile = function(type, data) {
         var file;
         file = uploadcare.fileFrom(type, data, this.settings);
-        return uploadcare.openDialog(file, this.settings).done(this.__setFile);
+        if (this.settings.previewStep) {
+          return uploadcare.openDialog(file, this.settings).done(this.__setFile);
+        } else {
+          return this.__setFile(file);
+        }
       };
 
       Widget.prototype.openDialog = function(tab) {
@@ -21453,7 +21627,7 @@ var _require = (function() {
   var expose, key,
     __hasProp = {}.hasOwnProperty;
 
-  uploadcare.version = '0.6.9';
+  uploadcare.version = '0.6.9.2';
 
   expose = uploadcare.expose;
 
