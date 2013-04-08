@@ -13,7 +13,11 @@ module Uploadcare
           if instance_variable_defined?("@#{attribute}_cached")
             instance_variable_get("@#{attribute}_cached")
           else
-            file_data = ::Rails.application.config.uploadcare.api.file(attributes[attribute.to_s])
+            re = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i
+            m = re.match(attributes[attribute.to_s])
+            return nil if m.nil?
+
+            file_data = ::Rails.application.config.uploadcare.api.file(m[0])
             instance_variable_set("@#{attribute}_cached", file_data)
             file_data
           end
