@@ -4,7 +4,8 @@ module Uploadcare
       def is_uploadcare_file attribute, options = {}
         options.symbolize_keys!
         opts = {
-          autostore: true
+          autostore: true,
+          force_autostore: false
         }.update options
 
         get_uuid = lambda do |attributes|
@@ -35,7 +36,11 @@ module Uploadcare
 
           define_method "store_#{attribute}" do
             uuid = get_uuid.call(attributes)
-             unless ::Rails.cache.exist?("uploadcare.file.#{uuid}.store")
+            stored = ::Rails.cache.exist?(
+              "uploadcare.file.#{uuid}.store",
+              force: opts[:force_autostore]
+            )
+             unless stored
               send(attribute).store
               ::Rails.cache.write("uploadcare.file.#{uuid}.store", true)
             end
