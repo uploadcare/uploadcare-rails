@@ -24,7 +24,7 @@ module Uploadcare
         end
 
         if opts[:autostore]
-          after_create "store_#{attribute}" 
+          after_save "store_#{attribute}"
 
           define_method "store_#{attribute}" do
             if send(attribute).present?
