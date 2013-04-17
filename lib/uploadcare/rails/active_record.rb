@@ -7,17 +7,24 @@ module Uploadcare
           autostore: true
         }.update options
 
+        get_uuid = lambda do |attributes|
+          re = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i
+          m = re.match(attributes[attribute.to_s])
+          if m.nil?
+            nil
+          else
+            m[0]
+          end
+        end
+
         define_method "#{attribute}" do
-          return nil unless attributes[attribute.to_s].present?
+          uuid = get_uuid.call(attributes)
+          return nil unless uuid
 
           if instance_variable_defined?("@#{attribute}_cached")
             instance_variable_get("@#{attribute}_cached")
           else
-            re = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i
-            m = re.match(attributes[attribute.to_s])
-            return nil if m.nil?
-
-            file_data = ::Rails.application.config.uploadcare.api.file(m[0])
+            file_data = ::Rails.application.config.uploadcare.api.file(uuid)
             instance_variable_set("@#{attribute}_cached", file_data)
             file_data
           end
@@ -27,8 +34,10 @@ module Uploadcare
           after_save "store_#{attribute}"
 
           define_method "store_#{attribute}" do
-            if send(attribute).present?
+            uuid = get_uuid.call(attributes)
+             unless ::Rails.cache.exist?("uploadcare.file.#{uuid}.store")
               send(attribute).store
+              ::Rails.cache.write("uploadcare.file.#{uuid}.store", true)
             end
           end
         end
