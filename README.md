@@ -36,7 +36,7 @@ class Post < ActiveRecord::Base
 end
 ```
 
-To display nice widgets for file upload, include the script for desired widget version (here we use 0.6.4.2) in your layout.
+To display nice widgets for file upload, include the script for desired widget version (here we use 0.8) in your layout.
 
 ```erb
 <%= uploadcare_include_tag version: '0.8' %>

@@ -6,7 +6,7 @@ module Uploadcare
         settings = {
           :public_key => 'demopublickey',
           :private_key => 'demoprivatekey',
-          :widget_version => '0.6.9.2'
+          :widget_version => '0.8'
         }.update(settings)
         settings.each do |k, v|
           send "#{k}=", v
