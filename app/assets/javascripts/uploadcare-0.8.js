@@ -1,7 +1,7 @@
 /*
- * Uploadcare (0.6.9.2)
- * Date: 2013-04-08 15:46:19 +0300
- * Rev: 5b86155f5a
+ * Uploadcare (0.8)
+ * Date: 2013-04-19 13:52:01 +0300
+ * Rev: 99aa9e7346
  */
 ;(function(uploadcare){(function() {
 
@@ -16700,16 +16700,6 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var __slice = [].slice;
-
-  uploadcare.debug = function() {
-    var args;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return uploadcare.jQuery(uploadcare).trigger('log.uploadcare', [args]);
-  };
-
-}).call(this);
-(function() {
 
   uploadcare.namespace('uploadcare.utils.abilities', function(ns) {
     ns.canFileAPI = !!window.FileList;
@@ -16723,9 +16713,6 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var debug;
-
-  debug = uploadcare.debug;
 
   uploadcare.namespace('uploadcare.utils.pusher', function(ns) {
     var hasOwners, pusherInstance, pusherWrapped, pushers, releasePusher, updateConnection;
@@ -16744,9 +16731,7 @@ var _require = (function() {
       return pusherWrapped(key, owner);
     };
     releasePusher = function(key, owner) {
-      debug('releasing', owner);
       if (!pushers[key].owners[owner]) {
-        debug('this pusher has already been released');
         return;
       }
       pushers[key].owners[owner] = false;
@@ -16771,12 +16756,8 @@ var _require = (function() {
       if (hasOwners(key)) {
         return instance.connect();
       } else {
-        debug('disconnect timeout started', key);
         return setTimeout((function() {
-          if (hasOwners(key)) {
-            return debug('not disconnecting in the end');
-          } else {
-            debug('actual disconnect', key);
+          if (!hasOwners(key)) {
             return instance.disconnect();
           }
         }), 5000);
@@ -16787,7 +16768,6 @@ var _require = (function() {
       if (((_ref = pushers[key]) != null ? _ref.instance : void 0) != null) {
         return pushers[key].instance;
       }
-      debug('new actual Pusher');
       return pushers[key].instance = new Pusher(key);
     };
     return pusherWrapped = function(key, owner) {
@@ -16806,135 +16786,142 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var $, debug, pusher;
+  var $, namespace,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = [].slice;
 
-  $ = uploadcare.jQuery, debug = uploadcare.debug;
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery;
 
-  pusher = uploadcare.utils.pusher;
+  namespace('uploadcare.utils', function(utils) {
+    utils.Collection = (function() {
 
-  uploadcare.namespace('uploadcare.utils.pubsub', function(ns) {
-    var PollWatcher, PusherWatcher;
-    ns.PubSub = (function() {
-
-      function PubSub(settings, channel, topic) {
-        this.settings = settings;
-        this.channel = channel;
-        this.topic = topic;
-        this.pollUrlConstructor = function(channel, topic) {
-          return "" + this.settings.socialBase + "/pubsub/status/" + this.channel + "/" + this.topic;
-        };
-        this.pusherw = new PusherWatcher(this, this.settings.pusherKey);
-        this.pollw = new PollWatcher(this);
+      function Collection(items) {
+        var item, _i, _len;
+        if (items == null) {
+          items = [];
+        }
+        this.onAdd = $.Callbacks();
+        this.onRemove = $.Callbacks();
+        this.__items = [];
+        for (_i = 0, _len = items.length; _i < _len; _i++) {
+          item = items[_i];
+          this.add(item);
+        }
       }
 
-      PubSub.prototype.watch = function() {
-        var _this = this;
-        this.pusherw.watch();
-        this.pollw.watch();
-        return $(this.pusherw).on('started', function() {
-          return _this.pollw.stop();
-        });
+      Collection.prototype.add = function(item) {
+        this.__items.push(item);
+        return this.onAdd.fire(item);
       };
 
-      PubSub.prototype.stop = function() {
-        this.pusherw.stop();
-        return this.pollw.stop();
-      };
-
-      PubSub.prototype.__update = function(status) {
-        if (!this.status || this.status.score < status.score) {
-          this.status = status;
-          return this.__notify();
+      Collection.prototype.remove = function(item) {
+        if (utils.remove(this.__items, item)) {
+          return this.onRemove.fire(item);
         }
       };
 
-      PubSub.prototype.__notify = function() {
-        debug('status', this.status.score, this.status.state, this.status);
-        return $(this).trigger(this.status.state, [this.status]);
+      Collection.prototype.clear = function() {
+        var item, _i, _len, _ref, _results;
+        _ref = this.get();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          _results.push(this.remove(item));
+        }
+        return _results;
       };
 
-      return PubSub;
+      Collection.prototype.get = function(index) {
+        if (index != null) {
+          return this.__items[index];
+        } else {
+          return this.__items.slice(0);
+        }
+      };
+
+      Collection.prototype.length = function() {
+        return this.__items.length;
+      };
+
+      Collection.prototype.readOnly = function() {
+        return utils.bindAll(this, ['get', 'length', 'onAdd', 'onRemove']);
+      };
+
+      return Collection;
 
     })();
-    PusherWatcher = (function() {
+    utils.UniqCollection = (function(_super) {
 
-      function PusherWatcher(ps, pusherKey) {
-        this.ps = ps;
-        this.pusher = pusher.getPusher(pusherKey, this.__channelName());
+      __extends(UniqCollection, _super);
+
+      function UniqCollection() {
+        return UniqCollection.__super__.constructor.apply(this, arguments);
       }
 
-      PusherWatcher.prototype.__channelName = function() {
-        return "pubsub.channel." + this.ps.channel + "." + this.ps.topic;
+      UniqCollection.prototype.add = function(item) {
+        if (__indexOf.call(this.__items, item) >= 0) {
+          return;
+        }
+        return UniqCollection.__super__.add.apply(this, arguments);
       };
 
-      PusherWatcher.prototype.watch = function() {
-        var onStarted,
+      return UniqCollection;
+
+    })(utils.Collection);
+    return utils.CollectionOfPromises = (function(_super) {
+
+      __extends(CollectionOfPromises, _super);
+
+      function CollectionOfPromises() {
+        this.onAnyDone = $.Callbacks();
+        this.onAnyFail = $.Callbacks();
+        this.onAnyProgress = $.Callbacks();
+        this.onAnyProgress.add(function(item, firstArgument) {
+          return $(item).data('lastProgress', firstArgument);
+        });
+        CollectionOfPromises.__super__.constructor.apply(this, arguments);
+      }
+
+      CollectionOfPromises.prototype.lastProgresses = function() {
+        var item, _i, _len, _ref, _results;
+        _ref = this.__items;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          _results.push($(item).data('lastProgress'));
+        }
+        return _results;
+      };
+
+      CollectionOfPromises.prototype.add = function(item) {
+        var handler,
           _this = this;
-        this.channel = this.pusher.subscribe(this.__channelName());
-        this.channel.bind('event', function(data) {
-          return _this.ps.__update($.parseJSON(data));
-        });
-        onStarted = function() {
-          debug('wow, listening with pusher');
-          $(_this).trigger('started');
-          return _this.channel.unbind('event', onStarted);
-        };
-        return this.channel.bind('event', onStarted);
-      };
-
-      PusherWatcher.prototype.stop = function() {
-        if (this.pusher) {
-          this.pusher.release();
+        if (!(item && item.done && item.fail && item.then)) {
+          return;
         }
-        return this.pusher = null;
-      };
-
-      return PusherWatcher;
-
-    })();
-    return PollWatcher = (function() {
-
-      function PollWatcher(ps) {
-        this.ps = ps;
-      }
-
-      PollWatcher.prototype.watch = function() {
-        var _this = this;
-        return this.interval = setInterval((function() {
-          return _this.__checkStatus();
-        }), 2000);
-      };
-
-      PollWatcher.prototype.stop = function() {
-        if (this.interval) {
-          clearInterval(this.interval);
-        }
-        return this.interval = null;
-      };
-
-      PollWatcher.prototype.__checkStatus = function() {
-        var fail,
-          _this = this;
-        debug('polling status...');
-        fail = function() {
-          return _this.ps.__update({
-            score: -1,
-            state: 'error'
-          });
+        CollectionOfPromises.__super__.add.apply(this, arguments);
+        handler = function(callbacks) {
+          return function() {
+            var args;
+            args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+            if (__indexOf.call(_this.__items, item) >= 0) {
+              args.unshift(item);
+              return callbacks.fire.apply(callbacks, args);
+            }
+          };
         };
-        return $.ajax(this.ps.pollUrlConstructor(this.ps.channel, this.ps.topic), {
-          dataType: 'jsonp'
-        }).fail(fail).done(function(data) {
-          if (data.error) {
-            return fail();
-          }
-          return _this.ps.__update(data);
-        });
+        return item.then(handler(this.onAnyDone), handler(this.onAnyFail), handler(this.onAnyProgress));
       };
 
-      return PollWatcher;
+      CollectionOfPromises.prototype.readOnly = function() {
+        return $.extend(CollectionOfPromises.__super__.readOnly.call(this), utils.bindAll(this, ['onAnyDone', 'onAnyFail', 'onAnyProgress', 'lastProgresses']));
+      };
 
-    })();
+      return CollectionOfPromises;
+
+    })(utils.UniqCollection);
   });
 
 }).call(this);
@@ -16943,7 +16930,115 @@ var _require = (function() {
 
   namespace = uploadcare.namespace, $ = uploadcare.jQuery;
 
+  namespace('uploadcare.utils', function(utils) {
+    return utils.squareImage = function(container, src, size, attempts) {
+      var img;
+      if (attempts == null) {
+        attempts = 5;
+      }
+      container = $(container);
+      if (size == null) {
+        size = container.width();
+      }
+      container.css({
+        position: 'relative',
+        overflow: 'hidden'
+      });
+      img = new Image();
+      img.src = src;
+      $(img).hide().appendTo(container);
+      return $(img).on({
+        load: function() {
+          if (this.width > this.height) {
+            this.width = this.width * size / this.height;
+            this.height = size;
+          } else {
+            this.height = this.height * size / this.width;
+            this.width = size;
+          }
+          return $(this).css({
+            top: Math.round((this.height - size) / -2),
+            left: Math.round((this.width - size) / -2)
+          }).fadeIn();
+        },
+        error: function() {
+          var d;
+          if (attempts-- > 0) {
+            d = src.split('?')[1] ? '&' : '?';
+            return this.src = "" + src + d + (new Date().getTime());
+          }
+        }
+      });
+    };
+  });
+
+}).call(this);
+(function() {
+  var namespace;
+
+  namespace = uploadcare.namespace;
+
   namespace('uploadcare.utils', function(ns) {
+    var common, messages;
+    ns.log = function(msg) {
+      if (console && console.log) {
+        return console.log(msg);
+      }
+    };
+    ns.warn = function(msg) {
+      if (console && console.warn) {
+        return console.warn(msg);
+      } else {
+        return ns.log(msg);
+      }
+    };
+    messages = {};
+    ns.warnOnce = function(msg) {
+      if (messages[msg] == null) {
+        messages[msg] = true;
+        return ns.warn(msg);
+      }
+    };
+    common = {
+      autostore: "You have enabled autostore in the widget, but not on the server.\nTo use autostore, make sure it's enabled in project settings.\n\nhttps://uploadcare.com/accounts/settings/",
+      publicKey: "Global public key not set. Uploads may not work!\nAdd this to the <head> tag to set your key:\n\n<script>\nUPLOADCARE_PUBLIC_KEY = 'your_public_key';\n</script>"
+    };
+    return ns.commonWarning = function(name) {
+      if (common[name] != null) {
+        return ns.warnOnce(common[name]);
+      }
+    };
+  });
+
+}).call(this);
+(function() {
+  var $, namespace,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery;
+
+  namespace('uploadcare.utils', function(ns) {
+    var own;
+    own = Object.prototype.hasOwnProperty;
+    ns.own = function(o, prop) {
+      return own.call(o, prop);
+    };
+    ns.uniq = function(arr, cond) {
+      var item, result, _i, _len;
+      if (cond == null) {
+        cond = function() {
+          return true;
+        };
+      }
+      result = [];
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        if (cond(item) && __indexOf.call(result, item) < 0) {
+          result.push(item);
+        }
+      }
+      return result;
+    };
     ns.defer = function(fn) {
       return setTimeout(fn, 0);
     };
@@ -16958,6 +17053,33 @@ var _require = (function() {
         }
         return result;
       };
+    };
+    ns.wrapToPromise = function(value) {
+      return $.Deferred().resolve(value).promise();
+    };
+    ns.remove = function(array, item) {
+      var index;
+      if ((index = array.indexOf(item)) !== -1) {
+        array.splice(index, 1);
+        return true;
+      } else {
+        return false;
+      }
+    };
+    ns.then = function(pr, doneFilter, failFilter, progressFilter) {
+      var compose, df;
+      df = $.Deferred();
+      compose = function(fn1, fn2) {
+        if (fn1 && fn2) {
+          return function() {
+            return fn2.call(this, fn1.apply(this, arguments));
+          };
+        } else {
+          return fn1 || fn2;
+        }
+      };
+      pr.then(compose(doneFilter, df.resolve), compose(failFilter, df.reject), compose(progressFilter, df.notify));
+      return df.promise();
     };
     ns.bindAll = function(source, methods) {
       var method, target, _fn, _i, _len;
@@ -16981,6 +17103,9 @@ var _require = (function() {
       }
       return target;
     };
+    ns.upperCase = function(s) {
+      return s.replace(/-/g, '_').toUpperCase();
+    };
     ns.publicCallbacks = function(callbacks) {
       var result;
       result = callbacks.add;
@@ -16997,6 +17122,7 @@ var _require = (function() {
       });
     };
     ns.uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
+    ns.groupIdRegex = new RegExp("" + ns.uuidRegex.source + "~[0-9]+", 'i');
     ns.fullUuidRegex = new RegExp("^" + ns.uuidRegex.source + "$", 'i');
     ns.cdnUrlModifiersRegex = /(?:-\/(?:[a-z0-9_,]+\/)+)+/i;
     ns.normalizeUrl = function(url) {
@@ -17005,32 +17131,205 @@ var _require = (function() {
       }
       return url.replace(/\/+$/, '');
     };
-    ns.buildSettings = function(settings) {
-      var crop, key, ratio, size, value, _i, _j, _len, _len1, _ref, _ref1;
-      settings = $.extend({}, uploadcare.defaults, settings || {});
-      if ($.type(settings.tabs) === "string") {
-        settings.tabs = settings.tabs.split(' ');
+    ns.fitText = function(text, max) {
+      var head, tail;
+      if (text.length > max) {
+        head = Math.ceil((max - 3) / 2);
+        tail = Math.floor((max - 3) / 2);
+        return text.slice(0, head) + '...' + text.slice(-tail);
+      } else {
+        return text;
       }
-      settings.tabs = settings.tabs || [];
-      _ref = ['urlBase', 'socialBase', 'cdnBase'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        key = _ref[_i];
-        settings[key] = ns.normalizeUrl(settings[key]);
+    };
+    ns.fileInput = function(container, multiple, fn) {
+      var input;
+      container.find('input:file').remove();
+      input = multiple ? $('<input type="file" multiple>') : $('<input type="file">');
+      input.css({
+        position: 'absolute',
+        top: 0,
+        opacity: 0,
+        margin: 0,
+        padding: 0,
+        width: 'auto',
+        height: 'auto',
+        cursor: container.css('cursor')
+      });
+      container.css({
+        position: 'relative',
+        overflow: 'hidden'
+      }).append(input);
+      input.on('change', function(e) {
+        fn(e);
+        input.remove();
+        return ns.fileInput(container, multiple, fn);
+      });
+      return container.mousemove(function(e) {
+        var left, top, width, _ref;
+        _ref = $(this).offset(), left = _ref.left, top = _ref.top;
+        width = input.width();
+        return input.css({
+          left: e.pageX - left - width + 10,
+          top: e.pageY - top - 10
+        });
+      });
+    };
+    ns.parseUrl = function(url) {
+      var a;
+      a = document.createElement('a');
+      a.href = url;
+      return a;
+    };
+    ns.createObjectUrl = function(object) {
+      var URL;
+      URL = window.URL || window.webkitURL;
+      if (URL) {
+        return URL.createObjectURL(object);
       }
-      _ref1 = ['previewStep', 'multiple', 'imagesOnly', 'pathValue'];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        key = _ref1[_j];
-        if (typeof settings[key] === 'string') {
-          value = $.trim(settings[key]).toLowerCase();
-          settings[key] = !(value === 'false' || value === 'disabled');
+      return null;
+    };
+    ns.inDom = function(el) {
+      if (el.jquery) {
+        el = el.get(0);
+      }
+      return $.contains(document.documentElement, el);
+    };
+    ns.readableFileSize = function(value, onNaN, prefix, postfix) {
+      var i, label, labels, _i, _len;
+      if (onNaN == null) {
+        onNaN = '';
+      }
+      if (prefix == null) {
+        prefix = '';
+      }
+      if (postfix == null) {
+        postfix = '';
+      }
+      value = parseInt(value, 10);
+      if (isNaN(value)) {
+        return onNaN;
+      }
+      labels = 'B KB MB GB TB PB EB ZB YB'.split(' ');
+      for (i = _i = 0, _len = labels.length; _i < _len; i = ++_i) {
+        label = labels[i];
+        if (value < 512 || i === labels.length - 1) {
+          return "" + prefix + value + " " + label + postfix;
+        }
+        value = Math.round(value / 1024);
+      }
+    };
+    return ns.jsonp = function(url, data) {
+      return $.ajax(url, {
+        data: data,
+        dataType: 'jsonp'
+      }).then(function(data) {
+        var text;
+        if (data.error) {
+          text = data.error.content || data.error;
+          ns.warn("JSONP error: " + text);
+          return $.Deferred().reject(text);
         } else {
-          settings[key] = !!settings[key];
+          return data;
+        }
+      }, function(_, textStatus, errorThrown) {
+        return "JSONP unexpected error: " + textStatus + " (" + errorThrown + ")";
+      });
+    };
+  });
+
+}).call(this);
+(function() {
+  var $, expose, namespace, utils,
+    __hasProp = {}.hasOwnProperty,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  expose = uploadcare.expose, namespace = uploadcare.namespace, utils = uploadcare.utils, $ = uploadcare.jQuery;
+
+  namespace('uploadcare.settings', function(ns) {
+    var arrayOptions, defaults, flagOptions, key, normalize, presets, publicDefaults, str2arr, urlOptions, value;
+    defaults = {
+      'autostore': false,
+      'cdn-base': 'https://ucarecdn.com',
+      'crop': 'disabled',
+      'images-only': false,
+      'live': true,
+      'locale': null,
+      'locale-pluralize': null,
+      'locale-translations': null,
+      'manual-start': false,
+      'multiple': false,
+      'path-value': false,
+      'preview-step': false,
+      'public-key': null,
+      'pusher-key': '79ae88bd931ea68464d9',
+      'social-base': 'https://social.uploadcare.com',
+      'tabs': 'file url facebook gdrive instagram',
+      'url-base': 'https://upload.uploadcare.com'
+    };
+    presets = {
+      'tabs': {
+        all: 'file url facebook dropbox gdrive instagram',
+        "default": defaults.tabs
+      }
+    };
+    str2arr = function(value) {
+      if (!$.isArray(value)) {
+        value = $.trim(value);
+        value = value ? value.split(' ') : [];
+      }
+      return value;
+    };
+    arrayOptions = function(settings, keys) {
+      var key, name, preset, presetList, value, _i, _len;
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key = keys[_i];
+        value = str2arr(settings[key]);
+        presetList = presets[key];
+        for (name in presetList) {
+          if (!__hasProp.call(presetList, name)) continue;
+          preset = presetList[name];
+          if (__indexOf.call(value, name) >= 0) {
+            value = value.concat(str2arr(preset));
+          }
+        }
+        settings[key] = utils.uniq(value, function(x) {
+          return !utils.own(presetList, x);
+        });
+      }
+      return settings;
+    };
+    urlOptions = function(settings, keys) {
+      var key, _i, _len;
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key = keys[_i];
+        if (settings[key] != null) {
+          settings[key] = utils.normalizeUrl(settings[key]);
         }
       }
-      if (settings.multiple) {
-        console.log('Sorry, the multiupload is not working now');
-        settings.multiple = false;
+      return settings;
+    };
+    flagOptions = function(settings, keys) {
+      var key, value, _i, _len;
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key = keys[_i];
+        if (!(settings[key] != null)) {
+          continue;
+        }
+        value = settings[key];
+        if ($.type(value) === 'string') {
+          value = $.trim(value).toLowerCase();
+          settings[key] = !(value === 'false' || value === 'disabled');
+        } else {
+          settings[key] = !!value;
+        }
       }
+      return settings;
+    };
+    normalize = function(settings) {
+      var crop, ratio, size;
+      arrayOptions(settings, ['tabs']);
+      urlOptions(settings, ['cdnBase', 'socialBase', 'urlBase']);
+      flagOptions(settings, ['autostore', 'imagesOnly', 'multiple', 'pathValue', 'previewStep']);
       if (settings.multiple) {
         settings.crop = 'disabled';
       }
@@ -17065,80 +17364,34 @@ var _require = (function() {
       }
       return settings;
     };
-    ns.fitText = function(text, max) {
-      var head, tail;
-      if (text.length > max) {
-        head = Math.ceil((max - 3) / 2);
-        tail = Math.floor((max - 3) / 2);
-        return text.slice(0, head) + '...' + text.slice(-tail);
-      } else {
-        return text;
+    publicDefaults = {};
+    for (key in defaults) {
+      if (!__hasProp.call(defaults, key)) continue;
+      value = defaults[key];
+      publicDefaults[$.camelCase(key)] = value;
+    }
+    expose('defaults', publicDefaults);
+    ns.globals = utils.once(function() {
+      var fallback, values;
+      values = {};
+      for (key in defaults) {
+        if (!__hasProp.call(defaults, key)) continue;
+        fallback = defaults[key];
+        value = window["UPLOADCARE_" + (utils.upperCase(key))];
+        values[$.camelCase(key)] = value != null ? value : fallback;
       }
-    };
-    ns.fileInput = function(container, multiple, fn) {
-      var input;
-      container.find('input:file').remove();
-      input = multiple ? $('<input type="file" multiple>') : $('<input type="file">');
-      input.on('change', fn).css({
-        position: 'absolute',
-        top: 0,
-        opacity: 0,
-        margin: 0,
-        padding: 0,
-        width: 'auto',
-        height: 'auto',
-        cursor: container.css('cursor')
-      });
-      container.css({
-        position: 'relative',
-        overflow: 'hidden'
-      }).append(input);
-      return container.mousemove(function(e) {
-        var left, top, width, _ref;
-        _ref = $(this).offset(), left = _ref.left, top = _ref.top;
-        width = input.width();
-        return input.css({
-          left: e.pageX - left - width + 10,
-          top: e.pageY - top - 10
-        });
-      });
-    };
-    ns.parseUrl = function(url) {
-      var a;
-      a = document.createElement('a');
-      a.href = url;
-      return a;
-    };
-    return ns.createObjectUrl = function(object) {
-      var URL;
-      URL = window.URL || window.webkitURL;
-      if (URL) {
-        return URL.createObjectURL(object);
+      if (!values.publicKey) {
+        utils.commonWarning('publicKey');
       }
-      return null;
+      return normalize(values);
+    });
+    ns.common = utils.once(function(settings) {
+      return normalize($.extend({}, ns.globals(), settings || {}));
+    });
+    return ns.build = function(settings) {
+      return normalize($.extend({}, ns.common(), settings || {}));
     };
   });
-
-}).call(this);
-(function() {
-
-  uploadcare.defaults = {
-    locale: window.UPLOADCARE_LOCALE,
-    translations: window.UPLOADCARE_LOCALE_TRANSLATIONS,
-    pluralize: window.UPLOADCARE_LOCALE_PLURALIZE,
-    publicKey: window.UPLOADCARE_PUBLIC_KEY || void 0,
-    pusherKey: window.UPLOADCARE_PUSHER_KEY || '79ae88bd931ea68464d9',
-    urlBase: window.UPLOADCARE_URL_BASE || 'https://upload.uploadcare.com',
-    socialBase: window.UPLOADCARE_SOCIAL_BASE || 'https://social.uploadcare.com',
-    cdnBase: window.UPLOADCARE_CDN_BASE || 'https://ucarecdn.com',
-    live: window.UPLOADCARE_LIVE != null ? window.UPLOADCARE_LIVE : true,
-    tabs: window.UPLOADCARE_TABS || 'file url facebook dropbox gdrive instagram',
-    crop: window.UPLOADCARE_CROP != null ? window.UPLOADCARE_CROP : 'disabled',
-    multiple: !!window.UPLOADCARE_MULTIPLE,
-    previewStep: !!window.UPLOADCARE_PREVIEW_STEP,
-    imagesOnly: !!window.UPLOADCARE_IMAGES_ONLY,
-    pathValue: !!window.UPLOADCARE_PATH_VALUE
-  };
 
 }).call(this);
 (function() {
@@ -17152,12 +17405,14 @@ var _require = (function() {
         "default": 'Error',
         baddata: 'Incorrect value',
         size: 'Too big',
-        upload: 'Can\'t upload',
+        upload: 'Can’t upload',
         user: 'Upload canceled',
-        info: 'Can\'t load info',
-        image: 'Only images allowed'
+        info: 'Can’t load info',
+        image: 'Only images allowed',
+        createGroup: 'Can’t create file group',
+        deleted: 'File was deleted'
       },
-      draghere: 'Drop the file here',
+      draghere: 'Drop a file here',
       file: {
         one: '1 file',
         other: '%1 files'
@@ -17168,6 +17423,8 @@ var _require = (function() {
         file: 'Computer'
       },
       dialog: {
+        done: 'Done',
+        showFiles: 'Show files',
         tabs: {
           file: {
             drag: 'Drop a file here',
@@ -17227,6 +17484,13 @@ var _require = (function() {
                 line1: 'The file you selected exceeds the 100 MB limit.',
                 line2: 'Please try again with another file.'
               }
+            },
+            multiple: {
+              title: 'You’ve chosen',
+              question: 'Do you want to add all of these files?',
+              toManyFiles: 'You’ve chosen to many files. %max% is maximum. Please remove some of them.',
+              clear: 'Remove all',
+              done: 'Done'
             }
           }
         },
@@ -17238,7 +17502,7 @@ var _require = (function() {
       crop: {
         error: {
           title: 'Error',
-          text: 'Can\'t load image'
+          text: 'Can’t load image'
         },
         done: 'Done'
       }
@@ -17492,7 +17756,9 @@ var _require = (function() {
         upload: 'Ошибка при загрузке',
         user: 'Загрузка прервана',
         info: 'Ошибка при загрузке информации',
-        image: 'Разрешены только изображения'
+        image: 'Разрешены только изображения',
+        createGroup: 'Не удалось создать группу файлов',
+        deleted: 'Файл удалён'
       },
       draghere: 'Перетащите файл сюда',
       file: {
@@ -17507,19 +17773,21 @@ var _require = (function() {
         file: 'Компьютер'
       },
       dialog: {
+        done: 'Готово',
+        showFiles: 'Показать файлы',
         tabs: {
           file: {
             drag: 'Перетащите файл сюда',
             nodrop: 'Загрузка файлов с вашего компьютера',
             or: 'или',
-            button: 'Выбрать файлы',
-            also: 'Вы также можете загрузить файлы используя',
+            button: 'Выберите файл с компьютера',
+            also: 'Вы также можете загрузить файлы, используя:',
             tabNames: {
               facebook: 'Facebook',
               dropbox: 'Dropbox',
               gdrive: 'Google Drive',
               instagram: 'Instagram',
-              url: 'Внешнюю ссылку'
+              url: 'Произвольную ссылку'
             }
           },
           url: {
@@ -17540,7 +17808,7 @@ var _require = (function() {
             },
             regular: {
               title: 'Загрузить этот файл?',
-              line1: 'Вы собираетесь загрузить представленный файл.',
+              line1: 'Вы собираетесь загрузить этот файл:',
               line2: 'Пожалуйста, подтвердите.'
             },
             image: {
@@ -17557,7 +17825,7 @@ var _require = (function() {
                 line2: 'Пожалуйста, попробуйте ещё раз.'
               },
               image: {
-                title: 'Только изображения',
+                title: 'Только изображения!',
                 line1: 'Можно загружать только изображения.',
                 line2: 'Попробуйте загрузить другой файл.'
               },
@@ -17566,6 +17834,13 @@ var _require = (function() {
                 line1: 'Размер выбранного файла превышает 100 Мб.',
                 line2: 'Попробуйте загрузить другой файл.'
               }
+            },
+            multiple: {
+              title: 'Вы выбрали',
+              question: 'Вы хотите добавить все эти файлы?',
+              toManyFiles: 'Вы выбрали слишком много файлов. %max% максимум. Удалите что-нибудь.',
+              clear: 'Удалить все',
+              done: 'Готово'
             }
           }
         },
@@ -17602,23 +17877,33 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var $, namespace;
+  var $, namespace, s, utils;
 
-  namespace = uploadcare.namespace, $ = uploadcare.jQuery;
+  namespace = uploadcare.namespace, utils = uploadcare.utils, s = uploadcare.settings, $ = uploadcare.jQuery;
 
   namespace('uploadcare.locale', function(ns) {
-    var defaultLocale, translate, _base, _name;
-    defaultLocale = 'en';
-    ns.lang = uploadcare.defaults.locale || defaultLocale;
-    (_base = ns.translations)[_name = ns.lang] || (_base[_name] = {});
-    $.extend(ns.translations[ns.lang], uploadcare.defaults.translations);
-    translate = function(key, locale) {
-      var node, path, subkey, _i, _len;
-      if (locale == null) {
-        locale = defaultLocale;
-      }
+    var build, defaultLang, defaults, translate;
+    defaultLang = 'en';
+    defaults = {
+      lang: defaultLang,
+      translations: ns.translations[defaultLang],
+      pluralize: ns.pluralize[defaultLang]
+    };
+    build = utils.once(function() {
+      var lang, pluralize, settings, translations;
+      settings = s.build();
+      lang = settings.locale || defaults.lang;
+      translations = $.extend(true, {}, ns.translations[lang], settings.localeTranslations);
+      pluralize = $.isFunction(settings.localePluralize) ? settings.localePluralize : ns.pluralize[lang];
+      return {
+        lang: lang,
+        translations: translations,
+        pluralize: pluralize
+      };
+    });
+    translate = function(key, node) {
+      var path, subkey, _i, _len;
       path = key.split('.');
-      node = ns.translations[locale];
       for (_i = 0, _len = path.length; _i < _len; _i++) {
         subkey = path[_i];
         if (node == null) {
@@ -17629,17 +17914,16 @@ var _require = (function() {
       return node;
     };
     return ns.t = function(key, n) {
-      var lang, pluralize, value, _ref;
-      lang = ns.lang;
-      value = translate(key, lang);
-      if (!(value != null) && lang !== defaultLocale) {
-        lang = defaultLocale;
-        value = translate(key, lang);
+      var locale, value, _ref;
+      locale = build();
+      value = translate(key, locale.translations);
+      if (!(value != null) && locale.lang !== defaults.lang) {
+        locale = defaults;
+        value = translate(key, locale.translations);
       }
       if (n != null) {
-        pluralize = ns.pluralize[lang];
-        if (pluralize != null) {
-          value = ((_ref = value[pluralize(n)]) != null ? _ref.replace('%1', n) : void 0) || n;
+        if (locale.pluralize != null) {
+          value = ((_ref = value[locale.pluralize(n)]) != null ? _ref.replace('%1', n) : void 0) || n;
         } else {
           value = '';
         }
@@ -17651,7 +17935,7 @@ var _require = (function() {
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
-  this.JST["uploadcare/templates/circle"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-widget-circle-back" role="uploadcare-widget-status">\n    <div class="uploadcare-widget-circle-center"></div>\n</div>\n');}return __p.join('');};
+  this.JST["uploadcare/templates/circle"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-widget-circle-back" role="uploadcare-widget-status">\n    <div class="uploadcare-widget-circle-center" role="uploadcare-circle-center"></div>\n</div>\n');}return __p.join('');};
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
@@ -17663,7 +17947,11 @@ var _require = (function() {
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
-  this.JST["uploadcare/templates/styles"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('\n\n\n\n\n\n.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:after{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAFeCAYAAADHfkwkAAAQGUlEQVR42uydbYxVRxnHuxdaa6q8pLwEQSi1CpLWT1qML9A2gDRVbKQNDfWDoU1s0bQ1RqOJrUqNDRQwvhCtxp6%2BKJMQarTQLmAbKtg2QutriESK1KTCCrvlZWnLsmzxP%2BzD3f%2FOM3P39sOZc8Xnwz8zZ87ce%2BZ3nnlm5p4zd%2Ba806dPnxMyEAMxEAMxEAMxkP9bkIceXUty5xWPDD6G2hCfhfTliP8e8Q6oB3EvH0eaWwHNQryt%2FjmEBRR8fyYQiApSg5agMHsQngbIaYSQo1DiIsm7BHlrHgJhHUqUD6ToB5kK7eBC4phhfKFDCE7fId9BNyYDSDG4OlyF8BAVkEINAThoIE55D%2BF4lnxnDhDHd2weLtojBVJVqCAgZY14tevBuU%2Bwz%2BSoWtNwoWO4qIJgmDiQS8JB3dA0aUhKBxkmPsFVRwFIWiMAnXfAZ4ZlsIhbIs5cd1o5VoVtHtCFlrml1OYXF2pDgfcQQOyu66qV9iMOWXt8n1SmRWZLYbiQEsabWk5Lg0A6%2F%2BwyLbJcmk4uRMLJNUi88BLqPMvLtMh27hN0vU%2F1EyJdzShd3ZBtZYJ00MVUn5Bw9K2IQ5xvaMeHOsqsWj2JFinVDD9FfY%2BPR%2FsdtlIx4Hs95VmEQXR10dULhfcdWyEgyjdEAWAWkA51B4NQAUnVkri2SNpfOjI4e9o3BDTpRxpad66iUp19hb7ryirp8VST5wVqeZnOPlv5RtzZB5w2ag2n%2Bxit2WVapA3aExY63THqdF2NdFx%2BPdbKHv3eosdPQ492df4GvyDLHjT6Ly%2F6h%2FE7Vd3Wx1oaMFblXgD0sJJB6n3CdKibfUFbQFc%2FLeVj3dB0eTqTBcTrWhQCP3W1r6SrD8J0K9Xjv1O%2Bv9xfiEXwHEou3J3uSwaJHT20YrfcmFxPUVzsudZ0X68JQkBU8xx93iWfnV63RJ4HdPx0ke%2Beq0FLEH9JQJQFQtAzeeUBnb45%2BXyExZaqQbOg%2B5HvWahDRsxeHdCzyOvPzYJq%2FFkJOW4PsQ3EQAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzEQIInjTPlCaF%2BETr0E3edJ3irRXoJmlnmQ%2By9UoD9uNDLCKH%2BEI8%2B5RhxaNC5ehyic4nPHhDAveWByIwEqK0IHpmqUOKFiM4NZfU25Ov0likNRKzxMgMIEBc%2Bqrfy3kMsWC5IQSAKQJ7WFyqdj5sFWZsLxInEKoGVvDQw0psE8a8kSvURcVA9GzutII8b%2BoaVbxFHIKo6xauaAmsWxJUMgouoQuvqk3L8pn0EKrlqkY%2Bk%2FMBLzXdvqaolIGGB1TFLA7UGiO%2BFVWeoAHTzLDCtZJEARHWOyvEZtkkQB5BMza8GcI0bgEdaqdXqBzkRdnhFqtAqT9Md4vFyQdLTyGmmg5LKX%2Bg0Pc8rg4%2BomaJcOCgAcgIZm0iTBs%2FRj0ihRLoQzcTVZ5WlSx6iHOeL6Uk0KQvpub4axoXAR8usWnepaUtQHI6rVtMWY91REoietyWhiONuX4Pf8f9qlacoqR9M3PSepLscVqHelgFpPPp190AxR2agu1sBpOGQBOG9aqJmEELfsgd0BmIgBmIgBmIgBmIgBmIgBmIgBmIgBmIgBmIgBnLugCTeHzo1P4VnCyE%2BAfH7kb4b8RMIu5C%2BGeEihLVqQNIvPhPp7tPQ0QZrqjwNjawCRFskPePhBqiXXi30IdwHdQVQG%2FCZtqwgeoqfFFwvRDkIAmE70iZL9axBi6Cj9D5lYVYQXYVcaAWxhOuld4mPIe0CKPyuxbTQ2KbcFuHqFbPQjR6CXvb8ykP4PBGQGtKPS76u3D5CBVfhXNxhgXDQgCUkT%2BzG%2FFPy92QFoUKFGgEdpFdt66ELkXeCnI9ZZBLUJ9bbXQGIi1nkS%2FSK7XewjIf4OfQ6dIfcALbscOTfQOtqrcoLomeY3gD5Dm8jvUOcieOvBatvLC0EBPHh0Dryo2PQxPzODhXUxELnQ3%2BifuFt0CU4%2FzAkabAMCtsP4dYR5CmcX1DZEAU6C3EaGg09RSDTqBV7kHr1b0JzaF7KKcRvqm6spXvs2dC3aRmeB8l%2FplG%2BLQjHQVGI3FVrAVnCFwj9hPNN7BTohE8T%2BWr1PqlmYin3Z1nc1UMsqmz0K059jJz0MQ9BE5rvDCaZeYe%2FkuCeQNo4BZEfxK0kiHaEgFATMb8gTe7DYo0tVLW%2B2CpTOP4uPtCHOz1Z%2FCU2XBmH8x5iHc3H6sS50S0BQj6wjwof%2B09JvZ8gx%2F6UP9cqIJ1S91%2BFakX8XzzDBllCWicBbA0QVJfNNA%2FrJgEgYdgBCIgs4eoQRQtZZBGNp45CS6BhUqUmQRsJ9BTAFWxrWKR%2FvcbfBrPkXpcZ1H1UncQSMi5rNYuIVUaiUBuDVfsZrBvxBdEZ2S0GArk2aCEK533mMNQD7YFWQ5O4NUPIMPaAzkAMxEAMxEAMxEAMxEAMxEAMxEAMxEAMxEAMxEAyKNdD7PEyv%2BTEEJtx4VyzW3E6%2F12PI5yQ87XCbxounCcqwp1b9T4kiCugjTlBXkts8aSAEtsNQsn03pwgUkgJ0%2Fu1SRhXkdi%2FJxvIkAVMVTWVV%2FlQXpAhN9zS1uG0HdDUyFILVVhE%2BwYXVtJTLdjH1EzU6kDSq80UUQs5Dt8eX6cO5yu2CGvIvRLJGgnLZgYJdxTTcvE8NBs13pdUA5La%2FzMJOHgpxGj1yweiW6wUgLZCoReglGOX30eiPTmDKaDEnHmGkbzZq5YGSW8orxeidGoCNOWvstXSe%2Bqmt9EMfER9LqNFlHOn%2BxPlS2yRxB7VlTh7%2FPdGDFLSuSOMfz4%2FiCi56pnedz1wfAapxNlpg%2Fm3ts0%2FgRSBg1c%2FRIGa2d6cLVKIOE9FrZZuoaLjJu0fERDHwNn7kZNqyB4N9dCeO8JEC9eb00eeCAqhhu8KRM7xdNrET932nLNMJ%2BCCT0Inw2ZWCswFjzUMsWrnrbwJae%2ByB3QGYiAGYiAGYiAGYiAGYiAGYiAGYiAGYiAGYiAG8j8EErzjkIWP1q6CnkF8YrAZlxbyQNsQX4nwnZXvCCP%2Fa78Z2k8PrA8inKsWSBJohPN8HnolsR9ajHhbVRa5wlsgsS%2BVX1XgbqhGr6F9%2FB7E%2B2KvH8Sal2cDQeFG4qLfg3oju4SFx5sRvxhpYxH6eJBHzaLrRdpqxEeWCoKLfBba33D2jz5%2BACEUbBuVyg%2FJNW4uE%2BR6FKAr9jpay%2B1COJ9mN8yHdun36no2EY47%2FbXKrVqPnlmZZjsumrLCIYRLoeGFXlnTp%2Flzh7jwgZ9tQ%2FrkXK3WcOg73nGpAD3QSmiU2mKQJtPIhJpRCH3eHrJsH7QM%2BYdn3%2F4JugbaL0sXXgZFpjI5tQMyfc9l%2FrNI%2FzfiV1fV%2FEJuPMLHoaViJb3TGCQg9WO2rP%2BsfMe4qnYWmwsdoKqxC5oPNVqY1Usg4Pz4DLVkBxDOyQMidxEXvQ8X7St8AXSr0460GQEQV7UZCNtjsx7kO7%2Frr1H2jvmX4GLPp6ZpEFgvwjUo%2FBhyeMTdmgLnFIBujp9D3iklgviBoetrZvdJOT4si0ze6eOULy3kkWHMyrKr1odxoRf1eEnvSAm9gmM%2F8%2FrjCF%2BRtKHmB7%2Fgr5HL2Wu44O24YFeDAm2RMdaNfrgBuLHQ0zhOTSHsRPw2qJa31Rqo9z9DyB1jHwq1TKaO%2F5DAHsD5i6BlUL16Svyn0JiqN3Z8NzQT2gl1In0eNBl6PrK56U5ATkX8WhlP7YCuRJ6Jle9QifAfCL8u6%2FmOga7zQA22nD0MXS95zwfYlxHurgIk%2FKfB3oH%2FhbjvI3wz9gcXhpE8a85aDTD7qgMRGGiKjLX0FCZRGgiScVp1VUvrKhTqjwogIfltMqd1tqMlf5Fm%2BTboUINOs%2F57pSX21eXhOlQ%2FlrRR8tukh3449UJr1PKfVYMU6rlVdBnQaVA7jtsBNEPy2ZNGAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzlnQPTOexLWdZ2krY8tFiZpXdDolgGBAgj3fpk8dg2e9b6niPxNnOBWVQ%2BirXAWapMU9K%2By%2BdDqwQCOYTzkpa01y7Rfnwz%2BcP952VbwVV59gKGg9S1mEXeBvBTlO38QGoH4XZE1GlkfrQokhPD6igCE%2FrBctqDd02D%2ByR8QtlUBEi4xNR7hsfBOy93vQfxS6DOpFkzSKtnYMVwf60EotbrZSYTvFcttH7CC0j7kvbASiwjIBxG%2BSXc2tMgKeh33IcoX85WvVuUjbSjQc0GV4fh%2FoBHBbq%2B%2FqINofzmC9LFV%2BMhibQnHTrwksqXzFIRvKHAJoR%2FlBrlI5l%2BlZjfshGrhMp%2Bi%2ByKLI%2FEmd9Mygrh7uZ6HcegjwbRZhhmBtIMEE1axDbkmZ%2FoFVd%2Bg6d%2BhfhlaQQ8u3e1DLId4dQYQ7O6dcFjoNWhirEoVegfLFxE%2F0i93pJC4aGsOkF0DEMrZvxEMIpVFWmPmg0w8TnVqMv3vVpz%2FNeKQewbxM8IxidNcPaS8C3P1I%2B3aR9xChONxrlvSmp2vFa6cdgB6R67m1%2F%2BAOkWj2q1SpX5CaZEhi0j%2Fq4fXa7w1d4f4A9pq9gOIX05wup%2BISi0k9jccD8s9RLlYZlr%2FWMCe1AXWy3syaAR6fgVjLefDzyH0QHOia2JzmEgrBrSp0h9WAKhBfwkKpyzA1ik0YB%2FSrrDnWgZiIAZiIAZiIAZiIAZiIAZiIAby3%2FbOWKWBIIqiqARRhChaaKH4BVrYuHYWlnaKja1f4H%2BkFi3WyvyAnTExxNIfUIiFokGsRGGzEMG7cgM3%2BzbpMtNMcdnZcTPOmbdvHDLPNwEkgASQABJAAsgY5ChgIILuoKEnudrsHIVHbHa52RM5B2FKkbRo%2B01lAG2siu5FpoRxapFbk3pt9A6V6hv1bUC0Uc7UkYGouwZJrCWqIo52sQW2c21Noe6JzyeuQbTTFsgmR9KdqbWCbYpWvz3nICNyyRnIWIR6A8IQKD8gotEpDq31DAgGpUVruQZRB7di%2FQ%2Beucb1kiPeo1UOtS1u3b0T1AOI9Q%2B9nsdMqqcJwqAHDoCZ7fyAjD4IO87FaImqZVwfzesnQF58RJKtrtAPEtwvDcQDS5k6kGNqZ7XN2CcIYfbYkZpJpsd7gZuBfmUG8w8iUUBHvL9iHSVQFMtffH7RK0j%2F1dC8QbTQvYnVErGuTIiuGRznIPylkodxDkqgHrQO6WyVDzA44SDUfIPoEkU7e8HO3EAlsYyGy66i%2FMHPHudmQu8%2BQv3PXB0uXZoob0jqz0mU93F95SDUGQ%2Fv1yKyws37whb0JrPaM0NnP2V91oIWhljZvbNnEgidqZahs%2F%2FA%2F8G11wvKp1BJ2%2FI8%2FdozcmObYn0adZsA3mV6qgn%2BTNry7%2Bz9sPB5dWjxCVXO4S1I1g7bS1xbpMHXpcK%2FC%2BYVy9URwoLw8xVapOHaIhE6l9qQP3sqq10gqqpaTqEdH%2F8IE6GDTXTCfB0kkaTSYVvHchfPNzOI8AVdAAkgASSABJAAEkACSAAZq%2F4A0EvZstJINZUAAAAASUVORK5CYII%3D)}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:hover:after{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAFeCAYAAADHfkwkAAAJFUlEQVR42uzdfWxVdx3H8dvbDkemsGYFgp0w5rSMbP6lY9EJ28IQMkUiWyDgH4YtcZuGzRjNTNxUZraUJ%2BMD8SmSkMx%2FDCMKbAVkAZnOWJiPIZIVLCZaKm3HgA1bSv36%2FuO75Jeb23NuH845v8Lnj1faXs5t%2Bs55%2BP3Or%2FfSkpldERSiEIUoRCEKUYhCAuufbQ3VYQFa8Vt0Y8B1%2B2MbfJs6RBdSxlp0wGrU4c8pxxIyB%2B2wUWrHnMJCPOJu9MDGqAcLcg%2FxiMUYgI2TAXwitxCPaMF52Di7gJbMQzyiPjgnstCO%2BjxC1sIy9lCmIX7t78ghpAN1WYYshOVkYZYhrTmGtGYZ8kqOIYezDOmGjdBBZyPUnVnIKAbAAyi5AyMdIBUS26Glk72GkA15Xn41IEY2RSlnPWl8KI9JY17T%2BCMZRhzNZRrvMXNxIaMbq7l53%2BouzeBWd2lRiw9Lx2nPXAgicg8JD7OjYzwn5sa2QHdiBAEnYlugC5WxABvxu8olU39so29Tjm3JdNQUohCFKEQhClGIQhSiEIUoRCEKUYhCFKIQl%2FVrUebjBCxjJzA%2Fy5CTMHThVEZOw3AyyxBDN%2BqyOrT813u9sKxDTmV9jvD4KYUoRCEKUYhCFKKQkYX05xDyVuYheVHI1RbyVo4h57IMeSLHkHUxLD50wobxz4m0inIpIWRwooQ8DUvx1EQIeaaGkG9qgU4hClGIQhSiEIUoRCEKUYhCFKIQhShEIQpRiEJmYiOOox992IeVKE%2BUkE%2FjHGwYL2Nq7CEPYBDmhtCJvoqY3aiLNaQyog2zgndbr6zYUytiDKmMeAGTwm38e6yGub2xhTxYEbEziKgMKQe%2FaO2LKeS%2BtD3hwu%2FzDxgGYgmZgjNBxA5ci5nDhfDxRgzBcDyWkC8FEb%2FxiJ%2FhItZV2b4Bu2Fuc9EhD2Am9sDcfDwJCzxWEfELmDuP5qJCwqvTNfgTzL0LN2E7zF1Ec5WIy1hW5IAYXmIbcQDmWlBy22DuG1hUEbGqsClKGOEW4lvB19uCkBaY24%2Fp4xLhxhKxbJhxYjb6YW47PuiHmbk%2Fo94jVhY2%2B%2FWT%2BnzCOPE4LPAk7gi%2BfhHTg4jCQjaFc6cgIvQFXMR23xv7Ye6L72xXdMjfg1msTwCrmu4R4dWpF41RhATnQGdCBKpeYj%2BFUiwhvTC8gfIwEfVVIlahFFPIPphblbYnwojYQlbC3DmsRT3emQDuSYiIKqQOv4YFLuIUhhIi4grxmKnYk%2FL%2Fyi2LfTko3DMrsA9nMYAObMGNWqBTiEIUohCFKEQhClGIQhSiEIUoRCEKUYhCFHIVhPADzMAL6IeNk37swsw8Q34Fy8iePEPezjBkMM8Qy5JCcg5px5zKq9ZEDLkLpSshZPIVERJGhI8rRCGjCkmfaylEIaaTXSEKUYhCigu5lGHIYJ4hL2YY0pb3S8pfCvbMeLiEvXivFugUohCFKEQhClGIQhSiEIUoRCEKUYhCFKIQhUzskCnYjENoriGgGYexCe%2BJ5d3Ta9AFc2dwX0LEYt%2FGXBdWo66o97Pf7nvAqriMp1AOAsp4GkOwKg7httxC%2FA3538EgLMU%2B3IBp%2FrmlGMQWTM0sxCM%2BGxxGtfqxsxHowposQ5ajD1aDY1iCklvij1kNerE860NrFl6BDaMHj6EBpQoN%2Fm89Cc8%2FjFm5nOz%2BA3274sQdwCZcj1KK633bAZgbwno0FHH5vRdd2IlbUBqhW%2Fy5%2F8Y9RY4jM7ArPJSSJBxquzC9kBAf9E4nnNxpKk%2F%2B01iU5zjSgOcSBrY2zEsImOfbWBVDeBYNWY8jN%2BH3NQ5sW9EUBDRha40D6auYnWXI5mBP1OIs1uFx%2F9xqNIRNWR9ad%2BI1WA3%2Bhbvwcf%2FcanAUd%2BY1jpTxaMoovx%2FT8CDW%2BOcvp4zmj6BcxOW3CT%2FFUJWBbTK%2BXzHnug7rq2z%2FEzQVfWP1PszHEfRiMWZVuyj4NnOw1Ldtxx1ojuEO8XV8DZPQhPvRm3IBWO7bXoMv43gMISeD94V8F%2F%2BDJfFttgZ7rTOGkNnYCRsVn6fFtIpyN%2F44goBjWBTrclAZj6Cn1vuVuELS7zfCaUvjRFyga0Gbm6eVRoUoRCEKUYhCFKIQhShEIQpRiEIUohCFKEQhV1%2FI%2Ff5xB2wYfWiMOeRWDOJevD%2FlbeKbYw7ZC8NfUY8tKe9fvznGkE%2FCAp9HI95IiNkRW8gkvA4LnMEUPAFL8LGYQr4Cq6LVIzsSQv6AuhhCZuA8rIoB3IzPwBKsiiFkW8oJ%2FQGUUl4H2Ylri3wF3YdTfq%2B%2BASX3EViCrxb1Cro6vAobxn8wBaXA8wnbv4lpRYSshiVYi1KF2fhvwnN%2BkFuIR1yX8vqrIwl%2FJ%2FG5hOddRkueIc%2FAEny0MiDhb1NX2p3XizPnpBweP0cpxaOwBPdkHZI2q30bzTW%2B3vc1vDmMg3mEHEsI%2BXrs9yNhyJKEQW0yHsYv3aFRWpHXyd5WJWQFZuACbAxO4915hdyKyzB3ECX8CDZGD%2Bc9IH4vuPZ%2FCLcFcaP1N9TnHXIDzuKHKOEl2BgtKWrS%2BDkPWjQOEXuLnsaX8ZcxRgzhdq1rKUQhClGIQhSiEIUoRCEKUYhC%2Ft%2Fevas0EEQBGB6VIIqQSCxMYbATLLSwSay0sLRTbGx9At8jtWihlU9gZ8yF2OkLKGihqIiVF9gEIse%2FmGIQ4oobN6c4xdcO%2FMXAmcPCWoiFWIiFWIiFaA2JDyijgTYkgTYaKA%2Fid7QldCB91EE57ZAzyB%2B94ybwBPFqaYdECUJKcIERXEMQpR0iCRS%2FX%2FbwyyELsZB4HzjBEVroQrAJF8jjUWvIPnJwgXlcQnpQF3II10MWV%2BpCghGlAEGEKbgfbEC88eBMFSFrEFThYozhE4KitpAtCI7hfuEVgry2kBUIzuFiZINh0WkLmUCELmZjQnYgqKoL8Q4gOEWmR8QMniHY1hpSCCbZJhbgvGGs4x6CGoZUhnhLeIB4t7jAC8RrYRJObYg3jT28QQJ32EUGTntIaBSLWMUchuAAPSERBDm4JPx5uUE9rOoQVJBNGJNFBYJ62iHlf1o%2BLA9qHdTs0zqoGUQkCFHCQizEQizEQizEQizEQnT6AqfQwgd5BnPGAAAAAElFTkSuQmCC)}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab:after{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAFeCAYAAADHfkwkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADDJJREFUeNrtW21wVUcZJgnQYiuBCQUjISQtGmBK%2FKGWgJWPDqEwCEUpA94kMxrr2CLQatWpM7R%2B1LEFCp1anXJJRBmrP0roaEv5DISPto5A1XovIxIgqC2kBAoEKgkErs%2Feuyd3z549Hzfp2XNueZ%2BZZ%2FZk7%2B4573Ped9999wz06UMgEAgEAoHw0UZ8x7gccFJsx7jl4Ou4bkXbGU%2BxNZ7qW8HGsLFhFJALg2vBZlwnGGNCa1zHzddsbC2bGwoRMKwU3C8aG1cbbuoTBLK5pUF7YgrYpjLaTphKJNo2cFJQIqbz2E8b11hua7DkBUvo8bV0r%2B5wKoPR7U5Gu%2FXZeO4iu7cuT%2BSxuLYJkW7PZBha4nh27zwd3qiNuRtjEeVFmBGaGPsNHftEs0tatayJmEtIKdZOc8zPfQYPmGzzYEcBMacwtM9yk%2F0Ustz04HQoJNxScMwlMSja5X6uj3126VRe4DGX9OuU4Xi7108hrZns4Ly%2FCW1TzCn8mGeFF8HbVj%2BFdMYdUq3CI43C3Ma4e%2F0l9nX6uUY64x42N6E1C5F2fpeU7KuQ1rjHhS38rQytuFsmayxv9VPIvpjLZua00DPc6ff6KWSFU2zHHPYJL7WX1Lfc1w0x5lJi9NRjit993BAby3N4%2BeAlY3nZve3mNvt%2BcmQFXTwD41VnlJhDwRnTUTQaZTwedCDmJsCahezXiLlCPqiljOdeGc0OQfEMRcRcFn8sdbAarfuoO5NtWm7VrtdShm%2B2M4M6t88UPeN1n1Ds8MwTwYgQwyyWiuuefD0x1sToPmEADMrlH9uOWgxVHHX59VF%2BbA7HBzppn8nln0NXwsA3eG3G1hEju34D7Ur%2BWTV8AggEAoFAIBAIBAKBQCAQCIQwY9bsuePBo2DCZ7JnjPdTyDH%2BoJPgCZ94ij%2FjmJ9C2ANawRwfn5EDnmHP8lvICQ0hfIKEkBASQkJICAkhISQkMyEdGoRc0iFEG0nIjSTkkkYhF%2FwU8ohGIUvDcLZvcTDw39n0keKKg5Cr2SLiCQ9h83g2CHnSg5Af08c1AoFAIBAIBAKBQCAQCAQCgXCDY%2BasOYXgSvAw2AGeBbeBC8DcbBFxH3gBTNhwJ5gfdhH3g1cFo6%2BBLdwjophXwZxsEbEFLOa%2F5fKwEj01LxtEbAT7K8ZFhDFbwyZiviTiZZUIwTOX%2BLizYRJR6cUT0pzjfGxnWEQMBE8LIhrAm1nqdZhTxBMAG384LEK%2BI4jYw0X8GvwfuFQxvi%2FPVsacVWFY2GzD2yQYNR58TEqxiyQRLwm%2FtYPDw5Cd%2BoF%2FEwy7CSwB1wt9zDPDFSK6wDlhSbGDwUbBuDJh3Dqh%2F0fgNEnEwjDtE5PBnwh%2FrxPGlgn928GhYRExR7VPgCN5QWj0s7D6NA8zo%2B%2FvYB4XsSDoKrbdbp%2FA9cPSAmcL%2Fi7h79e4RxYEnaGekWonVdnxbb6w13NvbBfmLA7LXvFPoYotdhg3lIsQs9MZlhTCIsRYAy0u41QpdnaYaqkz3LD37U52NiIW9gkT%2BPHUMHBhVorghi4QjGSHolqWToUCcJMk4qthPfXlgDukFMsy1Amhig23CEFMvvTmZV4E52bLlxHmmXl8zZxjhyKwGVzNQow%2BgBEIBAKBQCAQCAQCgUAgEAiEGwATItFhE6qiGysiazrQJtAmWIv%2BdGtci4yYf5PmdaB9BW2hTiF%2FMhlnGBVxECGxW4RV7CadQj5gxlZEFF6IyAan%2BgyhFRHFCxDGgfr%2B477JA3IoRWzedsR8bRojvQCdHrF6IKI2WNVWKMaILyYwIab1ofKA4AWI2I%2FrUrt7sjHahFhCR5WFIlF16ESid7u9HI1Cou4ZKmLbNyBEQtZIGUkSFonahpqtZ4Nc7GlB6lCzpGjJSHmcsdb0CrHbtW3CyxBrTePWOcHsI%2FZrIaM3bBd%2BeoRURd3TblUGQqoCEGLeH6ylSqYbnPhCtK6RCrsyQ94ozXVUwrXU0e6RiLosqbArHFVZS3WfQLKWU31VpQ43uwUenBBl4edea7lWCEEJqYhEXUt2OyPtarJAShT5mKs8KToIUZ1dtKdfi9ERm4OVQ9ZS1WU6Q%2BuKZW2o6iaFobaLPT1G61H3NVXaVKZghzWiqn7Rt0WnRwrx0M3gFfmEqPSEate3fFVJ3msr%2BEn64EYgEAgEAoFAIBAIBAKBQCAQshnL4gPBVeBucLiH8cPBveAz4MfDICAHrAJPggnO02Clw5zpfIwxns2NJO8VkIhx3AMJBbvAx8FcYXwu%2BAR4zWYOu9edOgXkg8%2BCV20MErkNLABv49du49k9Vyef4bOIaimMvDDKmcmck8mQ9VHIXPCsR2MOgTOEuTN4n5e5Z5LP8tkrxeA%2BByPawEVgX8Xcvvy3Nof5e5PP0LROmEE%2FkxZuJ0%2BngzzMH8THdgrz2b1%2BqnwBGgTdw%2BP5ZXBUD%2BaP4nPfBacGuY8MA1%2BxDSVvnl3E7zE0KBGV4Cnbxe0%2BX1787F7TdApgb%2FEph41tCzjWYf5YPkY1l93z5%2F6vk2XxEvDPHje2X4FDhLlDeJ%2BXjfRNcKSfQlY5eELFc%2BBS8GF%2B7XXetWRW89krFeBbHg16B7wb%2FCK%2F9jLnYPIZmtYJKwAfctnlt%2FMaaz6vkNn1Tpfd%2FEFToalx4bO4r5PCzdjYBoDPSzXXLfw3efxa03oKKA2PAMeDB%2Fhbnc7LGFVSYGNKwZl87H7wLk%2BHMQ1CjoA%2FBPtzD83iRjolgLl8bD%2FwUfBwGIQc4wayt%2FsceN3Dgr7OU7HhtZYwCBnJ66VED9mzOs1HQVPAv2Yg4JDekiTztPygy3mjrcdFZgCCVOcNo2wZ3CfrsCxexgtE50KSQCAQCAQCgUAgEAgEAoFAIBA%2Bmiiqq5nF2vZdpQ1gIskm1pYI16VnwcFhFjGmqL7mauHzC%2B9p2Vx2B4y9kjS8SRBkXO8qXRVmIVshJFFUV%2F2PiU%2FfmwdjV0vGi15hIm8PoYjqLzERxSkhCVx%2F68WN4wfD4PdthLBwawiXiPqa%2FvDGkaSAlAjWni6JRgYebyx7xCSkSRZT%2BoUwCfk%2BhCSSrOdMXS%2F%2F8vr7%2BsPoZotX0mL%2BAuaEYV0MA9uLjJAyeaWmE%2B3tb28b%2BxVlaKVDbGEYvLEu7YXqpCeEdXIF%2FBRPx%2FscvNIC3hykiM%2BB14vrLSFliFphjIWhn7cudhN%2FEJSIHAh40%2FBCt4j0OnkP1wPFOTD2RQch58Hbgki3kZThqTVRLApJ9dfKcy7sKh0JYy9bQist7Je6F%2Fgt4DvmkKpOCMIOFEWrlP9cCcY%2B1V2uWNkFlukU8qSwX5jXRqpvot3c8zvvGAhjTzvsK6%2FqCqlSGHu5W4DVK793uweMfchBCONUHUIa0gtb8kZdzQdFa6td%2F%2B1V69ZRfWHsW3yBn4eI89J1kw4hh8QwKjan3WXZc96or5lh2jPSbCl5rnbA9CUND0xfvOGPKTbsxt9WLt6wuxJk10bbfZ3iPF1itpj3juTamDfpe78bBmMuwqgEjEmYWpGsT%2B5P%2F30KvFXXgh8Dw7uEDTAZ0zBgjcVok7GcS4TWKuYB3RviL3iIdY144evllUteuhPGdXW%2FbdEjSZpFVIoeSf8WQ5unW0gBRJxD%2B0LSG4sbNivCxCxA9o51%2FIxgFn5dzdfGPP1YAd7utPTbFjwgi5H7zUK2BprFKpdsyIURbyvjvju8zCIrrQngGjiOvkERCAQCgUAgEAgEAoFAIBAIhCzFlO%2FWTwB3gx1gohfs4PeZEISICrCzlwJkdmoXgwfu7IXBF8FjAk8Jv%2B3SLeRyL4RUSPfKA4%2Fw3y7rFtKbECpW3G%2Bf8TsJISHuvARuAn%2FLDe3i%2FfOlexWAJ8MqZC04SJozFjzoNjdMQn7jMC8f%2FFfohAh%2FFxrpExziMvd%2BwfCP2d0zKCGVvK%2FRw9wB4DV54YdFyALe9weP8y%2Fw8QVhEzKF973uYW6%2BUSw63TMoIbfy9cFSbInL3G%2BqwjAUQnhfHe%2FfAfazmTcCfI%2BPqw6rkEKhkt0Dlgu%2F5YKzwf8aVS6YE0ohvP%2Bz4LtCej0OHgDbhD62yw%2F2es9AhPDfPgGuAdulze4%2F4KMOYRcuIcKYm8DPgFPBMjmUwiLEOFgN%2BpDuNyiog1UTf%2FBqti%2F08l75%2FD7sfk26hUzw6ePDxKA%2BB%2B35kD4H7QlEBIFAIBAIBALhxsL%2FAWFBQYLmSYGkAAAAAElFTkSuQmCC)}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-dialog,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-file,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-url{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAB4CAYAAACaTFAUAAADn0lEQVR42u3bS2wNURjA8aLaEBp0IV5NPGJBkJBSEl1UtB5hQW0JXSIsxGMjFsRjQ9AHQtJiwUpUaVJExELi3US5JZ7FlajiJlQfPv%2FcfKQ5uVNuO2em9Cx%2BSe%2FMSe8%2FM3PnnGluU0SkR3FBLsgF7T9YXAn5S5VBBEkyY12QC3JB%2F0VQEiwFaUh3BBb0p3HJnjpbU4ap0s32LsgFuSAXpGzOZR0lNVb5GOT9RoOwGgdQih1Yin5BB6XjKFo0ZB4mYhrq0IhNQQVlIYKtxhumYYz%2BnAnBBfSxGZSOJ5AObxRFGcTDGZtBR7AX54yjUwnBZ4%2Bo%2Bb4H6QXcgiVGzEYIvkJwS8d9h6gHNoJWQ7DNCPqAcszFJFyDIAbpYKjfQbtRaMRkQTqI4DEELca%2BqX4HlWCCEVQD6URfiMq3cYSyjaAjEA95OmYsBDP8DloMQaYRFX9txLw1xrRjgN9BqfgIQUoCZyCqAinqOKps3Yc2QzyiaiGoR7VxdEbanDou41mCoHREjG2C7bbnsn44C8EIM0xtQzu2BLn8KMRdiGqGoBVVGBX4ekhlIhcLMB0DPMa5NbULckEuqLuT6xp8gSQphiILQRrTNZ9675%2BFTdU1V6XhXVTeRN8Lwg968bpBY3pGkBnigswQkwty15AL%2BqeDvnQjKGYjqAhNkCQ1ocitGF2QC3JB7rnMPZclqXcGmevnp89fyPmqS%2BEG1T6skyvXrsvNW7flZcMbYVu4QcT8fv2o%2Fkl8W3HZsZCC9DRpSBxHSveHGMRpi%2BN1%2FLQdO1HeM04ZP8e3VddcCf%2BiRvxosU0%2FaSEFmbiG3I2xS8KeXN1zmVsxuiAX1LuCuK9kIKeT%2FbOQEdR%2FTy3Ca7RibYL969GGV1ho80ExEychhhKkoj9KIYYKDPMtSGNWIArxcAqnIR6iKPQlSL%2BvuAVtEEM7ijFEleg2MbRhM%2Fr4ecoK0AhRd5CdYNxM3IOoRuRbuaj5xeNxAxuQ2um3sRijY8fpditBk1GL7UjrZFyajnmASbY%2BZcsRg6jHyEswbh4iEBXDMr8%2FZbvwA2L4gQoMVychHuN2%2BhlUgJcQD%2BUaJh6eo8DvUzYYxQmO1B7dl4F9CW4LhzHY5tSRi3o0YyVG4y7uIwurdF8Ec4OYywowEFOQg3cQ9R5zMEXH5AcRVIJqrMU3iKEZ63ARpUEtP5ajAeLhLVYEukDTi%2FgQ2hPNbaGtGHUxdh%2B1mN0jlrC%2F1kNuTR2En2aqi4BnOyDfAAAAAElFTkSuQmCC)}.uploadcare-crop-widget .jcrop-vline,.uploadcare-crop-widget .jcrop-hline{background-image:url(data:image/gif;base64,R0lGODlhCAAIAJEAAKqqqv%2F%2F%2FwAAAAAAACH%2FC05FVFNDQVBFMi4wAwEAAAAh%2BQQJCgAAACwAAAAACAAIAAACDZQFCadrzVRMB9FZ5SwAIfkECQoAAAAsAAAAAAgACAAAAg%2BELqCYaudeW9ChyOyltQAAIfkECQoAAAAsAAAAAAgACAAAAg8EhGKXm%2BrQYtC0WGl9oAAAIfkECQoAAAAsAAAAAAgACAAAAg%2BEhWKQernaYmjCWLF7qAAAIfkECQoAAAAsAAAAAAgACAAAAg2EISmna81UTAfRWeUsACH5BAkKAAAALAAAAAAIAAgAAAIPFA6imGrnXlvQocjspbUAACH5BAkKAAAALAAAAAAIAAgAAAIPlIBgl5vq0GLQtFhpfaIAACH5BAUKAAAALAAAAAAIAAgAAAIPlIFgknq52mJowlixe6gAADs%3D)}.uploadcare-dialog-file-sources:before{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEMAAAAsCAYAAAA%2BaAX8AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAArdJREFUeNrsml1ozWEcx387lolkMSNJLKNIIhQ3btwouXBDlJer09rF3LFdyZWLCbHMy4W3lPfXQl5rGyk1WkqE8hLJxbCZjW0%2Bj%2Bd32tNxzhnLyv%2F%2FO9%2F69JzzdLY63%2FN9nuf3PM%2B%2FYOee%2BjIReQcdkkVVlUmxoASshiewQozLmTEaJsEZuA0zrJvRA%2BvgPuyFWii2ZkYhjIFLcCToL4Ip8Al6LSWjBOrS%2Bjt1Hum1Nkzeww3J69cwOREkYCQ8hDnwOdcf7qrbF%2BkvnqlccMm4ELz%2FArdgq9XVJL3YqoZV4RIb9RT88TDJEJePfPn1utz%2BNiziXI0msvRf1dUkdnPFX5sR%2FPqNMN2KIYl%2BZttjcByGWplAcy0%2F9TSvYIuVOqM%2FbYD55pOh6Wilua77lRLTZgTzx0K4B2NNm6GG3KE5rTvc4abNUNXAU6gwbwbpcBu6tbAjn4y%2B%2BcOV6otg%2B0D%2BR2zMCAx5pFv9QzDErBmqdlimq0utlaIrl77CcphoPRkpfYeX%2BtrtZcotmxHK1SINsDRvhshB8TdzB2C2tTkjk%2B7CVPHXDQVarbZbTEZK38SfuLtz1OewxrIZKT3W%2BWMTnIVhls1waoZ5cHOQhmWkzHDqEn%2BF2QazoAmWWDUjVItWrO62%2FwqUWjbD6RzMhIviT9CcRlg1IzV0XDpeB4k5r7thc2akyyXlGhyGbXEpugaqDk3Kfuk7VlwJc3XP02IpGSl1i38awKlRi7fL8GCwd8f%2F%2BynVW9gs%2FpGqjfBB%2B116qv%2F1%2FicqR3Y9mpIufe%2FmlXHiT%2Bsbgs%2BVWjAjXU2alPLguGC8%2BKeO3sBJ8adwWZXp8rxQoq82bd2zaROgTJfnbu13r0%2BJv%2BJ4Bkc1TUUYMpnW3Ri2VlUmO%2BNgRrpeKOGRwgLxj1ZMgx%2Favxh2wygoxpjkTwEGAPykmqa52kHJAAAAAElFTkSuQmCC)}.uploadcare-crop-widget--loading .uploadcare-crop-widget__image-wrap{background-image:url(data:image/gif;base64,R0lGODlhGQAZAPQAAOzq7Ozu7OTm5Ly6vKSmpLS2tNTS1MzKzKyqrOTi5MTCxLSytNTW1Nze3PT29Ly%2BvKyurPz%2B%2FPz6%2FMzOzMTGxNza3PTy9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH%2FC05FVFNDQVBFMi4wAwEAAAAh%2BQQFCQAAACwAAAAAGQAZAEAFhCAgjqIkRRKgFEfjkOMZwXQNRKhs7yKe1ibULcdzpEw8QKIBkLySUBjSmKQ6aQ6c9powPAjgQUDqi5bKZTNJllafZ7JfNCsk0bcvE7tu26cGYAgIFU9AWjYBBwgETDBtUHQjj1E6Om5nJ0iXAHQnhW56lpc6k1CipTuiMahvnzR%2BQ1s0IQAh%2BQQFCQAAACwUAAQABQAIAAAFHaBTBQDAEIMDJARRlQexqAFCNOVDHKVBFKXEQBECACH5BAUJAAAALBQADQAFAAgAAAUcIAAIyiEaRCE%2BhBkgRAIcxOIIsAGggwM4hoAoBAAh%2BQQFCQAAACwNAAEACAAYAAAFJyAgAtBonmiqrmzrvnAsz6KQmMFBEIlgKDtEITAIQhgOwKNwaCRFIQAh%2BQQFCQABACwEAAEAFQAYAAAFTWAgjmRplWiqruNJIGwsr8Zs3y2u73zv25Te4Ic7BRo9oy1BCDCIDMGOgSBMlChYCVCoIhQGqXNEGABMBghhHURhSZbGoXAQDSiVtygEACH5BAUJAAMALAAADQAYAAwAAAVBIKUIQ2meaFoQTOq%2BFPK8dKkQDYFYtRuUFghh0qsxEARA8YQwWQqIxhLFGwCklSlNp30RXo9mz1EjLAzkbunwCgEAIfkEBQkADwAsAAAEABcACAAABS3g8wCJaJ5o6hRIk74iYzIEIsAwQjgLceDARi0AxB0IiiJsUCAYlDDF4AZNhQAAIfkECQkAEQAsAQAAABgACgAABT5gJI5OcxTTqK6rwywEgVBsPQZDjDyGoCK2kUF2ANQCQZHDkEhGBJUaoekMIgjVFVYEySaBXpUF23yEVQpRCAAh%2BQQJCQAXACwBAAAAGAAKAAAFXOAljk5zFNMVRZI0vrDDLASBUJe0ri48BoMa4mEQ5HS7iMN3MdgOAGaLBwMkHIYE89VyVAIiR4Gg3foYhMGSgSAYzbBErXKBEA5w5oGwsCAQYHkwFjVyD4JMCnchACH5BAkJAAoALAEAAAAYABUAAAVloCKOTnMUkxJFkjS%2BsMMsBIFQirSuLjwGgxriYRDkdLuIw6cw2A4AZosHAyQchgTz1VI4eo4CQbv1OVYiBoJgLMOQLgjh4GbuFAhEoG5nER58UiyBW0iEgj2HiouMjY6PkJGSjSEAIfkECQkAFwAsAQAAABgAGQAABZLgJY5OcxTTFUWSNL6wwywEgVCXtK4uPAaDGuJhEOR0u4jDdzHYDgBmiwcDJByGBPPVujh6jgJBu%2FU5ViIGgmAsw5AuCOHgZu4uCESgbmcRHnxSfgaBPkgDbYUjOj2KTAqJji0SBAyOiytDlyI8NhabPHIpkmhqBFGFZywXFgUIDYpIIwCwFZFMAloSS5u9vr%2B9IQAh%2BQQJCQAXACwBAAAAGAAZAAAFq%2BAljk5zFNMVRZI0vrDDLASBUJe0ri48BoMa4mEQ5HS7iMN3MdgOAGaLBwMkHIYE89W6OHqOAkG79TlWIgaCYCzDkC4I4eBm7i4IRKBuZxEefFJ%2BBoE%2BSANthSM6PYpMComOLRIEDI6LK0OXIjw2Fps8cimSaGoEUYVnLBcWBQgNikgjALAVkVJLEksvDDYTn4KrPgBiNgpFR0nCZgZyNTjKjWUWJgV0PNIvIQAh%2BQQJCQAVACwAAAAAGQAZAAAFpGAljpXTHMVURZEkkTDpMAtBIFQlsewbj4GBDfEwCHQ7XsTxqxhuB8DP1YsBEg5DojlylXylAmHLhTlYIwaCcCyTkj4I4eCO8UQIRKBub1UID3wxOy8EBoIwSRUDbYgihI5lCo2OLoUMkY9oRJkrfjcWmVVyKpVoFWoEUoJnfhUWBQgNiIojALMSTGW5OrpvVU1wTa08vJZKYFPInsWCVC89ySQhACH5BAkJABUALAAAAAAZABkAAAWeYCWOldMcxVRFkSSRMOkwC0EgVCWx7BuPgYEN8TAIdDtexPGrGG4HwM%2FViwESDkOiOXKVfKUCYcuFOVgjBoJwLJOSLweEcHDHeJUGAhGw31sHBA9%2BMTsSYgaEMEkKA22KIoaQXDtMk0hwlzo9aJdwnZNVVZBJkaN%2BZy0jp3alXXFgTQ4vEpZvrIsstmZKLUwuSbi5PC%2B9sWVUxS3HIyEAIfkECQkAAAAsAAAAABkAGQAABYggII6A0xzFBESRJJEw6TALQSAUILHsG4%2BBgQ3xMAh0O17E8QMYbofAz9WLOSQOY3PkKvlE1S3MweKGxSNyC7xGw5K6sjvWg8%2FfrfNdlGx99yVygFNLg3xUbYNJdoo9goBVenN2i3tqX5JijEheaFc6THiJMUmhVkotTC59o6RKL6h%2Fmjuwfk0hACH5BAUJAAAALAAAAAAZABkAAAV2ICCOoiRFEhChKemS54qq8vyOTo06gKnzt1jk1ou1SI6UiThaJkmrIxO3akanrpztinXFetXuK%2FoVe1Fcs5WsRobbwQgQbjLCS9F326hXX9NmZXZmWkeAWGUlKU9TTxJza1JnckRaMo9FQjZEmik6kkw%2BnixEIQA7)}.uploadcare-dialog{font-family:"Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(49,49,49,0.95);z-index:10000;overflow:auto}.uploadcare-dialog *{margin:0;padding:0}.uploadcare-dialog-inner-wrap1{display:table;width:100%;height:100%}.uploadcare-dialog-inner-wrap2{display:table-cell;vertical-align:middle}.uploadcare-dialog-close{position:absolute;top:4px;left:0;width:100%;min-width:988px}.uploadcare-dialog-close>div{margin:0;padding:0;border:none;background:none;width:33px;height:33px;line-height:33px;font-size:29.7px;font-weight:bold;color:#1d1d1d;cursor:pointer;position:absolute;right:0;top:0}.uploadcare-dialog-panel-wrap{margin:0 auto;width:900px;padding:0 44px}.uploadcare-dialog-panel{width:900px;height:616px;overflow:hidden;border-radius:8px;background:#fff;-ms-box-shadow:0 1px 2px rgba(0,0,0,0.35);-moz-box-shadow:0 1px 2px rgba(0,0,0,0.35);-webkit-box-shadow:0 1px 2px rgba(0,0,0,0.35);-o-box-shadow:0 1px 2px rgba(0,0,0,0.35);box-shadow:0 1px 2px rgba(0,0,0,0.35);font-weight:normal}.uploadcare-dialog-panel a{text-decoration:none;border-bottom:1px dotted}.uploadcare-dialog-panel a:link,.uploadcare-dialog-panel a:visited{color:#1a85ad;border-bottom-color:#1a85ad}.uploadcare-dialog-panel a:hover,.uploadcare-dialog-panel a:active{color:#252525;border-bottom-color:#252525}.uploadcare-dialog-body .uploadcare-dialog-tabs{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;width:75px;height:616px;float:left;list-style:none;list-style-type:none;margin:0;padding:0;background:#dee0e1;border-bottom-left-radius:8px;border-top-left-radius:8px;overflow:hidden;position:relative}.uploadcare-dialog-body .uploadcare-dialog-tabs:before{content:\'\';display:block;position:absolute;top:0;right:0;bottom:0;width:0;border-left:1px solid #c5cace}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;width:75px;height:66px;border-bottom:1px solid #c5cace;border-right:1px solid #c5cace;cursor:pointer;position:relative}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:after{content:\'\';display:block;position:absolute;width:50px;height:50px;top:50%;left:50%;margin-top:-25px;margin-left:-25px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:hover{background-color:#ebeced}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab{margin-right:-1px;border-right:1px solid #efefef}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab,.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab:hover{background-color:#efefef}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-file:after{background-position:0 -50px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-url:after{background-position:0 -100px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-facebook:after{background-position:0 -150px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-dropbox:after{background-position:0 -200px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-gdrive:after{background-position:0 -250px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-instagram:after{background-position:0 -300px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-first-tab{border-top-left-radius:8px}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel{position:relative;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;margin-left:75px;padding:22px 25px;width:825px;height:616px;line-height:22px;background:#efefef;border-bottom-right-radius:8px;border-top-right-radius:8px;font-size:16px;color:black}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel input{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;width:100%;height:44px;margin-bottom:22px;padding:11px 12.5px;font-family:inherit;font-size:16px;border:1px solid #c5cace;background:white;color:black}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel .uploadcare-dialog-drop-file{background:white;border:1px dashed #c5cace;border-radius:3px;height:99px;padding-top:77px;text-align:center;color:#545454}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-facebook,.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-dropbox,.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-gdrive,.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-instagram{padding:0}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-facebook iframe,.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-dropbox iframe,.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-gdrive iframe,.uploadcare-dialog-body .uploadcare-dialog-tabs-panel-instagram iframe{border-bottom-right-radius:8px;border-top-right-radius:8px}.uploadcare-dialog-footer{font-size:13px;text-align:center;color:#888;margin-top:15px}.uploadcare-dialog-footer a{color:#c2c2c2;text-decoration:none}.uploadcare-dialog-footer a:hover{text-decoration:underline}.uploadcare-dialog-title{font-size:25px;line-height:1;font-weight:bolder;margin-bottom:25px}.uploadcare-dialog-title2{font-size:20px;line-height:1;padding-bottom:11px}.uploadcare-dialog-label{font-size:15px;line-height:25px;margin-bottom:12.5px}.uploadcare-dialog-section{margin-bottom:22px}.uploadcare-dialog-normal-text{font-size:13px;color:#545454}.uploadcare-dialog-button{display:inline-block;font-size:13px;line-height:31px;padding:0 22px;margin-right:.5em;border:solid 1px;border-radius:3px;cursor:pointer;color:#444}.uploadcare-dialog-button,.uploadcare-dialog-button[disabled]:active,.uploadcare-dialog-button.uploadcare-disabled-el:active,.uploadcare-dialog-button[disabled]:hover,.uploadcare-dialog-button.uploadcare-disabled-el:hover{background:#f3f3f3;background:-webkit-linear-gradient(whitesmoke,#f1f1f1);background:-moz-linear-gradient(whitesmoke,#f1f1f1);background:-o-linear-gradient(whitesmoke,#f1f1f1);background:linear-gradient(whitesmoke,#f1f1f1);-ms-box-shadow:none;-moz-box-shadow:none;-webkit-box-shadow:none;-o-box-shadow:none;box-shadow:none;border-color:gainsboro}.uploadcare-dialog-button:hover{background:#f8f8f8;background:-webkit-linear-gradient(#fbfbfb,#f6f6f6);background:-moz-linear-gradient(#fbfbfb,#f6f6f6);background:-o-linear-gradient(#fbfbfb,#f6f6f6);background:linear-gradient(#fbfbfb,#f6f6f6);-ms-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-o-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05)}.uploadcare-dialog-button:active{background:#f3f3f3;background:-webkit-linear-gradient(whitesmoke,#f1f1f1);background:-moz-linear-gradient(whitesmoke,#f1f1f1);background:-o-linear-gradient(whitesmoke,#f1f1f1);background:linear-gradient(whitesmoke,#f1f1f1);-ms-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-o-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);box-shadow:inset 0 2px 2px rgba(0,0,0,0.05)}.uploadcare-dialog-button[disabled],.uploadcare-dialog-button.uploadcare-disabled-el{cursor:default;opacity:.6}.uploadcare-dialog-button:active,.uploadcare-dialog-button:hover{border-color:#cbcbcb}.uploadcare-dialog-button-success{display:inline-block;font-size:13px;line-height:31px;padding:0 22px;margin-right:.5em;border:solid 1px;border-radius:3px;cursor:pointer;color:white}.uploadcare-dialog-button-success,.uploadcare-dialog-button-success[disabled]:active,.uploadcare-dialog-button-success.uploadcare-disabled-el:active,.uploadcare-dialog-button-success[disabled]:hover,.uploadcare-dialog-button-success.uploadcare-disabled-el:hover{background:#3786eb;background:-webkit-linear-gradient(#3b8df7,#347fdf);background:-moz-linear-gradient(#3b8df7,#347fdf);background:-o-linear-gradient(#3b8df7,#347fdf);background:linear-gradient(#3b8df7,#347fdf);-ms-box-shadow:none;-moz-box-shadow:none;-webkit-box-shadow:none;-o-box-shadow:none;box-shadow:none;border-color:#266fcb}.uploadcare-dialog-button-success:hover{background:#3279d6;background:-webkit-linear-gradient(#3986ea,#2c6dc2);background:-moz-linear-gradient(#3986ea,#2c6dc2);background:-o-linear-gradient(#3986ea,#2c6dc2);background:linear-gradient(#3986ea,#2c6dc2);-ms-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-o-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05)}.uploadcare-dialog-button-success:active{background:#3177d3;background:-webkit-linear-gradient(#3680e1,#2c6fc5);background:-moz-linear-gradient(#3680e1,#2c6fc5);background:-o-linear-gradient(#3680e1,#2c6fc5);background:linear-gradient(#3680e1,#2c6fc5);-ms-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-o-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);box-shadow:inset 0 2px 2px rgba(0,0,0,0.05)}.uploadcare-dialog-button-success[disabled],.uploadcare-dialog-button-success.uploadcare-disabled-el{cursor:default;opacity:.6}.uploadcare-dialog-button-success:active,.uploadcare-dialog-button-success:hover{border-color:#266eca #1f62b7 #1753a1}.uploadcare-dialog-button-success:hover{-ms-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);-moz-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);-webkit-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);-o-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5)}.uploadcare-dialog-button-success:active{-ms-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);-moz-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);-webkit-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);-o-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);box-shadow:inset 0 1px 3px rgba(22,82,160,0.4)}.uploadcare-dialog-big-button{border-radius:100px;font-size:20px;font-weight:normal;letter-spacing:1px;color:white;line-height:64px;border:solid 1px #276fcb;text-shadow:0 -1px #2a7ce5;display:inline-block;padding:0 2em;cursor:pointer;-ms-box-shadow:inset 0 -2px #1f66c1;-moz-box-shadow:inset 0 -2px #1f66c1;-webkit-box-shadow:inset 0 -2px #1f66c1;-o-box-shadow:inset 0 -2px #1f66c1;box-shadow:inset 0 -2px #1f66c1;background:#458dee;background:-webkit-linear-gradient(#4892f6,#4289e6);background:-moz-linear-gradient(#4892f6,#4289e6);background:-o-linear-gradient(#4892f6,#4289e6);background:linear-gradient(#4892f6,#4289e6)}.uploadcare-dialog-big-button:hover{-ms-box-shadow:inset 0 -2px #1652a0;-moz-box-shadow:inset 0 -2px #1652a0;-webkit-box-shadow:inset 0 -2px #1652a0;-o-box-shadow:inset 0 -2px #1652a0;box-shadow:inset 0 -2px #1652a0;background:#3279d6;background:-webkit-linear-gradient(#3986eb,#2c6dc2);background:-moz-linear-gradient(#3986eb,#2c6dc2);background:-o-linear-gradient(#3986eb,#2c6dc2);background:linear-gradient(#3986eb,#2c6dc2)}.uploadcare-dialog-big-button:active{border:none;line-height:66px;-ms-box-shadow:inset 0 2px #2561b9;-moz-box-shadow:inset 0 2px #2561b9;-webkit-box-shadow:inset 0 2px #2561b9;-o-box-shadow:inset 0 2px #2561b9;box-shadow:inset 0 2px #2561b9;background:#2c6ec3;background:-webkit-linear-gradient(#2c6ec3,#2c6ec3);background:-moz-linear-gradient(#2c6ec3,#2c6ec3);background:-o-linear-gradient(#2c6ec3,#2c6ec3);background:linear-gradient(#2c6ec3,#2c6ec3)}.uploadcare-dialog-preview-image-wrap1{width:100%;height:452px;margin-bottom:25px;display:table}.uploadcare-dialog-preview-image-wrap2{display:table-cell;vertical-align:middle;text-align:center}.uploadcare-dialog-preview-image-wrap2 img{max-width:775px;max-height:452px;display:block;margin:0 auto}.uploadcare-dialog-preview-footer{background:#fff3be;border-top:1px solid #efe2a9;height:33px;padding:16px 30px;margin:0 -25px -22px;border-bottom-right-radius:8px}.uploadcare-dialog-preview-footer .uploadcare-dialog-button-success{float:right;margin-right:0}.uploadcare-dialog-preview-footer .uploadcare-dialog-button{float:left}.uploadcare-dialog-preview-center{text-align:center;padding-top:176px}.uploadcare-dialog-preview-circle{width:66px;height:66px;display:inline-block;margin-bottom:22px}.uploadcare-no-draganddrop .uploadcare-if-draganddrop{display:none}.uploadcare-draganddrop .uploadcare-if-no-draganddrop{display:none}.uploadcare-dialog-file-drop-area{width:100%;height:100%;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;background:#f8f8f8;border:dashed 3px #c5cacd;text-align:center;border-radius:3px;padding-top:70px}.uploadcare-dialog-file-drop-area .uploadcare-dialog-big-button{margin-top:11px;margin-bottom:55px}.uploadcare-no-draganddrop .uploadcare-dialog-file-drop-area{border:none;padding-top:73px;background:transparent}.uploadcare-dialog-file-title{font-size:40px;line-height:1;color:#dee0e1;font-weight:bold;margin-bottom:66px;text-shadow:0 1px white}.uploadcare-no-draganddrop .uploadcare-dialog-file-title{text-shadow:none;color:black;margin-top:66px}.uploadcare-dialog-file-or{font-size:13px;color:#8f9498;margin-bottom:44px}.uploadcare-dialog-file-sources{position:relative;display:inline-block}.uploadcare-dialog-file-sources:before{content:\'\';display:block;position:absolute;width:67px;height:44px;top:-32px;left:-90px}.uploadcare-dialog-file-source{display:inline;font-size:15px;margin-right:.2em;cursor:pointer;font-weight:300}.uploadcare-dialog-file-source:after{content:\'\\00B7\';color:#b7babc;margin-left:.5em}.uploadcare-dialog-file-source:last-child:after{display:none}.uploadcare-draging .uploadcare-dialog-file-or,.uploadcare-draging .uploadcare-dialog-file-sources,.uploadcare-draging .uploadcare-dialog-file-drop-area .uploadcare-dialog-big-button{display:none}.uploadcare-draging .uploadcare-dialog-file-drop-area{background:#f2f7fe;border-color:#438ae7;padding-top:264px}.uploadcare-draging .uploadcare-dialog-file-title{color:#438ae7}.uploadcare-crop-widget .jcrop-holder{direction:ltr;text-align:left}.uploadcare-crop-widget .jcrop-vline,.uploadcare-crop-widget .jcrop-hline{background-color:white;background-position:top left;background-repeat:repeat;font-size:0;position:absolute}.uploadcare-crop-widget .jcrop-vline{height:100%;width:1px!important}.uploadcare-crop-widget .jcrop-hline{height:1px!important;width:100%}.uploadcare-crop-widget .jcrop-vline.right{right:0}.uploadcare-crop-widget .jcrop-hline.bottom{bottom:0}.uploadcare-crop-widget .jcrop-handle{background-color:#333;border:1px #eee solid;font-size:1px}.uploadcare-crop-widget .jcrop-tracker{height:100%;width:100%;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none}.uploadcare-crop-widget .jcrop-handle.ord-n{left:50%;margin-left:-4px;margin-top:-4px;top:0}.uploadcare-crop-widget .jcrop-handle.ord-s{bottom:0;left:50%;margin-bottom:-4px;margin-left:-4px}.uploadcare-crop-widget .jcrop-handle.ord-e{margin-right:-4px;margin-top:-4px;right:0;top:50%}.uploadcare-crop-widget .jcrop-handle.ord-w{left:0;margin-left:-4px;margin-top:-4px;top:50%}.uploadcare-crop-widget .jcrop-handle.ord-nw{left:0;margin-left:-4px;margin-top:-4px;top:0}.uploadcare-crop-widget .jcrop-handle.ord-ne{margin-right:-4px;margin-top:-4px;right:0;top:0}.uploadcare-crop-widget .jcrop-handle.ord-se{bottom:0;margin-bottom:-4px;margin-right:-4px;right:0}.uploadcare-crop-widget .jcrop-handle.ord-sw{bottom:0;left:0;margin-bottom:-4px;margin-left:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-n,.uploadcare-crop-widget .jcrop-dragbar.ord-s{height:7px;width:100%}.uploadcare-crop-widget .jcrop-dragbar.ord-e,.uploadcare-crop-widget .jcrop-dragbar.ord-w{height:100%;width:7px}.uploadcare-crop-widget .jcrop-dragbar.ord-n{margin-top:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-s{bottom:0;margin-bottom:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-e{margin-right:-4px;right:0}.uploadcare-crop-widget .jcrop-dragbar.ord-w{margin-left:-4px}.uploadcare-crop-widget .jcrop-light .jcrop-vline,.uploadcare-crop-widget .jcrop-light .jcrop-hline{background:#FFF;filter:Alpha(opacity=70)!important;opacity:.70!important}.uploadcare-crop-widget .jcrop-light .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#000;border-color:#FFF;border-radius:3px}.uploadcare-crop-widget .jcrop-dark .jcrop-vline,.uploadcare-crop-widget .jcrop-dark .jcrop-hline{background:#000;filter:Alpha(opacity=70)!important;opacity:.7!important}.uploadcare-crop-widget .jcrop-dark .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#FFF;border-color:#000;border-radius:3px}.uploadcare-crop-widget .jcrop-holder img,.uploadcare-crop-widget img.jcrop-preview{max-width:none}.uploadcare-crop-widget{font-family:"Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif}.uploadcare-crop-widget__image-wrap{position:relative}.uploadcare-crop-widget--loading .uploadcare-crop-widget__image-wrap{background-repeat:no-repeat;background-position:center}.uploadcare-crop-widget__image-wrap img{display:block}.uploadcare-crop-widget__error{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;text-align:center;position:absolute;top:50%;left:0;right:0;margin-top:-1em;display:none}.uploadcare-crop-widget--error .uploadcare-crop-widget__error{display:block}.uploadcare-crop-widget__error__title{font-size:20px}.uploadcare-crop-widget__error__text{font-size:15px}.uploadcare-crop-widget__controls{height:30px;padding-top:5px;text-align:center}.uploadcare-crop-widget--no-controls .uploadcare-crop-widget__controls{display:none}.uploadcare-widget{display:inline-block!important;position:relative;vertical-align:middle;padding:0 5px}.uploadcare-widget[data-status=loaded] .uploadcare-widget-buttons>li,.uploadcare-widget[data-status=started] .uploadcare-widget-buttons>li{display:none}.uploadcare-widget[data-status=started] .uploadcare-widget-buttons .uploadcare-widget-buttons-cancel,.uploadcare-widget[data-status=loaded] .uploadcare-widget-buttons .uploadcare-widget-buttons-remove{display:inline-block}.uploadcare-widget .uploadcare-widget-circle{width:25px;height:25px;top:-1px;float:left;margin-right:1ex}.uploadcare-widget-circle{position:relative;font-size:0}.uploadcare-widget-circle .uploadcare-widget-circle-back{position:relative;width:100%;height:100%;border-radius:50%;background:#e1e5e7}.uploadcare-widget-circle .uploadcare-widget-circle-back.uploadcare-widget-circle-active{background:#d0bf26}.uploadcare-widget-circle .uploadcare-widget-circle-center{position:absolute;background:white;width:10%;height:10%;top:50%;left:50%;border-radius:50%;margin-top:-5%;margin-left:-5%}.uploadcare-widget-buttons{position:relative;top:-1px;float:left;overflow:hidden;margin:0;padding:0;list-style:none}.uploadcare-widget-buttons>li{height:24px;float:left;font-size:11px;color:#8f9295;line-height:25px;min-width:36px;padding:0 6px;margin:0 3px 1px 0;list-style:none;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;border-radius:2px;background:#e1e5e7;cursor:default}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-dialog,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-file,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-url{background-position:0 0;background-repeat:no-repeat;padding-left:30px}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-dialog,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-url{background-position:0 -24px}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-cancel,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-remove{font-size:.9em;display:none}.uploadcare-widget-status-text{float:left;overflow:hidden;line-height:25px;height:25px;margin-right:1ex;white-space:nowrap;padding:0 5px}.uploadcare-widget-file-name{cursor:pointer;color:#1a85ad;border-bottom-color:#1a85ad;text-decoration:none;border-bottom:1px dotted}.uploadcare-widget .uploadcare-widget-dragndrop-area{display:none;position:absolute;top:-8px;left:0;width:100%;height:41px;line-height:41px;text-align:center;background-color:#f0f0f0;color:#707478;border:1px dashed #b3b5b6;border-radius:20.5px}.uploadcare-widget .uploadcare-widget-dragndrop-area.uploadcare-dragging{display:block}\n');}return __p.join('');};
+  this.JST["uploadcare/templates/source-tab-base"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div \n  class="uploadcare-dialog-source-base-wrap" \n  role="uploadcare-dialog-source-base-wrap"\n></div>\n\n<div class="uploadcare-dialog-inner-footer uploadcare-dialog-source-base-footer">\n  <div \n    class="uploadcare-dialog-button" \n    role="uploadcare-dialog-source-base-show-files">',(''+ t('dialog.showFiles') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div\n    class="uploadcare-dialog-button-success" \n    role="uploadcare-dialog-source-base-done">',(''+ t('dialog.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div \n    class="uploadcare-dialog-inner-footer-text"\n    role="uploadcare-dialog-source-base-footer-text"\n  ></div>\n</div>\n');}return __p.join('');};
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["uploadcare/templates/styles"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('\n\n\n\n\n\n.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:after{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAFeCAYAAADHfkwkAAAQGUlEQVR42uydbYxVRxnHuxdaa6q8pLwEQSi1CpLWT1qML9A2gDRVbKQNDfWDoU1s0bQ1RqOJrUqNDRQwvhCtxp6%2BKJMQarTQLmAbKtg2QutriESK1KTCCrvlZWnLsmzxP%2BzD3f%2FOM3P39sOZc8Xnwz8zZ87ce%2BZ3nnlm5p4zd%2Ba806dPnxMyEAMxEAMxEAMxkP9bkIceXUty5xWPDD6G2hCfhfTliP8e8Q6oB3EvH0eaWwHNQryt%2FjmEBRR8fyYQiApSg5agMHsQngbIaYSQo1DiIsm7BHlrHgJhHUqUD6ToB5kK7eBC4phhfKFDCE7fId9BNyYDSDG4OlyF8BAVkEINAThoIE55D%2BF4lnxnDhDHd2weLtojBVJVqCAgZY14tevBuU%2Bwz%2BSoWtNwoWO4qIJgmDiQS8JB3dA0aUhKBxkmPsFVRwFIWiMAnXfAZ4ZlsIhbIs5cd1o5VoVtHtCFlrml1OYXF2pDgfcQQOyu66qV9iMOWXt8n1SmRWZLYbiQEsabWk5Lg0A6%2F%2BwyLbJcmk4uRMLJNUi88BLqPMvLtMh27hN0vU%2F1EyJdzShd3ZBtZYJ00MVUn5Bw9K2IQ5xvaMeHOsqsWj2JFinVDD9FfY%2BPR%2FsdtlIx4Hs95VmEQXR10dULhfcdWyEgyjdEAWAWkA51B4NQAUnVkri2SNpfOjI4e9o3BDTpRxpad66iUp19hb7ryirp8VST5wVqeZnOPlv5RtzZB5w2ag2n%2Bxit2WVapA3aExY63THqdF2NdFx%2BPdbKHv3eosdPQ492df4GvyDLHjT6Ly%2F6h%2FE7Vd3Wx1oaMFblXgD0sJJB6n3CdKibfUFbQFc%2FLeVj3dB0eTqTBcTrWhQCP3W1r6SrD8J0K9Xjv1O%2Bv9xfiEXwHEou3J3uSwaJHT20YrfcmFxPUVzsudZ0X68JQkBU8xx93iWfnV63RJ4HdPx0ke%2Beq0FLEH9JQJQFQtAzeeUBnb45%2BXyExZaqQbOg%2B5HvWahDRsxeHdCzyOvPzYJq%2FFkJOW4PsQ3EQAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzEQIInjTPlCaF%2BETr0E3edJ3irRXoJmlnmQ%2By9UoD9uNDLCKH%2BEI8%2B5RhxaNC5ehyic4nPHhDAveWByIwEqK0IHpmqUOKFiM4NZfU25Ov0likNRKzxMgMIEBc%2Bqrfy3kMsWC5IQSAKQJ7WFyqdj5sFWZsLxInEKoGVvDQw0psE8a8kSvURcVA9GzutII8b%2BoaVbxFHIKo6xauaAmsWxJUMgouoQuvqk3L8pn0EKrlqkY%2Bk%2FMBLzXdvqaolIGGB1TFLA7UGiO%2BFVWeoAHTzLDCtZJEARHWOyvEZtkkQB5BMza8GcI0bgEdaqdXqBzkRdnhFqtAqT9Md4vFyQdLTyGmmg5LKX%2Bg0Pc8rg4%2BomaJcOCgAcgIZm0iTBs%2FRj0ihRLoQzcTVZ5WlSx6iHOeL6Uk0KQvpub4axoXAR8usWnepaUtQHI6rVtMWY91REoietyWhiONuX4Pf8f9qlacoqR9M3PSepLscVqHelgFpPPp190AxR2agu1sBpOGQBOG9aqJmEELfsgd0BmIgBmIgBmIgBmIgBmIgBmIgBmIgBmIgBmIgBnLugCTeHzo1P4VnCyE%2BAfH7kb4b8RMIu5C%2BGeEihLVqQNIvPhPp7tPQ0QZrqjwNjawCRFskPePhBqiXXi30IdwHdQVQG%2FCZtqwgeoqfFFwvRDkIAmE70iZL9axBi6Cj9D5lYVYQXYVcaAWxhOuld4mPIe0CKPyuxbTQ2KbcFuHqFbPQjR6CXvb8ykP4PBGQGtKPS76u3D5CBVfhXNxhgXDQgCUkT%2BzG%2FFPy92QFoUKFGgEdpFdt66ELkXeCnI9ZZBLUJ9bbXQGIi1nkS%2FSK7XewjIf4OfQ6dIfcALbscOTfQOtqrcoLomeY3gD5Dm8jvUOcieOvBatvLC0EBPHh0Dryo2PQxPzODhXUxELnQ3%2BifuFt0CU4%2FzAkabAMCtsP4dYR5CmcX1DZEAU6C3EaGg09RSDTqBV7kHr1b0JzaF7KKcRvqm6spXvs2dC3aRmeB8l%2FplG%2BLQjHQVGI3FVrAVnCFwj9hPNN7BTohE8T%2BWr1PqlmYin3Z1nc1UMsqmz0K059jJz0MQ9BE5rvDCaZeYe%2FkuCeQNo4BZEfxK0kiHaEgFATMb8gTe7DYo0tVLW%2B2CpTOP4uPtCHOz1Z%2FCU2XBmH8x5iHc3H6sS50S0BQj6wjwof%2B09JvZ8gx%2F6UP9cqIJ1S91%2BFakX8XzzDBllCWicBbA0QVJfNNA%2FrJgEgYdgBCIgs4eoQRQtZZBGNp45CS6BhUqUmQRsJ9BTAFWxrWKR%2FvcbfBrPkXpcZ1H1UncQSMi5rNYuIVUaiUBuDVfsZrBvxBdEZ2S0GArk2aCEK533mMNQD7YFWQ5O4NUPIMPaAzkAMxEAMxEAMxEAMxEAMxEAMxEAMxEAMxEAMxEAyKNdD7PEyv%2BTEEJtx4VyzW3E6%2F12PI5yQ87XCbxounCcqwp1b9T4kiCugjTlBXkts8aSAEtsNQsn03pwgUkgJ0%2Fu1SRhXkdi%2FJxvIkAVMVTWVV%2FlQXpAhN9zS1uG0HdDUyFILVVhE%2BwYXVtJTLdjH1EzU6kDSq80UUQs5Dt8eX6cO5yu2CGvIvRLJGgnLZgYJdxTTcvE8NBs13pdUA5La%2FzMJOHgpxGj1yweiW6wUgLZCoReglGOX30eiPTmDKaDEnHmGkbzZq5YGSW8orxeidGoCNOWvstXSe%2Bqmt9EMfER9LqNFlHOn%2BxPlS2yRxB7VlTh7%2FPdGDFLSuSOMfz4%2FiCi56pnedz1wfAapxNlpg%2Fm3ts0%2FgRSBg1c%2FRIGa2d6cLVKIOE9FrZZuoaLjJu0fERDHwNn7kZNqyB4N9dCeO8JEC9eb00eeCAqhhu8KRM7xdNrET932nLNMJ%2BCCT0Inw2ZWCswFjzUMsWrnrbwJae%2ByB3QGYiAGYiAGYiAGYiAGYiAGYiAGYiAGYiAGYiAG8j8EErzjkIWP1q6CnkF8YrAZlxbyQNsQX4nwnZXvCCP%2Fa78Z2k8PrA8inKsWSBJohPN8HnolsR9ajHhbVRa5wlsgsS%2BVX1XgbqhGr6F9%2FB7E%2B2KvH8Sal2cDQeFG4qLfg3oju4SFx5sRvxhpYxH6eJBHzaLrRdpqxEeWCoKLfBba33D2jz5%2BACEUbBuVyg%2FJNW4uE%2BR6FKAr9jpay%2B1COJ9mN8yHdun36no2EY47%2FbXKrVqPnlmZZjsumrLCIYRLoeGFXlnTp%2Flzh7jwgZ9tQ%2FrkXK3WcOg73nGpAD3QSmiU2mKQJtPIhJpRCH3eHrJsH7QM%2BYdn3%2F4JugbaL0sXXgZFpjI5tQMyfc9l%2FrNI%2FzfiV1fV%2FEJuPMLHoaViJb3TGCQg9WO2rP%2BsfMe4qnYWmwsdoKqxC5oPNVqY1Usg4Pz4DLVkBxDOyQMidxEXvQ8X7St8AXSr0460GQEQV7UZCNtjsx7kO7%2Frr1H2jvmX4GLPp6ZpEFgvwjUo%2FBhyeMTdmgLnFIBujp9D3iklgviBoetrZvdJOT4si0ze6eOULy3kkWHMyrKr1odxoRf1eEnvSAm9gmM%2F8%2FrjCF%2BRtKHmB7%2Fgr5HL2Wu44O24YFeDAm2RMdaNfrgBuLHQ0zhOTSHsRPw2qJa31Rqo9z9DyB1jHwq1TKaO%2F5DAHsD5i6BlUL16Svyn0JiqN3Z8NzQT2gl1In0eNBl6PrK56U5ATkX8WhlP7YCuRJ6Jle9QifAfCL8u6%2FmOga7zQA22nD0MXS95zwfYlxHurgIk%2FKfB3oH%2FhbjvI3wz9gcXhpE8a85aDTD7qgMRGGiKjLX0FCZRGgiScVp1VUvrKhTqjwogIfltMqd1tqMlf5Fm%2BTboUINOs%2F57pSX21eXhOlQ%2FlrRR8tukh3449UJr1PKfVYMU6rlVdBnQaVA7jtsBNEPy2ZNGAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzEQAzlnQPTOexLWdZ2krY8tFiZpXdDolgGBAgj3fpk8dg2e9b6niPxNnOBWVQ%2BirXAWapMU9K%2By%2BdDqwQCOYTzkpa01y7Rfnwz%2BcP952VbwVV59gKGg9S1mEXeBvBTlO38QGoH4XZE1GlkfrQokhPD6igCE%2FrBctqDd02D%2ByR8QtlUBEi4xNR7hsfBOy93vQfxS6DOpFkzSKtnYMVwf60EotbrZSYTvFcttH7CC0j7kvbASiwjIBxG%2BSXc2tMgKeh33IcoX85WvVuUjbSjQc0GV4fh%2FoBHBbq%2B%2FqINofzmC9LFV%2BMhibQnHTrwksqXzFIRvKHAJoR%2FlBrlI5l%2BlZjfshGrhMp%2Bi%2ByKLI%2FEmd9Mygrh7uZ6HcegjwbRZhhmBtIMEE1axDbkmZ%2FoFVd%2Bg6d%2BhfhlaQQ8u3e1DLId4dQYQ7O6dcFjoNWhirEoVegfLFxE%2F0i93pJC4aGsOkF0DEMrZvxEMIpVFWmPmg0w8TnVqMv3vVpz%2FNeKQewbxM8IxidNcPaS8C3P1I%2B3aR9xChONxrlvSmp2vFa6cdgB6R67m1%2F%2BAOkWj2q1SpX5CaZEhi0j%2Fq4fXa7w1d4f4A9pq9gOIX05wup%2BISi0k9jccD8s9RLlYZlr%2FWMCe1AXWy3syaAR6fgVjLefDzyH0QHOia2JzmEgrBrSp0h9WAKhBfwkKpyzA1ik0YB%2FSrrDnWgZiIAZiIAZiIAZiIAZiIAZiIAby3%2FbOWKWBIIqiqARRhChaaKH4BVrYuHYWlnaKja1f4H%2BkFi3WyvyAnTExxNIfUIiFokGsRGGzEMG7cgM3%2BzbpMtNMcdnZcTPOmbdvHDLPNwEkgASQABJAAsgY5ChgIILuoKEnudrsHIVHbHa52RM5B2FKkbRo%2B01lAG2siu5FpoRxapFbk3pt9A6V6hv1bUC0Uc7UkYGouwZJrCWqIo52sQW2c21Noe6JzyeuQbTTFsgmR9KdqbWCbYpWvz3nICNyyRnIWIR6A8IQKD8gotEpDq31DAgGpUVruQZRB7di%2FQ%2Beucb1kiPeo1UOtS1u3b0T1AOI9Q%2B9nsdMqqcJwqAHDoCZ7fyAjD4IO87FaImqZVwfzesnQF58RJKtrtAPEtwvDcQDS5k6kGNqZ7XN2CcIYfbYkZpJpsd7gZuBfmUG8w8iUUBHvL9iHSVQFMtffH7RK0j%2F1dC8QbTQvYnVErGuTIiuGRznIPylkodxDkqgHrQO6WyVDzA44SDUfIPoEkU7e8HO3EAlsYyGy66i%2FMHPHudmQu8%2BQv3PXB0uXZoob0jqz0mU93F95SDUGQ%2Fv1yKyws37whb0JrPaM0NnP2V91oIWhljZvbNnEgidqZahs%2F%2FA%2F8G11wvKp1BJ2%2FI8%2FdozcmObYn0adZsA3mV6qgn%2BTNry7%2Bz9sPB5dWjxCVXO4S1I1g7bS1xbpMHXpcK%2FC%2BYVy9URwoLw8xVapOHaIhE6l9qQP3sqq10gqqpaTqEdH%2F8IE6GDTXTCfB0kkaTSYVvHchfPNzOI8AVdAAkgASSABJAAEkACSAAZq%2F4A0EvZstJINZUAAAAASUVORK5CYII%3D)}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:hover:after{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAFeCAYAAADHfkwkAAAJFUlEQVR42uzdfWxVdx3H8dvbDkemsGYFgp0w5rSMbP6lY9EJ28IQMkUiWyDgH4YtcZuGzRjNTNxUZraUJ%2BMD8SmSkMx%2FDCMKbAVkAZnOWJiPIZIVLCZaKm3HgA1bSv36%2FuO75Jeb23NuH845v8Lnj1faXs5t%2Bs55%2BP3Or%2FfSkpldERSiEIUoRCEKUYhCAuufbQ3VYQFa8Vt0Y8B1%2B2MbfJs6RBdSxlp0wGrU4c8pxxIyB%2B2wUWrHnMJCPOJu9MDGqAcLcg%2FxiMUYgI2TAXwitxCPaMF52Di7gJbMQzyiPjgnstCO%2BjxC1sIy9lCmIX7t78ghpAN1WYYshOVkYZYhrTmGtGYZ8kqOIYezDOmGjdBBZyPUnVnIKAbAAyi5AyMdIBUS26Glk72GkA15Xn41IEY2RSlnPWl8KI9JY17T%2BCMZRhzNZRrvMXNxIaMbq7l53%2BouzeBWd2lRiw9Lx2nPXAgicg8JD7OjYzwn5sa2QHdiBAEnYlugC5WxABvxu8olU39so29Tjm3JdNQUohCFKEQhClGIQhSiEIUoRCEKUYhCFKIQl%2FVrUebjBCxjJzA%2Fy5CTMHThVEZOw3AyyxBDN%2BqyOrT813u9sKxDTmV9jvD4KYUoRCEKUYhCFKKQkYX05xDyVuYheVHI1RbyVo4h57IMeSLHkHUxLD50wobxz4m0inIpIWRwooQ8DUvx1EQIeaaGkG9qgU4hClGIQhSiEIUoRCEKUYhCFKIQhShEIQpRiEJmYiOOox992IeVKE%2BUkE%2FjHGwYL2Nq7CEPYBDmhtCJvoqY3aiLNaQyog2zgndbr6zYUytiDKmMeAGTwm38e6yGub2xhTxYEbEziKgMKQe%2FaO2LKeS%2BtD3hwu%2FzDxgGYgmZgjNBxA5ci5nDhfDxRgzBcDyWkC8FEb%2FxiJ%2FhItZV2b4Bu2Fuc9EhD2Am9sDcfDwJCzxWEfELmDuP5qJCwqvTNfgTzL0LN2E7zF1Ec5WIy1hW5IAYXmIbcQDmWlBy22DuG1hUEbGqsClKGOEW4lvB19uCkBaY24%2Fp4xLhxhKxbJhxYjb6YW47PuiHmbk%2Fo94jVhY2%2B%2FWT%2BnzCOPE4LPAk7gi%2BfhHTg4jCQjaFc6cgIvQFXMR23xv7Ye6L72xXdMjfg1msTwCrmu4R4dWpF41RhATnQGdCBKpeYj%2BFUiwhvTC8gfIwEfVVIlahFFPIPphblbYnwojYQlbC3DmsRT3emQDuSYiIKqQOv4YFLuIUhhIi4grxmKnYk%2FL%2Fyi2LfTko3DMrsA9nMYAObMGNWqBTiEIUohCFKEQhClGIQhSiEIUoRCEKUYhCFHIVhPADzMAL6IeNk37swsw8Q34Fy8iePEPezjBkMM8Qy5JCcg5px5zKq9ZEDLkLpSshZPIVERJGhI8rRCGjCkmfaylEIaaTXSEKUYhCigu5lGHIYJ4hL2YY0pb3S8pfCvbMeLiEvXivFugUohCFKEQhClGIQhSiEIUoRCEKUYhCFKIQhUzskCnYjENoriGgGYexCe%2BJ5d3Ta9AFc2dwX0LEYt%2FGXBdWo66o97Pf7nvAqriMp1AOAsp4GkOwKg7httxC%2FA3538EgLMU%2B3IBp%2FrmlGMQWTM0sxCM%2BGxxGtfqxsxHowposQ5ajD1aDY1iCklvij1kNerE860NrFl6BDaMHj6EBpQoN%2Fm89Cc8%2FjFm5nOz%2BA3274sQdwCZcj1KK633bAZgbwno0FHH5vRdd2IlbUBqhW%2Fy5%2F8Y9RY4jM7ArPJSSJBxquzC9kBAf9E4nnNxpKk%2F%2B01iU5zjSgOcSBrY2zEsImOfbWBVDeBYNWY8jN%2BH3NQ5sW9EUBDRha40D6auYnWXI5mBP1OIs1uFx%2F9xqNIRNWR9ad%2BI1WA3%2Bhbvwcf%2FcanAUd%2BY1jpTxaMoovx%2FT8CDW%2BOcvp4zmj6BcxOW3CT%2FFUJWBbTK%2BXzHnug7rq2z%2FEzQVfWP1PszHEfRiMWZVuyj4NnOw1Ldtxx1ojuEO8XV8DZPQhPvRm3IBWO7bXoMv43gMISeD94V8F%2F%2BDJfFttgZ7rTOGkNnYCRsVn6fFtIpyN%2F44goBjWBTrclAZj6Cn1vuVuELS7zfCaUvjRFyga0Gbm6eVRoUoRCEKUYhCFKIQhShEIQpRiEIUohCFKEQhV1%2FI%2Ff5xB2wYfWiMOeRWDOJevD%2FlbeKbYw7ZC8NfUY8tKe9fvznGkE%2FCAp9HI95IiNkRW8gkvA4LnMEUPAFL8LGYQr4Cq6LVIzsSQv6AuhhCZuA8rIoB3IzPwBKsiiFkW8oJ%2FQGUUl4H2Ylri3wF3YdTfq%2B%2BASX3EViCrxb1Cro6vAobxn8wBaXA8wnbv4lpRYSshiVYi1KF2fhvwnN%2BkFuIR1yX8vqrIwl%2FJ%2FG5hOddRkueIc%2FAEny0MiDhb1NX2p3XizPnpBweP0cpxaOwBPdkHZI2q30bzTW%2B3vc1vDmMg3mEHEsI%2BXrs9yNhyJKEQW0yHsYv3aFRWpHXyd5WJWQFZuACbAxO4915hdyKyzB3ECX8CDZGD%2Bc9IH4vuPZ%2FCLcFcaP1N9TnHXIDzuKHKOEl2BgtKWrS%2BDkPWjQOEXuLnsaX8ZcxRgzhdq1rKUQhClGIQhSiEIUoRCEKUYhC%2Ft%2Fevas0EEQBGB6VIIqQSCxMYbATLLSwSay0sLRTbGx9At8jtWihlU9gZ8yF2OkLKGihqIiVF9gEIse%2FmGIQ4oobN6c4xdcO%2FMXAmcPCWoiFWIiFWIiFaA2JDyijgTYkgTYaKA%2Fid7QldCB91EE57ZAzyB%2B94ybwBPFqaYdECUJKcIERXEMQpR0iCRS%2FX%2FbwyyELsZB4HzjBEVroQrAJF8jjUWvIPnJwgXlcQnpQF3II10MWV%2BpCghGlAEGEKbgfbEC88eBMFSFrEFThYozhE4KitpAtCI7hfuEVgry2kBUIzuFiZINh0WkLmUCELmZjQnYgqKoL8Q4gOEWmR8QMniHY1hpSCCbZJhbgvGGs4x6CGoZUhnhLeIB4t7jAC8RrYRJObYg3jT28QQJ32EUGTntIaBSLWMUchuAAPSERBDm4JPx5uUE9rOoQVJBNGJNFBYJ62iHlf1o%2BLA9qHdTs0zqoGUQkCFHCQizEQizEQizEQizEQnT6AqfQwgd5BnPGAAAAAElFTkSuQmCC)}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab:after{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAFeCAYAAADHfkwkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADDJJREFUeNrtW21wVUcZJgnQYiuBCQUjISQtGmBK%2FKGWgJWPDqEwCEUpA94kMxrr2CLQatWpM7R%2B1LEFCp1anXJJRBmrP0roaEv5DISPto5A1XovIxIgqC2kBAoEKgkErs%2Feuyd3z549Hzfp2XNueZ%2BZZ%2FZk7%2B4573Ped9999wz06UMgEAgEAoHw0UZ8x7gccFJsx7jl4Ou4bkXbGU%2BxNZ7qW8HGsLFhFJALg2vBZlwnGGNCa1zHzddsbC2bGwoRMKwU3C8aG1cbbuoTBLK5pUF7YgrYpjLaTphKJNo2cFJQIqbz2E8b11hua7DkBUvo8bV0r%2B5wKoPR7U5Gu%2FXZeO4iu7cuT%2BSxuLYJkW7PZBha4nh27zwd3qiNuRtjEeVFmBGaGPsNHftEs0tatayJmEtIKdZOc8zPfQYPmGzzYEcBMacwtM9yk%2F0Ustz04HQoJNxScMwlMSja5X6uj3126VRe4DGX9OuU4Xi7108hrZns4Ly%2FCW1TzCn8mGeFF8HbVj%2BFdMYdUq3CI43C3Ma4e%2F0l9nX6uUY64x42N6E1C5F2fpeU7KuQ1rjHhS38rQytuFsmayxv9VPIvpjLZua00DPc6ff6KWSFU2zHHPYJL7WX1Lfc1w0x5lJi9NRjit993BAby3N4%2BeAlY3nZve3mNvt%2BcmQFXTwD41VnlJhDwRnTUTQaZTwedCDmJsCahezXiLlCPqiljOdeGc0OQfEMRcRcFn8sdbAarfuoO5NtWm7VrtdShm%2B2M4M6t88UPeN1n1Ds8MwTwYgQwyyWiuuefD0x1sToPmEADMrlH9uOWgxVHHX59VF%2BbA7HBzppn8nln0NXwsA3eG3G1hEju34D7Ur%2BWTV8AggEAoFAIBAIBAKBQCAQCIQwY9bsuePBo2DCZ7JnjPdTyDH%2BoJPgCZ94ij%2FjmJ9C2ANawRwfn5EDnmHP8lvICQ0hfIKEkBASQkJICAkhISQkMyEdGoRc0iFEG0nIjSTkkkYhF%2FwU8ohGIUvDcLZvcTDw39n0keKKg5Cr2SLiCQ9h83g2CHnSg5Af08c1AoFAIBAIBAKBQCAQCAQCgXCDY%2BasOYXgSvAw2AGeBbeBC8DcbBFxH3gBTNhwJ5gfdhH3g1cFo6%2BBLdwjophXwZxsEbEFLOa%2F5fKwEj01LxtEbAT7K8ZFhDFbwyZiviTiZZUIwTOX%2BLizYRJR6cUT0pzjfGxnWEQMBE8LIhrAm1nqdZhTxBMAG384LEK%2BI4jYw0X8GvwfuFQxvi%2FPVsacVWFY2GzD2yQYNR58TEqxiyQRLwm%2FtYPDw5Cd%2BoF%2FEwy7CSwB1wt9zDPDFSK6wDlhSbGDwUbBuDJh3Dqh%2F0fgNEnEwjDtE5PBnwh%2FrxPGlgn928GhYRExR7VPgCN5QWj0s7D6NA8zo%2B%2FvYB4XsSDoKrbdbp%2FA9cPSAmcL%2Fi7h79e4RxYEnaGekWonVdnxbb6w13NvbBfmLA7LXvFPoYotdhg3lIsQs9MZlhTCIsRYAy0u41QpdnaYaqkz3LD37U52NiIW9gkT%2BPHUMHBhVorghi4QjGSHolqWToUCcJMk4qthPfXlgDukFMsy1Amhig23CEFMvvTmZV4E52bLlxHmmXl8zZxjhyKwGVzNQow%2BgBEIBAKBQCAQCAQCgUAgEAiEGwATItFhE6qiGysiazrQJtAmWIv%2BdGtci4yYf5PmdaB9BW2hTiF%2FMhlnGBVxECGxW4RV7CadQj5gxlZEFF6IyAan%2BgyhFRHFCxDGgfr%2B477JA3IoRWzedsR8bRojvQCdHrF6IKI2WNVWKMaILyYwIab1ofKA4AWI2I%2FrUrt7sjHahFhCR5WFIlF16ESid7u9HI1Cou4ZKmLbNyBEQtZIGUkSFonahpqtZ4Nc7GlB6lCzpGjJSHmcsdb0CrHbtW3CyxBrTePWOcHsI%2FZrIaM3bBd%2BeoRURd3TblUGQqoCEGLeH6ylSqYbnPhCtK6RCrsyQ94ozXVUwrXU0e6RiLosqbArHFVZS3WfQLKWU31VpQ43uwUenBBl4edea7lWCEEJqYhEXUt2OyPtarJAShT5mKs8KToIUZ1dtKdfi9ERm4OVQ9ZS1WU6Q%2BuKZW2o6iaFobaLPT1G61H3NVXaVKZghzWiqn7Rt0WnRwrx0M3gFfmEqPSEate3fFVJ3msr%2BEn64EYgEAgEAoFAIBAIBAKBQCAQshnL4gPBVeBucLiH8cPBveAz4MfDICAHrAJPggnO02Clw5zpfIwxns2NJO8VkIhx3AMJBbvAx8FcYXwu%2BAR4zWYOu9edOgXkg8%2BCV20MErkNLABv49du49k9Vyef4bOIaimMvDDKmcmck8mQ9VHIXPCsR2MOgTOEuTN4n5e5Z5LP8tkrxeA%2BByPawEVgX8Xcvvy3Nof5e5PP0LROmEE%2FkxZuJ0%2BngzzMH8THdgrz2b1%2BqnwBGgTdw%2BP5ZXBUD%2BaP4nPfBacGuY8MA1%2BxDSVvnl3E7zE0KBGV4Cnbxe0%2BX1787F7TdApgb%2FEph41tCzjWYf5YPkY1l93z5%2F6vk2XxEvDPHje2X4FDhLlDeJ%2BXjfRNcKSfQlY5eELFc%2BBS8GF%2B7XXetWRW89krFeBbHg16B7wb%2FCK%2F9jLnYPIZmtYJKwAfctnlt%2FMaaz6vkNn1Tpfd%2FEFToalx4bO4r5PCzdjYBoDPSzXXLfw3efxa03oKKA2PAMeDB%2Fhbnc7LGFVSYGNKwZl87H7wLk%2BHMQ1CjoA%2FBPtzD83iRjolgLl8bD%2FwUfBwGIQc4wayt%2FsceN3Dgr7OU7HhtZYwCBnJ66VED9mzOs1HQVPAv2Yg4JDekiTztPygy3mjrcdFZgCCVOcNo2wZ3CfrsCxexgtE50KSQCAQCAQCgUAgEAgEAoFAIBA%2Bmiiqq5nF2vZdpQ1gIskm1pYI16VnwcFhFjGmqL7mauHzC%2B9p2Vx2B4y9kjS8SRBkXO8qXRVmIVshJFFUV%2F2PiU%2FfmwdjV0vGi15hIm8PoYjqLzERxSkhCVx%2F68WN4wfD4PdthLBwawiXiPqa%2FvDGkaSAlAjWni6JRgYebyx7xCSkSRZT%2BoUwCfk%2BhCSSrOdMXS%2F%2F8vr7%2BsPoZotX0mL%2BAuaEYV0MA9uLjJAyeaWmE%2B3tb28b%2BxVlaKVDbGEYvLEu7YXqpCeEdXIF%2FBRPx%2FscvNIC3hykiM%2BB14vrLSFliFphjIWhn7cudhN%2FEJSIHAh40%2FBCt4j0OnkP1wPFOTD2RQch58Hbgki3kZThqTVRLApJ9dfKcy7sKh0JYy9bQist7Je6F%2Fgt4DvmkKpOCMIOFEWrlP9cCcY%2B1V2uWNkFlukU8qSwX5jXRqpvot3c8zvvGAhjTzvsK6%2FqCqlSGHu5W4DVK793uweMfchBCONUHUIa0gtb8kZdzQdFa6td%2F%2B1V69ZRfWHsW3yBn4eI89J1kw4hh8QwKjan3WXZc96or5lh2jPSbCl5rnbA9CUND0xfvOGPKTbsxt9WLt6wuxJk10bbfZ3iPF1itpj3juTamDfpe78bBmMuwqgEjEmYWpGsT%2B5P%2F30KvFXXgh8Dw7uEDTAZ0zBgjcVok7GcS4TWKuYB3RviL3iIdY144evllUteuhPGdXW%2FbdEjSZpFVIoeSf8WQ5unW0gBRJxD%2B0LSG4sbNivCxCxA9o51%2FIxgFn5dzdfGPP1YAd7utPTbFjwgi5H7zUK2BprFKpdsyIURbyvjvju8zCIrrQngGjiOvkERCAQCgUAgEAgEAoFAIBAIhCzFlO%2FWTwB3gx1gohfs4PeZEISICrCzlwJkdmoXgwfu7IXBF8FjAk8Jv%2B3SLeRyL4RUSPfKA4%2Fw3y7rFtKbECpW3G%2Bf8TsJISHuvARuAn%2FLDe3i%2FfOlexWAJ8MqZC04SJozFjzoNjdMQn7jMC8f%2FFfohAh%2FFxrpExziMvd%2BwfCP2d0zKCGVvK%2FRw9wB4DV54YdFyALe9weP8y%2Fw8QVhEzKF973uYW6%2BUSw63TMoIbfy9cFSbInL3G%2BqwjAUQnhfHe%2FfAfazmTcCfI%2BPqw6rkEKhkt0Dlgu%2F5YKzwf8aVS6YE0ohvP%2Bz4LtCej0OHgDbhD62yw%2F2es9AhPDfPgGuAdulze4%2F4KMOYRcuIcKYm8DPgFPBMjmUwiLEOFgN%2BpDuNyiog1UTf%2FBqti%2F08l75%2FD7sfk26hUzw6ePDxKA%2BB%2B35kD4H7QlEBIFAIBAIBALhxsL%2FAWFBQYLmSYGkAAAAAElFTkSuQmCC)}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-dialog,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-file,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-url{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAB4CAYAAACaTFAUAAADn0lEQVR42u3bS2wNURjA8aLaEBp0IV5NPGJBkJBSEl1UtB5hQW0JXSIsxGMjFsRjQ9AHQtJiwUpUaVJExELi3US5JZ7FlajiJlQfPv%2FcfKQ5uVNuO2em9Cx%2BSe%2FMSe8%2FM3PnnGluU0SkR3FBLsgF7T9YXAn5S5VBBEkyY12QC3JB%2F0VQEiwFaUh3BBb0p3HJnjpbU4ap0s32LsgFuSAXpGzOZR0lNVb5GOT9RoOwGgdQih1Yin5BB6XjKFo0ZB4mYhrq0IhNQQVlIYKtxhumYYz%2BnAnBBfSxGZSOJ5AObxRFGcTDGZtBR7AX54yjUwnBZ4%2Bo%2Bb4H6QXcgiVGzEYIvkJwS8d9h6gHNoJWQ7DNCPqAcszFJFyDIAbpYKjfQbtRaMRkQTqI4DEELca%2BqX4HlWCCEVQD6URfiMq3cYSyjaAjEA95OmYsBDP8DloMQaYRFX9txLw1xrRjgN9BqfgIQUoCZyCqAinqOKps3Yc2QzyiaiGoR7VxdEbanDou41mCoHREjG2C7bbnsn44C8EIM0xtQzu2BLn8KMRdiGqGoBVVGBX4ekhlIhcLMB0DPMa5NbULckEuqLuT6xp8gSQphiILQRrTNZ9675%2BFTdU1V6XhXVTeRN8Lwg968bpBY3pGkBnigswQkwty15AL%2BqeDvnQjKGYjqAhNkCQ1ocitGF2QC3JB7rnMPZclqXcGmevnp89fyPmqS%2BEG1T6skyvXrsvNW7flZcMbYVu4QcT8fv2o%2Fkl8W3HZsZCC9DRpSBxHSveHGMRpi%2BN1%2FLQdO1HeM04ZP8e3VddcCf%2BiRvxosU0%2FaSEFmbiG3I2xS8KeXN1zmVsxuiAX1LuCuK9kIKeT%2FbOQEdR%2FTy3Ca7RibYL969GGV1ho80ExEychhhKkoj9KIYYKDPMtSGNWIArxcAqnIR6iKPQlSL%2BvuAVtEEM7ijFEleg2MbRhM%2Fr4ecoK0AhRd5CdYNxM3IOoRuRbuaj5xeNxAxuQ2um3sRijY8fpditBk1GL7UjrZFyajnmASbY%2BZcsRg6jHyEswbh4iEBXDMr8%2FZbvwA2L4gQoMVychHuN2%2BhlUgJcQD%2BUaJh6eo8DvUzYYxQmO1B7dl4F9CW4LhzHY5tSRi3o0YyVG4y7uIwurdF8Ec4OYywowEFOQg3cQ9R5zMEXH5AcRVIJqrMU3iKEZ63ARpUEtP5ajAeLhLVYEukDTi%2FgQ2hPNbaGtGHUxdh%2B1mN0jlrC%2F1kNuTR2En2aqi4BnOyDfAAAAAElFTkSuQmCC)}.uploadcare-crop-widget .jcrop-vline,.uploadcare-crop-widget .jcrop-hline{background-image:url(data:image/gif;base64,R0lGODlhCAAIAJEAAKqqqv%2F%2F%2FwAAAAAAACH%2FC05FVFNDQVBFMi4wAwEAAAAh%2BQQJCgAAACwAAAAACAAIAAACDZQFCadrzVRMB9FZ5SwAIfkECQoAAAAsAAAAAAgACAAAAg%2BELqCYaudeW9ChyOyltQAAIfkECQoAAAAsAAAAAAgACAAAAg8EhGKXm%2BrQYtC0WGl9oAAAIfkECQoAAAAsAAAAAAgACAAAAg%2BEhWKQernaYmjCWLF7qAAAIfkECQoAAAAsAAAAAAgACAAAAg2EISmna81UTAfRWeUsACH5BAkKAAAALAAAAAAIAAgAAAIPFA6imGrnXlvQocjspbUAACH5BAkKAAAALAAAAAAIAAgAAAIPlIBgl5vq0GLQtFhpfaIAACH5BAUKAAAALAAAAAAIAAgAAAIPlIFgknq52mJowlixe6gAADs%3D)}.uploadcare-dialog-file-sources:before{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEMAAAAsCAYAAAA%2BaAX8AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAArdJREFUeNrsml1ozWEcx387lolkMSNJLKNIIhQ3btwouXBDlJer09rF3LFdyZWLCbHMy4W3lPfXQl5rGyk1WkqE8hLJxbCZjW0%2Bj%2Bd32tNxzhnLyv%2F%2FO9%2F69JzzdLY63%2FN9nuf3PM%2B%2FYOee%2BjIReQcdkkVVlUmxoASshiewQozLmTEaJsEZuA0zrJvRA%2BvgPuyFWii2ZkYhjIFLcCToL4Ip8Al6LSWjBOrS%2Bjt1Hum1Nkzeww3J69cwOREkYCQ8hDnwOdcf7qrbF%2BkvnqlccMm4ELz%2FArdgq9XVJL3YqoZV4RIb9RT88TDJEJePfPn1utz%2BNiziXI0msvRf1dUkdnPFX5sR%2FPqNMN2KIYl%2BZttjcByGWplAcy0%2F9TSvYIuVOqM%2FbYD55pOh6Wilua77lRLTZgTzx0K4B2NNm6GG3KE5rTvc4abNUNXAU6gwbwbpcBu6tbAjn4y%2B%2BcOV6otg%2B0D%2BR2zMCAx5pFv9QzDErBmqdlimq0utlaIrl77CcphoPRkpfYeX%2BtrtZcotmxHK1SINsDRvhshB8TdzB2C2tTkjk%2B7CVPHXDQVarbZbTEZK38SfuLtz1OewxrIZKT3W%2BWMTnIVhls1waoZ5cHOQhmWkzHDqEn%2BF2QazoAmWWDUjVItWrO62%2FwqUWjbD6RzMhIviT9CcRlg1IzV0XDpeB4k5r7thc2akyyXlGhyGbXEpugaqDk3Kfuk7VlwJc3XP02IpGSl1i38awKlRi7fL8GCwd8f%2F%2BynVW9gs%2FpGqjfBB%2B116qv%2F1%2FicqR3Y9mpIufe%2FmlXHiT%2Bsbgs%2BVWjAjXU2alPLguGC8%2BKeO3sBJ8adwWZXp8rxQoq82bd2zaROgTJfnbu13r0%2BJv%2BJ4Bkc1TUUYMpnW3Ri2VlUmO%2BNgRrpeKOGRwgLxj1ZMgx%2Favxh2wygoxpjkTwEGAPykmqa52kHJAAAAAElFTkSuQmCC)}.uploadcare-crop-widget--loading .uploadcare-crop-widget__image-wrap{background-image:url(data:image/gif;base64,R0lGODlhGQAZAPQAAOzq7Ozu7OTm5Ly6vKSmpLS2tNTS1MzKzKyqrOTi5MTCxLSytNTW1Nze3PT29Ly%2BvKyurPz%2B%2FPz6%2FMzOzMTGxNza3PTy9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH%2FC05FVFNDQVBFMi4wAwEAAAAh%2BQQFCQAAACwAAAAAGQAZAEAFhCAgjqIkRRKgFEfjkOMZwXQNRKhs7yKe1ibULcdzpEw8QKIBkLySUBjSmKQ6aQ6c9powPAjgQUDqi5bKZTNJllafZ7JfNCsk0bcvE7tu26cGYAgIFU9AWjYBBwgETDBtUHQjj1E6Om5nJ0iXAHQnhW56lpc6k1CipTuiMahvnzR%2BQ1s0IQAh%2BQQFCQAAACwUAAQABQAIAAAFHaBTBQDAEIMDJARRlQexqAFCNOVDHKVBFKXEQBECACH5BAUJAAAALBQADQAFAAgAAAUcIAAIyiEaRCE%2BhBkgRAIcxOIIsAGggwM4hoAoBAAh%2BQQFCQAAACwNAAEACAAYAAAFJyAgAtBonmiqrmzrvnAsz6KQmMFBEIlgKDtEITAIQhgOwKNwaCRFIQAh%2BQQFCQABACwEAAEAFQAYAAAFTWAgjmRplWiqruNJIGwsr8Zs3y2u73zv25Te4Ic7BRo9oy1BCDCIDMGOgSBMlChYCVCoIhQGqXNEGABMBghhHURhSZbGoXAQDSiVtygEACH5BAUJAAMALAAADQAYAAwAAAVBIKUIQ2meaFoQTOq%2BFPK8dKkQDYFYtRuUFghh0qsxEARA8YQwWQqIxhLFGwCklSlNp30RXo9mz1EjLAzkbunwCgEAIfkEBQkADwAsAAAEABcACAAABS3g8wCJaJ5o6hRIk74iYzIEIsAwQjgLceDARi0AxB0IiiJsUCAYlDDF4AZNhQAAIfkECQkAEQAsAQAAABgACgAABT5gJI5OcxTTqK6rwywEgVBsPQZDjDyGoCK2kUF2ANQCQZHDkEhGBJUaoekMIgjVFVYEySaBXpUF23yEVQpRCAAh%2BQQJCQAXACwBAAAAGAAKAAAFXOAljk5zFNMVRZI0vrDDLASBUJe0ri48BoMa4mEQ5HS7iMN3MdgOAGaLBwMkHIYE89VyVAIiR4Gg3foYhMGSgSAYzbBErXKBEA5w5oGwsCAQYHkwFjVyD4JMCnchACH5BAkJAAoALAEAAAAYABUAAAVloCKOTnMUkxJFkjS%2BsMMsBIFQirSuLjwGgxriYRDkdLuIw6cw2A4AZosHAyQchgTz1VI4eo4CQbv1OVYiBoJgLMOQLgjh4GbuFAhEoG5nER58UiyBW0iEgj2HiouMjY6PkJGSjSEAIfkECQkAFwAsAQAAABgAGQAABZLgJY5OcxTTFUWSNL6wwywEgVCXtK4uPAaDGuJhEOR0u4jDdzHYDgBmiwcDJByGBPPVujh6jgJBu%2FU5ViIGgmAsw5AuCOHgZu4uCESgbmcRHnxSfgaBPkgDbYUjOj2KTAqJji0SBAyOiytDlyI8NhabPHIpkmhqBFGFZywXFgUIDYpIIwCwFZFMAloSS5u9vr%2B9IQAh%2BQQJCQAXACwBAAAAGAAZAAAFq%2BAljk5zFNMVRZI0vrDDLASBUJe0ri48BoMa4mEQ5HS7iMN3MdgOAGaLBwMkHIYE89W6OHqOAkG79TlWIgaCYCzDkC4I4eBm7i4IRKBuZxEefFJ%2BBoE%2BSANthSM6PYpMComOLRIEDI6LK0OXIjw2Fps8cimSaGoEUYVnLBcWBQgNikgjALAVkVJLEksvDDYTn4KrPgBiNgpFR0nCZgZyNTjKjWUWJgV0PNIvIQAh%2BQQJCQAVACwAAAAAGQAZAAAFpGAljpXTHMVURZEkkTDpMAtBIFQlsewbj4GBDfEwCHQ7XsTxqxhuB8DP1YsBEg5DojlylXylAmHLhTlYIwaCcCyTkj4I4eCO8UQIRKBub1UID3wxOy8EBoIwSRUDbYgihI5lCo2OLoUMkY9oRJkrfjcWmVVyKpVoFWoEUoJnfhUWBQgNiIojALMSTGW5OrpvVU1wTa08vJZKYFPInsWCVC89ySQhACH5BAkJABUALAAAAAAZABkAAAWeYCWOldMcxVRFkSSRMOkwC0EgVCWx7BuPgYEN8TAIdDtexPGrGG4HwM%2FViwESDkOiOXKVfKUCYcuFOVgjBoJwLJOSLweEcHDHeJUGAhGw31sHBA9%2BMTsSYgaEMEkKA22KIoaQXDtMk0hwlzo9aJdwnZNVVZBJkaN%2BZy0jp3alXXFgTQ4vEpZvrIsstmZKLUwuSbi5PC%2B9sWVUxS3HIyEAIfkECQkAAAAsAAAAABkAGQAABYggII6A0xzFBESRJJEw6TALQSAUILHsG4%2BBgQ3xMAh0O17E8QMYbofAz9WLOSQOY3PkKvlE1S3MweKGxSNyC7xGw5K6sjvWg8%2FfrfNdlGx99yVygFNLg3xUbYNJdoo9goBVenN2i3tqX5JijEheaFc6THiJMUmhVkotTC59o6RKL6h%2Fmjuwfk0hACH5BAUJAAAALAAAAAAZABkAAAV2ICCOoiRFEhChKemS54qq8vyOTo06gKnzt1jk1ou1SI6UiThaJkmrIxO3akanrpztinXFetXuK%2FoVe1Fcs5WsRobbwQgQbjLCS9F326hXX9NmZXZmWkeAWGUlKU9TTxJza1JnckRaMo9FQjZEmik6kkw%2BnixEIQA7)}.uploadcare-dpm-file-remove{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABh0lEQVR42q2Vz26CQBDGSZO%2BV%2F33Oh699dA%2BSntpLxSMwqHoA5C96QGuQJREX4CD0P2ZrgF2IdFg8oV15ptvZ4Zh16qqSkNRFM9JkozCMHzdbDZfq9XqV8KX6w9s0vcCxxSrGdI0HW232x%2F5E7ZtC9d1xXK5BKyvNnxwJHfcKXi5XJ52u93ccRwCEOgFHLjEENsQLMvS2u%2F381pGfdAyJhYNtFSZE5xA7Q5M4tiUX%2F0HaFwFaa7sh6cIlBFFEQTheV6jfNa%2B74ssy%2BDAvdnRQMuSb2zWDsrzXMjdxOl0uokC1ufzGR8cbTO0LDkGb%2FShXhJZEKhE1%2Bs1UDaecBotQUNqvVtBEHy3etXOBlGgxFTWWm%2FRshjajrEgKyVUz7ZzrNBC0DM4aTgETRAbvi5BSv4csmTTS6mL8bzrpWhjQznH41EF9o0NXG1sjIMdx7E4HA5kYRpsfHCMg60%2BvekAn9506MPBeHwtHji%2BFsT2HbDjOw7YSTu%2B7wqYMQb%2FV0AAWGPD13UF%2FAEl4axZtqCy7wAAAABJRU5ErkJggg%3D%3D)}.uploadcare-dpm-file-error:before{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABIklEQVR42q3Vv2rCUBTHcaEQH825TdLl9hl0FsFdV7s5uXSpb%2BDoEziV6JCgATdR02D9E09%2FR64KF3NPbQx84BJOvgRyuSktK5VbHHiFDwhhCwl86Xu%2BnimZbsWeYQIkmMCLLfgELaA7tfSzRlCISVEz6AEV5J2DDszyBtNGg7L5%2FCSt123BGBwOKqA8WRzT%2BcqmU%2Bkt3zj4aQ0myTW4WEjBPgcj29B%2BNLoE98OhFIw4%2BGMb2vR6l%2BCm25WCWw6ubUPftRrR8XiSVKt%2FCgZADxKJH2XlurQbDBivxY8ibpu02SR98VrcNuLGXitFh%2FGYDkHAa2ljlznIfKCCfPNwaBeItfOOr84%2FYu%2Fm8WVy7zhgPfHE1hxQ0IcQdlqo76m8X8Avwkyxg4iIuCEAAAAASUVORK5CYII%3D)}.uploadcare-dpm-file-name:before{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAUCAMAAACzvE1FAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHhQTFRFAAAAnZ2dqKiooaGho6Ojq6uroaGhpqamsrKyzc3N0NDQ0dHRyMjIycnJysrKy8vLzMzMyMjIpaWlpqamr6%2BvsLCwsrKytra2vLy8wMDAwsLCw8PDxcXFyMjIycnJysrKy8vLzMzMzc3Nzs7Oz8%2FP0NDQ0dHR0tLSdHkMAgAAABJ0Uk5TAAFjbHaCi5ea6Ojo6%2Bvr6%2BzuM18ehwAAAJxJREFUGBkFwUFSAzEQBMGqltbLZQkI%2F%2F%2BXHK1pMgXAOwUFNgCv99dnKTYb4PXcBCpzNnA9a8EIhg374SrGtiGs73VdB6n%2BHXfe%2B86MkcyL%2BvsjLUFBujukgAzW7KFFrUrtBkssJ6BEA3NoQJlAdaDozDRMcYkUTldYKVLbskI6zRSJ4JC2itiiNrVH5FSYTmJnKMG2TlqQoSlt1z9lQV37unfRSAAAAABJRU5ErkJggg%3D%3D)}.uploadcare-dialog{font-family:"Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(49,49,49,0.95);z-index:10000;overflow:auto}.uploadcare-dialog *{margin:0;padding:0}.uploadcare-dialog-inner-wrap1{display:table;width:100%;height:100%}.uploadcare-dialog-inner-wrap2{display:table-cell;vertical-align:middle}.uploadcare-dialog-close{position:absolute;top:4px;left:0;width:100%;min-width:988px}.uploadcare-dialog-close>div{margin:0;padding:0;border:none;background:none;width:33px;height:33px;line-height:33px;font-size:29.7px;font-weight:bold;color:#1d1d1d;cursor:pointer;position:absolute;right:0;top:0}.uploadcare-dialog-panel-wrap{margin:0 auto;width:900px;padding:0 44px}.uploadcare-dialog-panel{width:900px;height:616px;overflow:hidden;border-radius:8px;background:#fff;-ms-box-shadow:0 1px 2px rgba(0,0,0,0.35);-moz-box-shadow:0 1px 2px rgba(0,0,0,0.35);-webkit-box-shadow:0 1px 2px rgba(0,0,0,0.35);-o-box-shadow:0 1px 2px rgba(0,0,0,0.35);box-shadow:0 1px 2px rgba(0,0,0,0.35);font-weight:normal}.uploadcare-dialog-panel a{text-decoration:none;border-bottom:1px dotted}.uploadcare-dialog-panel a:link,.uploadcare-dialog-panel a:visited{color:#1a85ad;border-bottom-color:#1a85ad}.uploadcare-dialog-panel a:hover,.uploadcare-dialog-panel a:active{color:#252525;border-bottom-color:#252525}.uploadcare-dialog-body .uploadcare-dialog-tabs{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;width:75px;height:616px;float:left;list-style:none;list-style-type:none;margin:0;padding:0;background:#dee0e1;border-bottom-left-radius:8px;border-top-left-radius:8px;overflow:hidden;position:relative}.uploadcare-dialog-body .uploadcare-dialog-tabs:before{content:\'\';display:block;position:absolute;top:0;right:0;bottom:0;width:0;border-left:1px solid #c5cace}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;width:75px;height:66px;border-bottom:1px solid #c5cace;border-right:1px solid #c5cace;cursor:pointer;position:relative}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:after{content:\'\';display:block;position:absolute;width:50px;height:50px;top:50%;left:50%;margin-top:-25px;margin-left:-25px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab:hover{background-color:#e5e7e8}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab{margin-right:-1px;border-right:1px solid #efefef}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab,.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-selected-tab:hover{background-color:#efefef}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-preview:after{display:none}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-file:after{background-position:0 -50px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-url:after{background-position:0 -100px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-facebook:after{background-position:0 -150px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-dropbox:after{background-position:0 -200px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-gdrive:after{background-position:0 -250px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-tab-instagram:after{background-position:0 -300px}.uploadcare-dialog-body .uploadcare-dialog-tabs .uploadcare-dialog-tab.uploadcare-dialog-first-tab{border-top-left-radius:8px}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel{position:relative;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;margin-left:75px;padding:22px 25px;width:825px;height:616px;line-height:22px;background:#efefef;border-bottom-right-radius:8px;border-top-right-radius:8px;font-size:16px;color:black}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel input{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;width:100%;height:44px;margin-bottom:22px;padding:11px 12.5px;font-family:inherit;font-size:16px;border:1px solid #c5cace;background:white;color:black}.uploadcare-dialog-body .uploadcare-dialog-tabs-panel .uploadcare-dialog-drop-file{background:white;border:1px dashed #c5cace;border-radius:3px;height:99px;padding-top:77px;text-align:center;color:#545454}.uploadcare-dialog-body .uploadcare-pre{white-space:pre;font-family:monospace;margin:22px auto;padding:22px 25px;background-color:white;border:1px solid #c5cace;border-radius:3px;text-align:left;font-size:15px;line-height:22px}.uploadcare-dialog-footer{font-size:13px;text-align:center;color:#888;margin-top:15px}.uploadcare-dialog-footer a{color:#c2c2c2;text-decoration:none}.uploadcare-dialog-footer a:hover{text-decoration:underline}.uploadcare-dialog-title{font-size:25px;line-height:1;font-weight:bolder;margin-bottom:25px}.uploadcare-dialog-title2{font-size:20px;line-height:1;padding-bottom:11px}.uploadcare-dialog-label{font-size:15px;line-height:25px;margin-bottom:12.5px}.uploadcare-dialog-large-text{font-size:18px;line-height:25px}.uploadcare-dialog-section{margin-bottom:22px}.uploadcare-dialog-normal-text{font-size:13px;color:#545454}.uploadcare-dialog-button{display:inline-block;font-size:13px;line-height:31px;padding:0 22px;margin-right:.5em;border:solid 1px;border-radius:3px;cursor:pointer;color:#444}.uploadcare-dialog-button,.uploadcare-dialog-button[disabled]:active,.uploadcare-dialog-button.uploadcare-disabled-el:active,.uploadcare-dialog-button[disabled]:hover,.uploadcare-dialog-button.uploadcare-disabled-el:hover{background:#f3f3f3;background:-webkit-linear-gradient(whitesmoke,#f1f1f1);background:-moz-linear-gradient(whitesmoke,#f1f1f1);background:-o-linear-gradient(whitesmoke,#f1f1f1);background:linear-gradient(whitesmoke,#f1f1f1);-ms-box-shadow:none;-moz-box-shadow:none;-webkit-box-shadow:none;-o-box-shadow:none;box-shadow:none;border-color:gainsboro}.uploadcare-dialog-button:hover{background:#f8f8f8;background:-webkit-linear-gradient(#fbfbfb,#f6f6f6);background:-moz-linear-gradient(#fbfbfb,#f6f6f6);background:-o-linear-gradient(#fbfbfb,#f6f6f6);background:linear-gradient(#fbfbfb,#f6f6f6);-ms-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-o-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05)}.uploadcare-dialog-button:active{background:#f3f3f3;background:-webkit-linear-gradient(whitesmoke,#f1f1f1);background:-moz-linear-gradient(whitesmoke,#f1f1f1);background:-o-linear-gradient(whitesmoke,#f1f1f1);background:linear-gradient(whitesmoke,#f1f1f1);-ms-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-o-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);box-shadow:inset 0 2px 2px rgba(0,0,0,0.05)}.uploadcare-dialog-button[disabled],.uploadcare-dialog-button.uploadcare-disabled-el{cursor:default;opacity:.6}.uploadcare-dialog-button:active,.uploadcare-dialog-button:hover{border-color:#cbcbcb}.uploadcare-dialog-button-success{display:inline-block;font-size:13px;line-height:31px;padding:0 22px;margin-right:.5em;border:solid 1px;border-radius:3px;cursor:pointer;color:white}.uploadcare-dialog-button-success,.uploadcare-dialog-button-success[disabled]:active,.uploadcare-dialog-button-success.uploadcare-disabled-el:active,.uploadcare-dialog-button-success[disabled]:hover,.uploadcare-dialog-button-success.uploadcare-disabled-el:hover{background:#3786eb;background:-webkit-linear-gradient(#3b8df7,#347fdf);background:-moz-linear-gradient(#3b8df7,#347fdf);background:-o-linear-gradient(#3b8df7,#347fdf);background:linear-gradient(#3b8df7,#347fdf);-ms-box-shadow:none;-moz-box-shadow:none;-webkit-box-shadow:none;-o-box-shadow:none;box-shadow:none;border-color:#266fcb}.uploadcare-dialog-button-success:hover{background:#3279d6;background:-webkit-linear-gradient(#3986ea,#2c6dc2);background:-moz-linear-gradient(#3986ea,#2c6dc2);background:-o-linear-gradient(#3986ea,#2c6dc2);background:linear-gradient(#3986ea,#2c6dc2);-ms-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);-o-box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05);box-shadow:inset 0 -1px 3px rgba(0,0,0,0.05)}.uploadcare-dialog-button-success:active{background:#3177d3;background:-webkit-linear-gradient(#3680e1,#2c6fc5);background:-moz-linear-gradient(#3680e1,#2c6fc5);background:-o-linear-gradient(#3680e1,#2c6fc5);background:linear-gradient(#3680e1,#2c6fc5);-ms-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-moz-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-webkit-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);-o-box-shadow:inset 0 2px 2px rgba(0,0,0,0.05);box-shadow:inset 0 2px 2px rgba(0,0,0,0.05)}.uploadcare-dialog-button-success[disabled],.uploadcare-dialog-button-success.uploadcare-disabled-el{cursor:default;opacity:.6}.uploadcare-dialog-button-success:active,.uploadcare-dialog-button-success:hover{border-color:#266eca #1f62b7 #1753a1}.uploadcare-dialog-button-success:hover{-ms-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);-moz-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);-webkit-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);-o-box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5);box-shadow:inset 0 -1px 3px rgba(22,82,160,0.5)}.uploadcare-dialog-button-success:active{-ms-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);-moz-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);-webkit-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);-o-box-shadow:inset 0 1px 3px rgba(22,82,160,0.4);box-shadow:inset 0 1px 3px rgba(22,82,160,0.4)}.uploadcare-dialog-big-button{border-radius:100px;font-size:20px;font-weight:normal;letter-spacing:1px;color:white;line-height:64px;border:solid 1px #276fcb;text-shadow:0 -1px #2a7ce5;display:inline-block;padding:0 2em;cursor:pointer;-ms-box-shadow:inset 0 -2px #1f66c1;-moz-box-shadow:inset 0 -2px #1f66c1;-webkit-box-shadow:inset 0 -2px #1f66c1;-o-box-shadow:inset 0 -2px #1f66c1;box-shadow:inset 0 -2px #1f66c1;background:#458dee;background:-webkit-linear-gradient(#4892f6,#4289e6);background:-moz-linear-gradient(#4892f6,#4289e6);background:-o-linear-gradient(#4892f6,#4289e6);background:linear-gradient(#4892f6,#4289e6)}.uploadcare-dialog-big-button:hover{-ms-box-shadow:inset 0 -2px #1652a0;-moz-box-shadow:inset 0 -2px #1652a0;-webkit-box-shadow:inset 0 -2px #1652a0;-o-box-shadow:inset 0 -2px #1652a0;box-shadow:inset 0 -2px #1652a0;background:#3279d6;background:-webkit-linear-gradient(#3986eb,#2c6dc2);background:-moz-linear-gradient(#3986eb,#2c6dc2);background:-o-linear-gradient(#3986eb,#2c6dc2);background:linear-gradient(#3986eb,#2c6dc2)}.uploadcare-dialog-big-button:active{border:none;line-height:66px;-ms-box-shadow:inset 0 2px #2561b9;-moz-box-shadow:inset 0 2px #2561b9;-webkit-box-shadow:inset 0 2px #2561b9;-o-box-shadow:inset 0 2px #2561b9;box-shadow:inset 0 2px #2561b9;background:#2c6ec3;background:-webkit-linear-gradient(#2c6ec3,#2c6ec3);background:-moz-linear-gradient(#2c6ec3,#2c6ec3);background:-o-linear-gradient(#2c6ec3,#2c6ec3);background:linear-gradient(#2c6ec3,#2c6ec3)}.uploadcare-dialog-preview-image-wrap1{width:100%;height:456px;margin-bottom:22px;display:table}.uploadcare-dialog-preview-image-wrap2{display:table-cell;vertical-align:middle;text-align:center}.uploadcare-dialog-preview-image-wrap2 img{max-width:775px;max-height:456px;display:block;margin:0 auto}.uploadcare-dialog-inner-footer{background:#fff3be;border-top:1px solid #efe2a9;height:33px;padding:16px 30px;margin:0 -25px -22px;border-bottom-right-radius:8px}.uploadcare-dialog-inner-footer .uploadcare-dialog-button-success{float:right}.uploadcare-dialog-inner-footer .uploadcare-dialog-button{float:left}.uploadcare-dialog-inner-footer .uploadcare-dialog-button-success,.uploadcare-dialog-inner-footer .uploadcare-dialog-button{width:112.5px;padding:0;text-align:center;margin-right:0}.uploadcare-dialog-inner-footer-text{text-align:center;color:#85732c;font-size:15px;line-height:33px}.uploadcare-dialog-inner-footer-text.uploadcare-error{color:red}.uploadcare-dialog-message-center,.uploadcare-dialog-preview-center{text-align:center;padding-top:176px}.uploadcare-dialog-message-center .uploadcare-pre,.uploadcare-dialog-preview-center .uploadcare-pre{width:400px}.uploadcare-dialog-preview-circle{width:66px;height:66px;display:inline-block;margin-bottom:22px}.uploadcare-no-draganddrop .uploadcare-if-draganddrop{display:none}.uploadcare-draganddrop .uploadcare-if-no-draganddrop{display:none}.uploadcare-dialog-file-drop-area{width:100%;height:100%;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;background:#f8f8f8;border:dashed 3px #c5cacd;text-align:center;border-radius:3px;padding-top:70px}.uploadcare-dialog-file-drop-area .uploadcare-dialog-big-button{margin-top:11px;margin-bottom:55px}.uploadcare-no-draganddrop .uploadcare-dialog-file-drop-area{border:none;padding-top:73px;background:transparent}.uploadcare-dialog-file-title{font-size:40px;line-height:1;color:#dee0e1;font-weight:bold;margin-bottom:66px;text-shadow:0 1px white}.uploadcare-no-draganddrop .uploadcare-dialog-file-title{text-shadow:none;color:black;margin-top:66px}.uploadcare-dialog-file-or{font-size:13px;color:#8f9498;margin-bottom:44px}.uploadcare-dialog-file-sources{position:relative;display:inline-block}.uploadcare-dialog-file-sources:before{content:\'\';display:block;position:absolute;width:67px;height:44px;top:-32px;left:-90px}.uploadcare-dialog-file-source{display:inline;font-size:15px;margin-right:.2em;cursor:pointer;font-weight:300}.uploadcare-dialog-file-source:after{content:\'\\00B7\';color:#b7babc;margin-left:.5em}.uploadcare-dialog-file-source:last-child:after{display:none}.uploadcare-draging .uploadcare-dialog-file-or,.uploadcare-draging .uploadcare-dialog-file-sources,.uploadcare-draging .uploadcare-dialog-file-drop-area .uploadcare-dialog-big-button{display:none}.uploadcare-draging .uploadcare-dialog-file-drop-area{background:#f2f7fe;border-color:#438ae7;padding-top:264px}.uploadcare-draging .uploadcare-dialog-file-title{color:#438ae7}.uploadcare-dpm-file-list{height:478px;overflow:auto;margin:0 -25px;padding:0 25px}.uploadcare-dpm-file-item{border-top:1px solid #e3e3e3;padding:10px 0;font-size:13px;line-height:1;word-wrap:break-word}.uploadcare-dpm-file-item:last-child{border-bottom:1px solid #e3e3e3}.uploadcare-dpm-file-item:hover{background:#ececec}.uploadcare-dpm-file-item:hover .uploadcare-dpm-file-remove{display:inline-block}.uploadcare-dpm-file-item.uploadcare-dpm-image .uploadcare-dpm-file-preview-wrap{display:inline-block}.uploadcare-dpm-file-item.uploadcare-dpm-image .uploadcare-dpm-file-name{width:60%}.uploadcare-dpm-file-item.uploadcare-dpm-image .uploadcare-dpm-file-name:before{display:none}.uploadcare-dpm-file-item.uploadcare-dpm-uploaded .uploadcare-dpm-file-progressbar-value{background:#8ac54c}.uploadcare-dpm-file-item.uploadcare-dpm-error .uploadcare-dpm-file-error{display:inline-block}.uploadcare-dpm-file-item.uploadcare-dpm-error .uploadcare-dpm-file-size,.uploadcare-dpm-file-item.uploadcare-dpm-error .uploadcare-dpm-file-progressbar-wrap{display:none}.uploadcare-dpm-file-preview-wrap,.uploadcare-dpm-file-name,.uploadcare-dpm-file-size,.uploadcare-dpm-file-progressbar-wrap,.uploadcare-dpm-file-error,.uploadcare-dpm-file-remove-wrap{vertical-align:middle;display:inline-block;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;padding:0 10px}.uploadcare-dpm-file-preview-wrap{text-align:center;width:8%;display:none;padding:0;line-height:0}.uploadcare-dpm-file-preview-wrap2{display:inline-block;width:45px;height:45px}.uploadcare-dpm-file-name,.uploadcare-dpm-file-size,.uploadcare-dpm-file-error{padding-top:4px;padding-bottom:4px}.uploadcare-dpm-file-name:before,.uploadcare-dpm-file-error:before{content:\'\';display:inline-block;width:20px;height:20px;margin:-3.5px .7em -3.5px 0}.uploadcare-dpm-file-name{width:68%}.uploadcare-dpm-file-name:before{width:16px}.uploadcare-dpm-file-size{width:10%;padding-right:0;text-align:left}.uploadcare-dpm-file-progressbar-wrap{width:14%}.uploadcare-dpm-file-progressbar{width:80px;height:8px;background:#e0e0e0;border-radius:100px}.uploadcare-dpm-file-progressbar-value{height:100%;background:#d6b849;border-radius:100px}.uploadcare-dpm-file-error{width:24%;display:none;color:#f5444b}.uploadcare-dpm-file-remove-wrap{padding:0;padding-right:10px;width:8%;text-align:right;line-height:0}.uploadcare-dpm-file-remove{display:none;width:20px;height:20px;cursor:pointer}.uploadcare-dialog-source-base-wrap{height:616px;margin:-22px -25px;padding:22px 25px;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box}.uploadcare-dialog-source-base-wrap.uploadcare-dialog-remote-iframe-wrap{padding:0}.uploadcare-dialog-source-base-wrap.uploadcare-dialog-remote-iframe-wrap iframe{border-top-right-radius:8px;border-bottom-right-radius:8px}.uploadcare-dialog-multiple .uploadcare-dialog-source-base-wrap.uploadcare-dialog-remote-iframe-wrap iframe{border-bottom-right-radius:0}.uploadcare-dialog-multiple .uploadcare-dialog-source-base-wrap{height:550px;margin:-22px -25px 0}.uploadcare-dialog-source-base-footer{display:none}.uploadcare-dialog-multiple .uploadcare-dialog-source-base-footer{display:block}.uploadcare-crop-widget .jcrop-holder{direction:ltr;text-align:left}.uploadcare-crop-widget .jcrop-vline,.uploadcare-crop-widget .jcrop-hline{background-color:white;background-position:top left;background-repeat:repeat;font-size:0;position:absolute}.uploadcare-crop-widget .jcrop-vline{height:100%;width:1px!important}.uploadcare-crop-widget .jcrop-hline{height:1px!important;width:100%}.uploadcare-crop-widget .jcrop-vline.right{right:0}.uploadcare-crop-widget .jcrop-hline.bottom{bottom:0}.uploadcare-crop-widget .jcrop-handle{background-color:#333;border:1px #eee solid;font-size:1px}.uploadcare-crop-widget .jcrop-tracker{height:100%;width:100%;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none}.uploadcare-crop-widget .jcrop-handle.ord-n{left:50%;margin-left:-4px;margin-top:-4px;top:0}.uploadcare-crop-widget .jcrop-handle.ord-s{bottom:0;left:50%;margin-bottom:-4px;margin-left:-4px}.uploadcare-crop-widget .jcrop-handle.ord-e{margin-right:-4px;margin-top:-4px;right:0;top:50%}.uploadcare-crop-widget .jcrop-handle.ord-w{left:0;margin-left:-4px;margin-top:-4px;top:50%}.uploadcare-crop-widget .jcrop-handle.ord-nw{left:0;margin-left:-4px;margin-top:-4px;top:0}.uploadcare-crop-widget .jcrop-handle.ord-ne{margin-right:-4px;margin-top:-4px;right:0;top:0}.uploadcare-crop-widget .jcrop-handle.ord-se{bottom:0;margin-bottom:-4px;margin-right:-4px;right:0}.uploadcare-crop-widget .jcrop-handle.ord-sw{bottom:0;left:0;margin-bottom:-4px;margin-left:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-n,.uploadcare-crop-widget .jcrop-dragbar.ord-s{height:7px;width:100%}.uploadcare-crop-widget .jcrop-dragbar.ord-e,.uploadcare-crop-widget .jcrop-dragbar.ord-w{height:100%;width:7px}.uploadcare-crop-widget .jcrop-dragbar.ord-n{margin-top:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-s{bottom:0;margin-bottom:-4px}.uploadcare-crop-widget .jcrop-dragbar.ord-e{margin-right:-4px;right:0}.uploadcare-crop-widget .jcrop-dragbar.ord-w{margin-left:-4px}.uploadcare-crop-widget .jcrop-light .jcrop-vline,.uploadcare-crop-widget .jcrop-light .jcrop-hline{background:#FFF;filter:Alpha(opacity=70)!important;opacity:.70!important}.uploadcare-crop-widget .jcrop-light .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#000;border-color:#FFF;border-radius:3px}.uploadcare-crop-widget .jcrop-dark .jcrop-vline,.uploadcare-crop-widget .jcrop-dark .jcrop-hline{background:#000;filter:Alpha(opacity=70)!important;opacity:.7!important}.uploadcare-crop-widget .jcrop-dark .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#FFF;border-color:#000;border-radius:3px}.uploadcare-crop-widget .jcrop-holder img,.uploadcare-crop-widget img.jcrop-preview{max-width:none}.uploadcare-crop-widget{font-family:"Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif}.uploadcare-crop-widget__image-wrap{position:relative}.uploadcare-crop-widget--loading .uploadcare-crop-widget__image-wrap{background-repeat:no-repeat;background-position:center}.uploadcare-crop-widget__image-wrap img{display:block}.uploadcare-crop-widget__error{-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;text-align:center;position:absolute;top:50%;left:0;right:0;margin-top:-1em;display:none}.uploadcare-crop-widget--error .uploadcare-crop-widget__error{display:block}.uploadcare-crop-widget__error__title{font-size:20px}.uploadcare-crop-widget__error__text{font-size:15px}.uploadcare-crop-widget__controls{height:30px;padding-top:5px;text-align:center}.uploadcare-crop-widget--no-controls .uploadcare-crop-widget__controls{display:none}.uploadcare-widget{display:inline-block!important;position:relative;vertical-align:middle;padding:0 5px}.uploadcare-widget[data-status=loaded] .uploadcare-widget-buttons>li,.uploadcare-widget[data-status=started] .uploadcare-widget-buttons>li{display:none}.uploadcare-widget[data-status=started] .uploadcare-widget-buttons .uploadcare-widget-buttons-cancel,.uploadcare-widget[data-status=loaded] .uploadcare-widget-buttons .uploadcare-widget-buttons-remove{display:inline-block}.uploadcare-widget .uploadcare-widget-circle{width:25px;height:25px;top:-1px;float:left;margin-right:1ex}.uploadcare-widget-circle{position:relative;font-size:0}.uploadcare-widget-circle .uploadcare-widget-circle-back{position:relative;width:100%;height:100%;border-radius:50%}.uploadcare-widget-circle .uploadcare-widget-circle-center{position:absolute;width:10%;height:10%;top:50%;left:50%;border-radius:50%;margin-top:-5%;margin-left:-5%}.uploadcare-widget-buttons{position:relative;top:-1px;float:left;overflow:hidden;margin:0;padding:0;list-style:none}.uploadcare-widget-buttons>li{height:24px;float:left;font-size:11px;color:#8f9295;line-height:25px;min-width:36px;padding:0 6px;margin:0 3px 1px 0;list-style:none;-ms-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-o-box-sizing:border-box;box-sizing:border-box;border-radius:2px;background:#e1e5e7;cursor:default}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-dialog,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-file,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-url{background-position:0 0;background-repeat:no-repeat;padding-left:30px}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-dialog,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-url{background-position:0 -24px}.uploadcare-widget-buttons>li.uploadcare-widget-buttons-cancel,.uploadcare-widget-buttons>li.uploadcare-widget-buttons-remove{font-size:.9em;display:none}.uploadcare-widget-status-text{float:left;overflow:hidden;line-height:25px;height:25px;margin-right:1ex;white-space:nowrap;padding:0 5px}.uploadcare-widget-file-name{cursor:pointer;color:#1a85ad;border-bottom-color:#1a85ad;text-decoration:none;border-bottom:1px dotted}.uploadcare-widget .uploadcare-widget-dragndrop-area{display:none;position:absolute;top:-8px;left:0;width:100%;height:41px;line-height:41px;text-align:center;background-color:#f0f0f0;color:#707478;border:1px dashed #b3b5b6;border-radius:20.5px}.uploadcare-widget .uploadcare-widget-dragndrop-area.uploadcare-dragging{display:block}\n');}return __p.join('');};
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
@@ -17675,7 +17963,8 @@ var _require = (function() {
   this.JST || (this.JST = {});
   this.JST["uploadcare/templates/tab-preview-error"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-title">',(''+ 
     t('dialog.tabs.preview.error.'+error+'.title') || t('dialog.tabs.preview.error.default.title')
-  ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n\n<div class="uploadcare-dialog-label">\n  ',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'');  if (file.size != null) { ; __p.push(',\n  ',(''+ Math.round(file.size/1000) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),' KB');  } ; __p.push('\n</div>\n\n<div class="uploadcare-dialog-section uploadcare-dialog-normal-text">\n  ',(''+ 
+  ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n\n<div class="uploadcare-dialog-label">\n  ',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'',(''+ 
+      utils.readableFileSize(file.size, '', ', ') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'\n</div>\n\n<div class="uploadcare-dialog-section uploadcare-dialog-normal-text">\n  ',(''+ 
       t('dialog.tabs.preview.error.'+error+'.line1') || t('dialog.tabs.preview.error.default.line1')
     ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'<br/>\n  ',(''+ 
       t('dialog.tabs.preview.error.'+error+'.line2') || t('dialog.tabs.preview.error.default.line2')
@@ -17683,23 +17972,33 @@ var _require = (function() {
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
-  this.JST["uploadcare/templates/tab-preview-image"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-title">',(''+ t('dialog.tabs.preview.image.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n\n<div class="uploadcare-dialog-preview-image-wrap1">\n<div class="uploadcare-dialog-preview-image-wrap2">\n  <img \n    src="',(''+ file.previewUrl ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'" \n    title="',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'" \n    alt="',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'"\n    role="uploadcare-dialog-preview-image"\n  />\n</div>\n</div>\n\n<div class="uploadcare-dialog-preview-footer">\n  <div \n    class="uploadcare-dialog-button" \n    role="uploadcare-dialog-preview-back">',(''+ t('dialog.tabs.preview.image.change') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div \n    class="uploadcare-dialog-button-success" \n    role="uploadcare-dialog-preview-done">',(''+ t('dialog.tabs.preview.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n</div>\n');}return __p.join('');};
+  this.JST["uploadcare/templates/tab-preview-image"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-title">',(''+ t('dialog.tabs.preview.image.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n\n<div class="uploadcare-dialog-preview-image-wrap1">\n<div class="uploadcare-dialog-preview-image-wrap2">\n  <img \n    src="',(''+ file.previewUrl ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'" \n    title="',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'" \n    alt="',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'"\n    role="uploadcare-dialog-preview-image"\n  />\n</div>\n</div>\n\n<div class="uploadcare-dialog-inner-footer">\n  <div \n    class="uploadcare-dialog-button" \n    role="uploadcare-dialog-preview-back">',(''+ t('dialog.tabs.preview.image.change') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div \n    class="uploadcare-dialog-button-success" \n    role="uploadcare-dialog-preview-done">',(''+ t('dialog.tabs.preview.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n</div>\n');}return __p.join('');};
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
-  this.JST["uploadcare/templates/tab-preview-regular"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-title">',(''+ t('dialog.tabs.preview.regular.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n\n<div class="uploadcare-dialog-label">\n  ',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'');  if (file.size != null) { ; __p.push(',\n  ',(''+ Math.round(file.size/1000) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),' KB');  } ; __p.push('\n</div>\n\n<div class="uploadcare-dialog-section uploadcare-dialog-normal-text">\n  ',(''+ t('dialog.tabs.preview.regular.line1') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'<br/>\n  ',(''+ t('dialog.tabs.preview.regular.line2') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'\n</div>\n\n<div \n  class="uploadcare-dialog-button-success" \n  role="uploadcare-dialog-preview-done">',(''+ t('dialog.tabs.preview.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n<div \n  class="uploadcare-dialog-button" \n  role="uploadcare-dialog-preview-back">',(''+ t('dialog.tabs.preview.change') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n');}return __p.join('');};
+  this.JST["uploadcare/templates/tab-preview-multiple-file"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div role="uploadcare-dpm-file-item" class="uploadcare-dpm-file-item">\n  <div class="uploadcare-dpm-file-preview-wrap">\n    <div class="uploadcare-dpm-file-preview-wrap2" role="uploadcare-dpm-file-preview-wrap"></div>\n  </div><!--\n  --><div role="uploadcare-dpm-file-name" class="uploadcare-dpm-file-name">\n    ',(''+ t('dialog.tabs.preview.unknownName') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'\n  </div><!--\n  --><div role="uploadcare-dpm-file-size" class="uploadcare-dpm-file-size"></div><!--\n  --><div class="uploadcare-dpm-file-progressbar-wrap">\n    <div class="uploadcare-dpm-file-progressbar">\n      <div \n        role="uploadcare-dpm-file-progressbar-value"\n        class="uploadcare-dpm-file-progressbar-value"\n      ></div>\n    </div>\n  </div><!--\n  --><div role="uploadcare-dpm-file-error" class="uploadcare-dpm-file-error"></div><!--\n  --><div class="uploadcare-dpm-file-remove-wrap">\n    <div role="uploadcare-dpm-file-remove" class="uploadcare-dpm-file-remove"></div>\n  </div>\n</div>\n');}return __p.join('');};
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
-  this.JST["uploadcare/templates/tab-preview-unknown"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-preview-center">\n  \n  <div \n    class="uploadcare-dialog-preview-circle"\n    role="uploadcare-dialog-preview-circle"></div>\n  <div class="uploadcare-dialog-title2">',(''+ t('dialog.tabs.preview.unknown.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div class="uploadcare-dialog-label">\n    ',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'');  if (file.size != null) { ; __p.push(',\n    ',(''+ Math.round(file.size/1000) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),' KB');  } ; __p.push('\n  </div>\n  <div \n    class="uploadcare-dialog-button-success" \n    role="uploadcare-dialog-preview-done">',(''+ t('dialog.tabs.preview.unknown.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n</div>\n');}return __p.join('');};
+  this.JST["uploadcare/templates/tab-preview-multiple"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-title">\n  ',(''+ t('dialog.tabs.preview.multiple.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'\n  <span role="uploadcare-dpm-files-count"></span>\n</div>\n\n<div role="uploadcare-dpm-file-list" class="uploadcare-dpm-file-list"></div>\n\n<div class="uploadcare-dialog-inner-footer">\n  <div \n    class="uploadcare-dialog-button" \n    role="uploadcare-dialog-preview-back">',(''+ t('dialog.tabs.preview.multiple.clear') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div \n    class="uploadcare-dialog-button-success" \n    role="uploadcare-dialog-preview-done">',(''+ t('dialog.tabs.preview.multiple.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div class="uploadcare-dialog-inner-footer-text" role="uploadcare-dpm-footer-text"></div>\n</div>\n');}return __p.join('');};
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
-  this.JST["uploadcare/templates/tab-preview"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('');}return __p.join('');};
+  this.JST["uploadcare/templates/tab-preview-regular"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-title">',(''+ t('dialog.tabs.preview.regular.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n\n<div class="uploadcare-dialog-label">\n  ',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'',(''+ 
+      utils.readableFileSize(file.size, '', ', ') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'\n</div>\n\n<div class="uploadcare-dialog-section uploadcare-dialog-normal-text">\n  ',(''+ t('dialog.tabs.preview.regular.line1') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'<br/>\n  ',(''+ t('dialog.tabs.preview.regular.line2') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'\n</div>\n\n<div \n  class="uploadcare-dialog-button-success" \n  role="uploadcare-dialog-preview-done">',(''+ t('dialog.tabs.preview.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n<div \n  class="uploadcare-dialog-button" \n  role="uploadcare-dialog-preview-back">',(''+ t('dialog.tabs.preview.change') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n');}return __p.join('');};
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["uploadcare/templates/tab-preview-unknown"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-preview-center">\n  \n  <div \n    class="uploadcare-dialog-preview-circle"\n    role="uploadcare-dialog-preview-circle"></div>\n  <div class="uploadcare-dialog-title2">',(''+ t('dialog.tabs.preview.unknown.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n  <div class="uploadcare-dialog-label">\n    ',(''+ (file.name || t('dialog.tabs.preview.unknownName')) ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'',(''+ 
+        utils.readableFileSize(file.size, '', ', ') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'\n  </div>\n  <div \n    class="uploadcare-dialog-button-success" \n    role="uploadcare-dialog-preview-done">',(''+ t('dialog.tabs.preview.unknown.done') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n</div>\n');}return __p.join('');};
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
   this.JST["uploadcare/templates/tab-url"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-title">',(''+ t('dialog.tabs.url.title') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n<div class="uploadcare-dialog-section uploadcare-dialog-normal-text">\n    <div>',(''+ t('dialog.tabs.url.line1') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n    <div>',(''+ t('dialog.tabs.url.line2') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n</div>\n<form role="uploadcare-dialog-url-form">\n    <input type="text" role="uploadcare-dialog-url-input" placeholder="',(''+ t('dialog.tabs.url.input') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'">\n    <button class="uploadcare-dialog-button" type="submit" role="uploadcare-dialog-url-submit">',(''+ t('dialog.tabs.url.button') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</button>\n</form>\n');}return __p.join('');};
+}).call(this);
+(function() {
+  this.JST || (this.JST = {});
+  this.JST["uploadcare/templates/tab-welcome"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-dialog-message-center">\n    <div class="uploadcare-dialog-title">Welcome to Uploadcare</div>\n    <div class="uploadcare-dialog-large-text">\n        <div>Your <a href="https://uploadcare.com/accounts/settings/">public key</a> is not set.</div>\n        <div>Add this to the &lt;head&gt; tag to start uploading files:</div>\n        <div class="uploadcare-pre">&lt;script&gt;\nUPLOADCARE_PUBLIC_KEY = \'your_public_key\';\n&lt;/script&gt;</div>\n    </div>\n</div>\n');}return __p.join('');};
 }).call(this);
 (function() {
   this.JST || (this.JST = {});
@@ -17714,9 +18013,9 @@ var _require = (function() {
   this.JST["uploadcare/templates/widget"] = function(obj){var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="uploadcare-widget">\n    <div role="uploadcare-widget-status"></div>\n    <div role="uploadcare-widget-status-text" class="uploadcare-widget-status-text"></div>\n    <ul role="uploadcare-widget-buttons" class="uploadcare-widget-buttons"></ul>\n    <div class="uploadcare-widget-dragndrop-area" role="uploadcare-drop-area">',(''+ t('draghere') ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;'),'</div>\n</div>\n');}return __p.join('');};
 }).call(this);
 (function() {
-  var locale, namespace;
+  var locale, namespace, utils;
 
-  namespace = uploadcare.namespace, locale = uploadcare.locale;
+  namespace = uploadcare.namespace, locale = uploadcare.locale, utils = uploadcare.utils;
 
   namespace('uploadcare.templates', function(ns) {
     return ns.tpl = function(key, ctx) {
@@ -17727,6 +18026,7 @@ var _require = (function() {
       fn = JST["uploadcare/templates/" + key];
       if (fn != null) {
         ctx.t = locale.t;
+        ctx.utils = utils;
         return fn(ctx);
       } else {
         return '';
@@ -19780,10 +20080,10 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var $, namespace, utils,
+  var $, namespace, s, utils,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils;
+  namespace = uploadcare.namespace, s = uploadcare.settings, $ = uploadcare.jQuery, utils = uploadcare.utils;
 
   namespace('uploadcare.files', function(ns) {
     return ns.BaseFile = (function() {
@@ -19806,7 +20106,7 @@ var _require = (function() {
         this.__requestInfo = __bind(this.__requestInfo, this);
 
         var _this = this;
-        this.settings = utils.buildSettings(settings);
+        this.settings = s.build(settings);
         this.fileId = null;
         this.fileName = null;
         this.fileSize = null;
@@ -19832,32 +20132,28 @@ var _require = (function() {
         throw new Error('not implemented');
       };
 
+      BaseFile.prototype.__handleFileData = function(data) {
+        this.fileName = data.original_filename;
+        this.fileSize = data.size;
+        this.isImage = data.is_image;
+        this.isStored = data.is_stored || data.is_public;
+        this.__buildPreviewUrl();
+        if (this.settings.imagesOnly && !this.isImage) {
+          this.__infoDf.reject('image', this);
+          return;
+        }
+        return this.__infoDf.resolve(this);
+      };
+
       BaseFile.prototype.__requestInfo = function() {
-        var fail,
-          _this = this;
-        fail = function() {
+        var _this = this;
+        return utils.jsonp("" + this.settings.urlBase + "/info/", {
+          file_id: this.fileId,
+          pub_key: this.settings.publicKey
+        }).fail(function() {
           return _this.__infoDf.reject('info', _this);
-        };
-        return $.ajax("" + this.settings.urlBase + "/info/", {
-          data: {
-            file_id: this.fileId,
-            pub_key: this.settings.publicKey
-          },
-          dataType: 'jsonp'
-        }).fail(fail).done(function(data) {
-          if (data.error) {
-            return fail();
-          }
-          _this.fileName = data.original_filename;
-          _this.fileSize = data.size;
-          _this.isImage = data.is_image;
-          _this.isStored = data.is_stored;
-          _this.__buildPreviewUrl();
-          if (_this.settings.imagesOnly && !_this.isImage) {
-            _this.__infoDf.reject('image', _this);
-            return;
-          }
-          return _this.__infoDf.resolve(_this);
+        }).done(function(data) {
+          return _this.__handleFileData(data);
         });
       };
 
@@ -19998,13 +20294,30 @@ var _require = (function() {
     })();
   });
 
+  namespace('uploadcare.utils', function(utils) {
+    utils.isFile = function(obj) {
+      return obj && obj.done && obj.fail && obj.cancel;
+    };
+    return utils.anyToFile = function(value, settings) {
+      if (value) {
+        if (utils.isFile(value)) {
+          return value;
+        } else {
+          return uploadcare.fileFrom('url', value, settings);
+        }
+      } else {
+        return null;
+      }
+    };
+  });
+
 }).call(this);
 (function() {
-  var $, debug, namespace, utils,
+  var $, namespace, utils,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils, debug = uploadcare.debug;
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils;
 
   namespace('uploadcare.files', function(ns) {
     return ns.EventFile = (function(_super) {
@@ -20032,6 +20345,9 @@ var _require = (function() {
         formData = new FormData();
         formData.append('UPLOADCARE_PUB_KEY', this.settings.publicKey);
         formData.append('UPLOADCARE_FILE_ID', this.fileId);
+        if (this.settings.autostore) {
+          formData.append('UPLOADCARE_STORE', 1);
+        }
         formData.append('file', this.__file);
         fail = function() {
           return _this.__uploadDf.reject('upload', _this);
@@ -20067,7 +20383,9 @@ var _require = (function() {
           error: fail,
           success: function(data) {
             if (data != null ? data.error : void 0) {
-              debug(data.error.content);
+              if (_this.settings.autostore && /autostore/i.test(data.error.content)) {
+                utils.commonWarning('autostore');
+              }
               return fail();
             }
             return _this.__uploadDf.resolve(_this);
@@ -20136,7 +20454,7 @@ var _require = (function() {
           action: targetUrl,
           enctype: 'multipart/form-data',
           target: iframeId
-        }).append(formParam('UPLOADCARE_PUB_KEY', this.settings.publicKey)).append(formParam('UPLOADCARE_FILE_ID', this.fileId)).append(this.__input).css('display', 'none').appendTo('body').submit();
+        }).append(formParam('UPLOADCARE_PUB_KEY', this.settings.publicKey)).append(formParam('UPLOADCARE_FILE_ID', this.fileId)).append(this.settings.autostore ? formParam('UPLOADCARE_STORE', 1) : void 0).append(this.__input).css('display', 'none').appendTo('body').submit();
       };
 
       InputFile.prototype.__cleanUp = function() {
@@ -20158,11 +20476,11 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var $, debug, namespace, pusher, utils,
+  var $, namespace, pusher, utils,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils, debug = uploadcare.debug;
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils;
 
   pusher = uploadcare.utils.pusher;
 
@@ -20183,24 +20501,24 @@ var _require = (function() {
       }
 
       UrlFile.prototype.__startUpload = function() {
-        var fail,
+        var data,
           _this = this;
         this.__pollWatcher = new PollWatcher(this, this.settings);
         this.__pusherWatcher = new PusherWatcher(this, this.settings);
         this.__state('start');
-        fail = function() {
-          return _this.__state('error');
+        data = {
+          pub_key: this.settings.publicKey,
+          source_url: this.__url
         };
-        $.ajax("" + this.settings.urlBase + "/from_url/", {
-          data: {
-            pub_key: this.settings.publicKey,
-            source_url: this.__url
-          },
-          dataType: 'jsonp'
-        }).fail(fail).done(function(data) {
-          if (data.error) {
-            return fail();
+        if (this.settings.autostore) {
+          data.store = 1;
+        }
+        utils.jsonp("" + this.settings.urlBase + "/from_url/", data).fail(function(error) {
+          if (_this.settings.autostore && /autostore/i.test(error)) {
+            utils.commonWarning('autostore');
           }
+          return _this.__state('error');
+        }).done(function(data) {
           _this.__token = data.token;
           _this.__pollWatcher.watch(_this.__token);
           _this.__pusherWatcher.watch(_this.__token);
@@ -20259,7 +20577,6 @@ var _require = (function() {
         var ev, onStarted, _fn, _i, _len, _ref,
           _this = this;
         this.token = token;
-        debug('started url watching with pusher');
         this.channel = this.pusher.subscribe("task-status-" + this.token);
         onStarted = function() {
           var ev, _i, _len, _ref, _results;
@@ -20274,10 +20591,10 @@ var _require = (function() {
         };
         _ref = ['progress', 'success'];
         _fn = function(ev) {
-          _this.channel.bind(ev, onStarted);
-          return _this.channel.bind(ev, function(data) {
+          _this.channel.bind(ev, function(data) {
             return _this.uploader.__state(ev, data);
           });
+          return _this.channel.bind(ev, onStarted);
         };
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ev = _ref[_i];
@@ -20331,20 +20648,12 @@ var _require = (function() {
       };
 
       PollWatcher.prototype.__checkStatus = function(callback) {
-        var fail,
-          _this = this;
-        fail = function() {
+        var _this = this;
+        return utils.jsonp("" + this.settings.urlBase + "/status/", {
+          token: this.token
+        }).fail(function(error) {
           return _this.__error();
-        };
-        return $.ajax("" + this.settings.urlBase + "/status/", {
-          data: {
-            'token': this.token
-          },
-          dataType: 'jsonp'
-        }).fail(fail).done(function(data) {
-          if (data.error) {
-            return fail();
-          }
+        }).done(function(data) {
           return callback(data);
         });
       };
@@ -20363,7 +20672,7 @@ var _require = (function() {
   namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils;
 
   namespace('uploadcare.files', function(ns) {
-    return ns.UploadedFile = (function(_super) {
+    ns.UploadedFile = (function(_super) {
 
       __extends(UploadedFile, _super);
 
@@ -20390,6 +20699,337 @@ var _require = (function() {
       return UploadedFile;
 
     })(ns.BaseFile);
+    ns.ReadyFile = (function(_super) {
+
+      __extends(ReadyFile, _super);
+
+      function ReadyFile(settings, __fileData) {
+        this.__fileData = __fileData;
+        ReadyFile.__super__.constructor.apply(this, arguments);
+        this.fileId = this.__fileData.file_id;
+        this.__uploadDf.resolve();
+      }
+
+      ReadyFile.prototype.__startUpload = function() {};
+
+      ReadyFile.prototype.__requestInfo = function() {
+        return this.__handleFileData(this.__fileData);
+      };
+
+      return ReadyFile;
+
+    })(ns.BaseFile);
+    return ns.DeletedFile = (function(_super) {
+
+      __extends(DeletedFile, _super);
+
+      function DeletedFile() {
+        DeletedFile.__super__.constructor.apply(this, arguments);
+        this.__uploadDf.reject('deleted');
+      }
+
+      DeletedFile.prototype.__startUpload = function() {};
+
+      return DeletedFile;
+
+    })(ns.BaseFile);
+  });
+
+}).call(this);
+(function() {
+  var $, namespace, s, t, utils, _ref,
+    __slice = [].slice,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils, (_ref = uploadcare.locale, t = _ref.t), s = uploadcare.settings;
+
+  namespace('uploadcare.files', function(ns) {
+    ns.FileGroup = (function() {
+
+      function FileGroup(files, settings) {
+        var _this = this;
+        this.settings = s.build(settings);
+        this.__fileColl = new utils.CollectionOfPromises(files);
+        this.__allFilesDf = $.when.apply($, this.__fileColl.get());
+        this.__fileInfosDf = (function() {
+          var file;
+          files = (function() {
+            var _i, _len, _ref1, _results;
+            _ref1 = this.__fileColl.get();
+            _results = [];
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+              file = _ref1[_i];
+              _results.push(file.then(null, function(err, info) {
+                return $.when(info);
+              }));
+            }
+            return _results;
+          }).call(_this);
+          return $.when.apply($, files);
+        })();
+        this.__createGroupDf = $.Deferred();
+        this.__initApiDeferred();
+      }
+
+      FileGroup.prototype.files = function() {
+        return this.__fileColl.get();
+      };
+
+      FileGroup.prototype.__save = function() {
+        var _this = this;
+        if (!this.__saved) {
+          this.__saved = true;
+          return this.__allFilesDf.done(function() {
+            return _this.__createGroup().done(function(groupInfo) {
+              _this.__uuid = groupInfo.id;
+              return _this.__buildInfo(function(info) {
+                if (_this.settings.imagesOnly && !info.isImage) {
+                  return _this.__createGroupDf.reject('image', info);
+                } else {
+                  return _this.__createGroupDf.resolve(info);
+                }
+              });
+            }).fail(function() {
+              return _this.__createGroupDf.reject('createGroup');
+            });
+          });
+        }
+      };
+
+      FileGroup.prototype.promise = function() {
+        this.__save();
+        return this.__apiDf.promise();
+      };
+
+      FileGroup.prototype.__initApiDeferred = function() {
+        var notify, reject, resolve,
+          _this = this;
+        this.__apiDf = $.Deferred();
+        this.__progressState = 'uploading';
+        reject = function(err) {
+          return _this.__buildInfo(function(info) {
+            return _this.__apiDf.reject(err, info);
+          });
+        };
+        resolve = function(info) {
+          return _this.__apiDf.resolve(info);
+        };
+        notify = function() {
+          return _this.__apiDf.notify(_this.__progressInfo());
+        };
+        notify();
+        this.__fileColl.onAnyProgress.add(notify);
+        this.__allFilesDf.done(function() {
+          _this.__progressState = 'uploaded';
+          return notify();
+        }).fail(reject);
+        return this.__createGroupDf.done(function(info) {
+          _this.__progressState = 'ready';
+          notify();
+          return resolve(info);
+        }).fail(reject);
+      };
+
+      FileGroup.prototype.__progressInfo = function() {
+        var progress, progressInfo, progressInfos, _i, _len;
+        progress = 0;
+        progressInfos = this.__fileColl.lastProgresses();
+        for (_i = 0, _len = progressInfos.length; _i < _len; _i++) {
+          progressInfo = progressInfos[_i];
+          progress += ((progressInfo != null ? progressInfo.progress : void 0) || 0) / progressInfos.length;
+        }
+        return {
+          state: this.__progressState,
+          uploadProgress: progress,
+          progress: this.__progressState === 'ready' ? 1 : progress * 0.9,
+          incompleteFileInfo: {}
+        };
+      };
+
+      FileGroup.prototype.__buildInfo = function(cb) {
+        var info;
+        info = {
+          uuid: this.__uuid,
+          cdnUrl: "" + this.settings.cdnBase + "/" + this.__uuid + "/",
+          name: t('file', this.__fileColl.length()),
+          size: 0,
+          isImage: true,
+          isStored: true
+        };
+        return this.__fileInfosDf.done(function() {
+          var infos, _i, _info, _len;
+          infos = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_i = 0, _len = infos.length; _i < _len; _i++) {
+            _info = infos[_i];
+            info.size += _info.size;
+            if (!_info.isImage) {
+              info.isImage = false;
+            }
+            if (!_info.isStored) {
+              info.isStored = false;
+            }
+          }
+          return cb(info);
+        });
+      };
+
+      FileGroup.prototype.__createGroup = function() {
+        var df,
+          _this = this;
+        df = $.Deferred();
+        if (this.__fileColl.length()) {
+          this.__fileInfosDf.done(function() {
+            var data, info, infos;
+            infos = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+            data = {
+              pub_key: _this.settings.publicKey,
+              files: (function() {
+                var _i, _len, _results;
+                _results = [];
+                for (_i = 0, _len = infos.length; _i < _len; _i++) {
+                  info = infos[_i];
+                  _results.push(info.uuid);
+                }
+                return _results;
+              })()
+            };
+            return utils.jsonp("" + _this.settings.urlBase + "/group/", data).fail(df.reject).done(df.resolve);
+          });
+        } else {
+          df.reject();
+        }
+        return df.promise();
+      };
+
+      FileGroup.prototype.api = function() {
+        if (!this.__api) {
+          this.__api = utils.bindAll(this, ['promise', 'files']);
+        }
+        return this.__api;
+      };
+
+      return FileGroup;
+
+    })();
+    return ns.SavedFileGroup = (function(_super) {
+
+      __extends(SavedFileGroup, _super);
+
+      function SavedFileGroup(__data, settings) {
+        var files;
+        this.__data = __data;
+        files = uploadcare.filesFrom('ready', this.__data.files, settings);
+        SavedFileGroup.__super__.constructor.call(this, files, settings);
+      }
+
+      SavedFileGroup.prototype.__createGroup = function() {
+        return utils.wrapToPromise(this.__data);
+      };
+
+      return SavedFileGroup;
+
+    })(ns.FileGroup);
+  });
+
+  namespace('uploadcare', function(ns) {
+    ns.FileGroup = function(filesAndGroups, settings) {
+      var file, files, item, _i, _j, _len, _len1, _ref1;
+      if (filesAndGroups == null) {
+        filesAndGroups = [];
+      }
+      files = [];
+      for (_i = 0, _len = filesAndGroups.length; _i < _len; _i++) {
+        item = filesAndGroups[_i];
+        if (utils.isFile(item)) {
+          files.push(item);
+        } else if (utils.isFileGroup(item)) {
+          _ref1 = item.files();
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            file = _ref1[_j];
+            files.push(file);
+          }
+        }
+      }
+      return new uploadcare.files.FileGroup(files, settings).api();
+    };
+    return ns.loadFileGroup = function(groupIdOrUrl, settings) {
+      var data, df, id;
+      settings = s.build(settings);
+      df = $.Deferred();
+      id = utils.groupIdRegex.exec(groupIdOrUrl);
+      if (id) {
+        data = {
+          pub_key: settings.publicKey,
+          group_id: id[0]
+        };
+        utils.jsonp("" + settings.urlBase + "/group/info/", data).fail(df.reject).done(function(data) {
+          return df.resolve(new uploadcare.files.SavedFileGroup(data, settings).api());
+        });
+      } else {
+        df.reject();
+      }
+      return df.promise();
+    };
+  });
+
+  namespace('uploadcare.utils', function(utils) {
+    utils.isFileGroup = function(obj) {
+      return obj && obj.files && obj.promise;
+    };
+    utils.anyToFileGroup = function(value, settings) {
+      var files, item, _i, _len;
+      if (value) {
+        if ($.isArray(value)) {
+          for (_i = 0, _len = value.length; _i < _len; _i++) {
+            item = value[_i];
+            files = utils.anyToFile(item, settings);
+          }
+          return utils.wrapToPromise(uploadcare.FileGroup(files, settings));
+        } else {
+          if (utils.isFileGroup(value)) {
+            return utils.wrapToPromise(value);
+          } else {
+            return uploadcare.loadFileGroup(value, settings);
+          }
+        }
+      } else {
+        return utils.wrapToPromise(null);
+      }
+    };
+    return utils.isFileGroupsEqual = function(group1, group2) {
+      var file, files1, files2, i, mismatches;
+      if (group1 === group2) {
+        return true;
+      } else {
+        if (utils.isFileGroup(group1) && utils.isFileGroup(group2)) {
+          files1 = group1.files();
+          files2 = group2.files();
+          if (files1.length !== files2.length) {
+            return false;
+          } else {
+            mismatches = (function() {
+              var _i, _len, _results;
+              _results = [];
+              for (i = _i = 0, _len = files1.length; _i < _len; i = ++_i) {
+                file = files1[i];
+                if (file !== files2[i]) {
+                  _results.push(1);
+                }
+              }
+              return _results;
+            })();
+            if (mismatches.length) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        } else {
+          return false;
+        }
+      }
+    };
   });
 
 }).call(this);
@@ -20401,35 +21041,83 @@ var _require = (function() {
   namespace('uploadcare', function(ns) {
     var converters;
     ns.fileFrom = function(type, data, settings) {
+      return converters[type](settings, data)[0].promise();
+    };
+    ns.filesFrom = function(type, data, settings) {
+      var file, _i, _len, _ref, _results;
       if (settings == null) {
         settings = {};
       }
-      return converters[type](settings, data).promise();
+      _ref = converters[type](settings, data);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        _results.push(file.promise());
+      }
+      return _results;
     };
     return converters = {
       event: function(settings, e) {
-        var files;
+        var file, files, _i, _len, _results;
         if (utils.abilities.canFileAPI) {
           files = e.type === 'drop' ? e.originalEvent.dataTransfer.files : e.target.files;
-          return new f.EventFile(settings, files[0]);
+          _results = [];
+          for (_i = 0, _len = files.length; _i < _len; _i++) {
+            file = files[_i];
+            _results.push(new f.EventFile(settings, file));
+          }
+          return _results;
         } else {
           return this.input(settings, e.target);
         }
       },
       input: function(settings, input) {
-        return new f.InputFile(settings, input);
+        return [new f.InputFile(settings, input)];
       },
-      url: function(settings, url) {
-        var cdn;
-        cdn = new RegExp("^" + settings.cdnBase + "/" + utils.uuidRegex.source, 'i');
-        if (utils.fullUuidRegex.test(url) || cdn.test(url)) {
-          return new f.UploadedFile(settings, url);
-        } else {
-          return new f.UrlFile(settings, url);
+      url: function(settings, urls) {
+        var cdn, url, _i, _len, _results;
+        if (!$.isArray(urls)) {
+          urls = [urls];
         }
+        _results = [];
+        for (_i = 0, _len = urls.length; _i < _len; _i++) {
+          url = urls[_i];
+          cdn = new RegExp("^" + settings.cdnBase + "/" + utils.uuidRegex.source, 'i');
+          if (utils.fullUuidRegex.test(url) || cdn.test(url)) {
+            _results.push(new f.UploadedFile(settings, url));
+          } else {
+            _results.push(new f.UrlFile(settings, url));
+          }
+        }
+        return _results;
       },
-      uploaded: function(settings, uuid) {
-        return new f.UploadedFile(settings, uuid);
+      uploaded: function(settings, uuids) {
+        var uuid, _i, _len, _results;
+        if (!$.isArray(uuids)) {
+          uuids = [uuids];
+        }
+        _results = [];
+        for (_i = 0, _len = uuids.length; _i < _len; _i++) {
+          uuid = uuids[_i];
+          _results.push(new f.UploadedFile(settings, uuid));
+        }
+        return _results;
+      },
+      ready: function(settings, arrayOfFileData) {
+        var fileData, _i, _len, _results;
+        if (!$.isArray(arrayOfFileData)) {
+          arrayOfFileData = [arrayOfFileData];
+        }
+        _results = [];
+        for (_i = 0, _len = arrayOfFileData.length; _i < _len; _i++) {
+          fileData = arrayOfFileData[_i];
+          if (fileData) {
+            _results.push(new f.ReadyFile(settings, fileData));
+          } else {
+            _results.push(new f.DeletedFile());
+          }
+        }
+        return _results;
       }
     };
   });
@@ -20526,10 +21214,11 @@ var _require = (function() {
         this.element = $(this.element);
         this.element.html(tpl('circle'));
         this.pie = this.element.find('@uploadcare-widget-status');
+        this.center = this.element.find('@uploadcare-circle-center');
         this.element.addClass('uploadcare-widget-circle');
+        this.setColorTheme('default');
         this.size = Math.min(this.element.width(), this.element.height());
         this.pie.width(this.size).height(this.size);
-        this.color = this.__getSegmentColor();
         this.angleOffset = -90;
         this.raphael = this.__initRaphael();
         this.path = this.raphael.path();
@@ -20556,9 +21245,9 @@ var _require = (function() {
         };
         this.observed = file;
         if (this.observed.state() === "resolved") {
-          return this.__update(1, true);
+          this.__update(1, true);
         } else {
-          return this.observed.progress(function(progress) {
+          this.observed.progress(function(progress) {
             if (file === _this.observed) {
               return _this.__update(selectorFn(progress));
             }
@@ -20568,6 +21257,7 @@ var _require = (function() {
             }
           });
         }
+        return this;
       };
 
       Circle.prototype.reset = function(filled) {
@@ -20578,15 +21268,47 @@ var _require = (function() {
         return this.__update((filled ? 100 : 0), true);
       };
 
+      Circle.prototype.colorThemes = {
+        "default": {
+          back: '#e1e5e7',
+          front: '#d0bf26',
+          center: '#ffffff'
+        },
+        grey: {
+          back: '#c5cacd',
+          front: '#a0a3a5'
+        },
+        darkGrey: {
+          back: '#bfbfbf',
+          front: '#8c8c8c'
+        }
+      };
+
+      Circle.prototype.setColorTheme = function(theme) {
+        if ($.type(theme) === 'string') {
+          theme = this.colorThemes[theme];
+        }
+        this.colorTheme = $.extend({}, this.colorThemes["default"], theme);
+        this.pie.css('background', this.colorTheme.back);
+        this.center.css('background', this.colorTheme.center);
+        if (this.raphael) {
+          return this.__update();
+        }
+      };
+
       Circle.prototype.__update = function(val, instant) {
         var delay,
           _this = this;
+        if (val == null) {
+          val = this.currentVal;
+        }
         if (instant == null) {
           instant = false;
         }
         if (val > 1) {
           val = 1;
         }
+        this.currentVal = val;
         delay = this.fullDelay * Math.abs(val - this.value);
         this.value = val;
         if (instant) {
@@ -20610,20 +21332,15 @@ var _require = (function() {
         return 360 * (value < 1 ? value : 0.99999999);
       };
 
-      Circle.prototype.__getSegmentColor = function() {
-        var color;
-        this.pie.addClass('uploadcare-widget-circle-active');
-        color = this.pie.css('background-color');
-        this.pie.removeClass('uploadcare-widget-circle-active');
-        return color;
-      };
-
       Circle.prototype.__initRaphael = function() {
-        var angleOffset, color, raphael, size;
+        var angleOffset, getColor, raphael, size,
+          _this = this;
         raphael = uploadcare.Raphael(this.pie.get(0), this.size, this.size);
-        color = this.color;
         size = this.size;
         angleOffset = this.angleOffset;
+        getColor = function() {
+          return _this.colorTheme.front;
+        };
         raphael.customAttributes.segment = function(angle) {
           var a1, a2, flag, r, x, y;
           x = size / 2;
@@ -20639,7 +21356,7 @@ var _require = (function() {
           a2 = (a2 % 360) * Math.PI / 180;
           return {
             path: [["M", x, y], ["l", r * Math.cos(a1), r * Math.sin(a1)], ["A", r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)], ["z"]],
-            fill: color
+            fill: getColor()
           };
         };
         return raphael;
@@ -20652,13 +21369,9 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var $, namespace, progress, t, tpl, utils, _ref;
+  var $, namespace, progress, t, tpl, utils, _ref, _ref1, _ref2;
 
-  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils, (_ref = uploadcare.ui, progress = _ref.progress);
-
-  t = uploadcare.locale.t;
-
-  tpl = uploadcare.templates.tpl;
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils, (_ref = uploadcare.ui, progress = _ref.progress), (_ref1 = uploadcare.locale, t = _ref1.t), (_ref2 = uploadcare.templates, tpl = _ref2.tpl);
 
   namespace('uploadcare.widget', function(ns) {
     return ns.Template = (function() {
@@ -20743,7 +21456,6 @@ var _require = (function() {
 
       Template.prototype.error = function(type) {
         this.statusText.text(t("errors." + (type || 'default')));
-        this.circle.reset();
         return this.setStatus('error');
       };
 
@@ -20764,16 +21476,14 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var $, files, namespace, t, tpl, utils;
+  var $, Circle, files, namespace, s, t, tpl, utils, _ref, _ref1, _ref2, _ref3,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  namespace = uploadcare.namespace, utils = uploadcare.utils, files = uploadcare.files, $ = uploadcare.jQuery;
-
-  t = uploadcare.locale.t;
-
-  tpl = uploadcare.templates.tpl;
+  namespace = uploadcare.namespace, utils = uploadcare.utils, (_ref = uploadcare.locale, t = _ref.t), (_ref1 = uploadcare.templates, tpl = _ref1.tpl), (_ref2 = uploadcare.ui, (_ref3 = _ref2.progress, Circle = _ref3.Circle)), files = uploadcare.files, s = uploadcare.settings, $ = uploadcare.jQuery;
 
   namespace('uploadcare', function(ns) {
     var Dialog, currentDialogPr;
+    ns.MULTIPLE_UPLOAD_FILES_LIMIT = 30;
     currentDialogPr = null;
     ns.isDialogOpened = function() {
       return currentDialogPr !== null;
@@ -20781,38 +21491,62 @@ var _require = (function() {
     ns.closeDialog = function() {
       return currentDialogPr != null ? currentDialogPr.reject() : void 0;
     };
-    ns.openDialog = function(currentFile, tab, settings) {
-      var dialog;
+    ns.openDialog = function(files, tab, settings) {
+      var dialog, filter, promise;
       if ($.isPlainObject(tab)) {
         settings = tab;
         tab = null;
       }
       ns.closeDialog();
-      settings = utils.buildSettings(settings);
-      dialog = new Dialog(settings, currentFile, tab);
-      return currentDialogPr = dialog.publicPromise().always(function() {
+      if (utils.isFileGroup(files)) {
+        files = files.files();
+      }
+      settings = s.build(settings);
+      dialog = new Dialog(settings, files, tab);
+      currentDialogPr = dialog.publicPromise().always(function() {
         return currentDialogPr = null;
       });
+      filter = settings.multiple ? function(files) {
+        return uploadcare.FileGroup(files, settings);
+      } : function(files) {
+        return files[0];
+      };
+      promise = utils.then(currentDialogPr, filter, filter);
+      promise.reject = currentDialogPr.reject;
+      return promise;
     };
     return Dialog = (function() {
 
-      function Dialog(settings, currentFile, tab) {
+      function Dialog(settings, files, tab) {
         var _this = this;
         this.settings = settings;
-        if (currentFile) {
-          this.settings = $.extend({}, this.settings, {
-            previewStep: true
-          });
+        this.switchTab = __bind(this.switchTab, this);
+
+        this.__reject = __bind(this.__reject, this);
+
+        this.__resolve = __bind(this.__resolve, this);
+
+        if (files) {
+          if (!$.isArray(files)) {
+            files = [files];
+          }
+        } else {
+          files = [];
         }
         this.dfd = $.Deferred();
         this.dfd.always(function() {
           return _this.__closeDialog();
         });
-        this.content = $(tpl('dialog')).hide().appendTo('body');
+        this.content = $(tpl('dialog')).hide().appendTo('body').addClass(this.settings.multiple ? 'uploadcare-dialog-multiple' : void 0);
+        this.files = new utils.CollectionOfPromises();
         this["__bind"]();
-        this.__prepareTabs();
-        this.switchTab(tab || this.settings.tabs[0]);
-        this.__setFile(currentFile);
+        this.tabs = {};
+        if (this.settings.publicKey) {
+          this.__prepareTabs(tab);
+          this.__prepareFiles(files);
+        } else {
+          this.__welcome();
+        }
         this.__updateFirstTab();
         this.content.fadeIn('fast');
       }
@@ -20824,59 +21558,115 @@ var _require = (function() {
         return promise;
       };
 
-      Dialog.prototype["__bind"] = function() {
-        var isPartOfWindow, reject,
+      Dialog.prototype.apiForTab = function(tabName) {
+        var api,
           _this = this;
-        reject = function() {
-          return _this.dfd.reject(_this.currentFile);
+        api = {
+          avalibleTabs: this.settings.tabs,
+          fileColl: this.files.readOnly(),
+          onSwitched: $.Callbacks(),
+          onSwitchedToMe: $.Callbacks(),
+          addFiles: function(fileType, data) {
+            var file, _i, _len, _ref4, _results;
+            if (_this.settings.multiple) {
+              _ref4 = ns.filesFrom(fileType, data, _this.settings);
+              _results = [];
+              for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+                file = _ref4[_i];
+                _results.push(_this.files.add(file));
+              }
+              return _results;
+            } else {
+              _this.files.clear();
+              return _this.files.add(ns.fileFrom(fileType, data, _this.settings));
+            }
+          },
+          removeFile: function(file) {
+            return _this.files.remove(file);
+          },
+          clearFiles: function() {
+            return _this.files.clear();
+          },
+          switchToPreview: function() {
+            return _this.switchTab('preview');
+          },
+          done: this.__resolve,
+          switchTab: this.switchTab
         };
+        this.dfd.progress(function(name) {
+          api.onSwitched.fire(name, name === tabName);
+          if (name === tabName) {
+            return api.onSwitchedToMe.fire(name);
+          }
+        });
+        return api;
+      };
+
+      Dialog.prototype.__resolve = function() {
+        return this.dfd.resolve(this.files.get());
+      };
+
+      Dialog.prototype.__reject = function() {
+        return this.dfd.reject(this.files.get());
+      };
+
+      Dialog.prototype["__bind"] = function() {
+        var isPartOfWindow, panel,
+          _this = this;
+        panel = this.content.find('.uploadcare-dialog-panel');
         isPartOfWindow = function(el) {
-          return $(el).is('.uploadcare-dialog-panel') || $(el).parents('.uploadcare-dialog-panel').size();
+          return $(el).is(panel) || $.contains(panel.get(0), el);
         };
         this.content.on('click', function(e) {
-          if (!(isPartOfWindow(e.target) || $(e.target).is('a'))) {
-            return reject();
+          if (!(!utils.inDom(e.target) || isPartOfWindow(e.target) || $(e.target).is('a'))) {
+            return _this.__reject();
           }
         });
-        $(window).on('keydown', function(e) {
+        return $(window).on('keydown', function(e) {
           if (e.which === 27) {
-            return reject();
+            return _this.__reject();
           }
-        });
-        return this.content.on('click', '@uploadcare-dialog-switch-tab', function(e) {
-          return _this.switchTab($(e.target).data('tab'));
         });
       };
 
-      Dialog.prototype.__prepareTabs = function() {
-        var tabName, _i, _len, _ref, _results,
-          _this = this;
-        this.tabs = {};
-        this.tabs.preview = this.addTab('preview');
-        this.tabs.preview.onDone.add(function() {
-          return _this.dfd.resolve(_this.currentFile);
-        });
-        this.tabs.preview.onBack.add(function() {
-          return _this.__setFile(null);
-        });
+      Dialog.prototype.__prepareTabs = function(tab) {
+        var tabName, _i, _len, _ref4;
+        this.addTab('preview');
         this.__hideTab('preview');
-        _ref = this.settings.tabs;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          tabName = _ref[_i];
-          if (!(!(tabName in this.tabs))) {
-            continue;
-          }
-          this.tabs[tabName] = this.addTab(tabName);
-          if (this.tabs[tabName]) {
-            _results.push(this.tabs[tabName].onSelected.add(function(fileType, data) {
-              return _this.__setFile(ns.fileFrom(fileType, data, _this.settings));
-            }));
-          } else {
-            throw new Error("No such tab: " + tabName);
-          }
+        _ref4 = this.settings.tabs;
+        for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+          tabName = _ref4[_i];
+          this.addTab(tabName);
         }
-        return _results;
+        return this.switchTab(tab || this.settings.tabs[0]);
+      };
+
+      Dialog.prototype.__prepareFiles = function(files) {
+        var file, _i, _len,
+          _this = this;
+        for (_i = 0, _len = files.length; _i < _len; _i++) {
+          file = files[_i];
+          this.files.add(file);
+        }
+        if (files.length) {
+          this.__showTab('preview');
+          this.switchTab('preview');
+        }
+        this.files.onAdd.add(function() {
+          if (_this.settings.previewStep) {
+            _this.__showTab('preview');
+            if (!_this.settings.multiple) {
+              return _this.switchTab('preview');
+            }
+          } else {
+            return _this.__resolve();
+          }
+        });
+        return this.files.onRemove.add(function() {
+          if (_this.files.length() === 0) {
+            return _this.__hideTab('preview');
+          }
+        });
       };
 
       Dialog.prototype.__closeDialog = function() {
@@ -20886,28 +21676,14 @@ var _require = (function() {
         });
       };
 
-      Dialog.prototype.__setFile = function(currentFile) {
-        this.currentFile = currentFile;
-        if (this.settings.previewStep) {
-          if (this.currentFile) {
-            this.tabs.preview.setFile(this.currentFile);
-            this.__showTab('preview');
-            return this.switchTab('preview');
-          } else {
-            return this.__hideTab('preview');
-          }
-        } else {
-          if (this.currentFile) {
-            return this.dfd.resolve(this.currentFile);
-          }
-        }
-      };
-
       Dialog.prototype.addTab = function(name) {
-        var tab, tabCls, tabs,
+        var TabCls, tabButton, tabPanel, tabs,
           _this = this;
         tabs = uploadcare.widget.tabs;
-        tabCls = (function() {
+        if (name in this.tabs) {
+          return;
+        }
+        TabCls = (function() {
           switch (name) {
             case 'file':
               return tabs.FileTab;
@@ -20922,20 +21698,23 @@ var _require = (function() {
             case 'instagram':
               return tabs.RemoteTabFor('instagram');
             case 'preview':
-              return tabs.PreviewTab;
+              if (this.settings.multiple) {
+                return tabs.PreviewTabMultiple;
+              } else {
+                return tabs.PreviewTab;
+              }
+            case 'welcome':
+              return tabs.StaticTabWith('welcome');
           }
-        })();
-        if (!tabCls) {
-          return false;
+        }).call(this);
+        if (!TabCls) {
+          throw new Error("No such tab: " + name);
         }
-        tab = new tabCls(this.dfd.promise(), this.settings);
-        $('<div>').addClass("uploadcare-dialog-tab uploadcare-dialog-tab-" + name).attr('title', t("tabs." + name + ".title")).on('click', function() {
+        tabPanel = $('<div>').hide().addClass('uploadcare-dialog-tabs-panel').addClass("uploadcare-dialog-tabs-panel-" + name).appendTo(this.content.find('.uploadcare-dialog-body'));
+        tabButton = $('<div>').addClass("uploadcare-dialog-tab uploadcare-dialog-tab-" + name).attr('title', t("tabs." + name + ".title")).on('click', function() {
           return _this.switchTab(name);
         }).appendTo(this.content.find('.uploadcare-dialog-tabs'));
-        tab.setContent($('<div>').hide().addClass('uploadcare-dialog-tabs-panel').addClass("uploadcare-dialog-tabs-panel-" + name).append(tpl("tab-" + name, {
-          avalibleTabs: this.settings.tabs
-        })).appendTo(this.content.find('.uploadcare-dialog-body')));
-        return tab;
+        return this.tabs[name] = new TabCls(tabPanel, tabButton, this.apiForTab(name), this.settings);
       };
 
       Dialog.prototype.switchTab = function(currentTab) {
@@ -20966,6 +21745,11 @@ var _require = (function() {
         return this.__updateFirstTab();
       };
 
+      Dialog.prototype.__welcome = function() {
+        this.addTab('welcome');
+        return this.switchTab('welcome');
+      };
+
       return Dialog;
 
     })();
@@ -20973,35 +21757,55 @@ var _require = (function() {
 
 }).call(this);
 (function() {
-  var $, namespace;
+  var $, MULTIPLE_UPLOAD_FILES_LIMIT, namespace, t, tpl, _ref, _ref1;
 
-  namespace = uploadcare.namespace, $ = uploadcare.jQuery;
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery, (_ref = uploadcare.templates, tpl = _ref.tpl), (_ref1 = uploadcare.locale, t = _ref1.t), MULTIPLE_UPLOAD_FILES_LIMIT = uploadcare.MULTIPLE_UPLOAD_FILES_LIMIT;
 
   namespace('uploadcare.widget.tabs', function(ns) {
-    return ns.BaseFileTab = (function() {
+    return ns.BaseSourceTab = (function() {
+      var CLASS_PREFIX, ROLE_PREFIX;
 
-      function BaseFileTab(dialog, settings) {
-        this.dialog = dialog;
+      CLASS_PREFIX = 'uploadcare-dialog-source-base-';
+
+      ROLE_PREFIX = '@' + CLASS_PREFIX;
+
+      function BaseSourceTab(container, tabButton, dialogApi, settings) {
+        var notDisabled, updateFooter,
+          _this = this;
+        this.container = container;
+        this.tabButton = tabButton;
+        this.dialogApi = dialogApi;
         this.settings = settings;
-        this.onSelected = $.Callbacks();
+        this.container.append(tpl('source-tab-base'));
+        this.wrap = this.container.find(ROLE_PREFIX + 'wrap');
+        notDisabled = ':not(.uploadcare-disabled-el)';
+        this.container.on('click', ROLE_PREFIX + 'show-files' + notDisabled, this.dialogApi.switchToPreview);
+        this.container.on('click', ROLE_PREFIX + 'done' + notDisabled, this.dialogApi.done);
+        updateFooter = function() {
+          var toLessFiles, toManyFiles;
+          toManyFiles = _this.dialogApi.fileColl.length() > MULTIPLE_UPLOAD_FILES_LIMIT;
+          toLessFiles = _this.dialogApi.fileColl.length() === 0;
+          _this.container.find(ROLE_PREFIX + 'done').toggleClass('uploadcare-disabled-el', toManyFiles || toLessFiles);
+          _this.container.find(ROLE_PREFIX + 'show-files').toggleClass('uploadcare-disabled-el', toLessFiles);
+          return _this.container.find(ROLE_PREFIX + 'footer-text').toggleClass('uploadcare-error', toManyFiles).text(toManyFiles ? t('dialog.tabs.preview.multiple.toManyFiles').replace('%max%', MULTIPLE_UPLOAD_FILES_LIMIT) : t('dialog.tabs.preview.multiple.title') + ' ' + t('file', _this.dialogApi.fileColl.length()));
+        };
+        updateFooter();
+        this.dialogApi.fileColl.onAdd.add(updateFooter);
+        this.dialogApi.fileColl.onRemove.add(updateFooter);
       }
 
-      BaseFileTab.prototype.setContent = function(content) {
-        throw new Error('not implemented');
-      };
-
-      return BaseFileTab;
+      return BaseSourceTab;
 
     })();
   });
 
 }).call(this);
 (function() {
-  var $, dragdrop, namespace, utils,
+  var $, dragdrop, namespace, tpl, utils, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  namespace = uploadcare.namespace, utils = uploadcare.utils, $ = uploadcare.jQuery;
+  namespace = uploadcare.namespace, utils = uploadcare.utils, $ = uploadcare.jQuery, (_ref = uploadcare.templates, tpl = _ref.tpl);
 
   dragdrop = uploadcare.widget.dragdrop;
 
@@ -21011,48 +21815,54 @@ var _require = (function() {
       __extends(FileTab, _super);
 
       function FileTab() {
-        return FileTab.__super__.constructor.apply(this, arguments);
+        var _this = this;
+        FileTab.__super__.constructor.apply(this, arguments);
+        this.wrap.append(tpl('tab-file', {
+          avalibleTabs: this.dialogApi.avalibleTabs
+        }));
+        this.wrap.on('click', '@uploadcare-dialog-switch-tab', function(e) {
+          return _this.dialogApi.switchTab($(e.target).data('tab'));
+        });
+        this.__setupFileButton();
+        this.__initDragNDrop();
       }
 
-      FileTab.prototype.setContent = function(content) {
-        this.content = content;
-        this.__setupFileButton();
-        return this.__initDragNDrop();
-      };
-
       FileTab.prototype.__initDragNDrop = function() {
-        var className, dropArea;
-        dropArea = this.content.find('@uploadcare-drop-area');
+        var className, dropArea,
+          _this = this;
+        dropArea = this.wrap.find('@uploadcare-drop-area');
         if (utils.abilities.fileDragAndDrop) {
-          dragdrop.receiveDrop(this.onSelected.fire, dropArea);
+          dragdrop.receiveDrop(function(type, data) {
+            return _this.dialogApi.addFiles(type, data);
+          }, dropArea);
           className = 'draganddrop';
         } else {
           className = 'no-draganddrop';
         }
-        return this.content.addClass("uploadcare-" + className);
+        return this.wrap.addClass("uploadcare-" + className);
       };
 
       FileTab.prototype.__setupFileButton = function() {
         var fileButton,
           _this = this;
-        fileButton = this.content.find('@uploadcare-dialog-browse-file');
+        fileButton = this.wrap.find('@uploadcare-dialog-browse-file');
         return utils.fileInput(fileButton, this.settings.multiple, function(e) {
-          return _this.onSelected.fire('event', e);
+          return _this.dialogApi.addFiles('event', e);
         });
       };
 
       return FileTab;
 
-    })(ns.BaseFileTab);
+    })(ns.BaseSourceTab);
   });
 
 }).call(this);
 (function() {
-  var $, namespace, t,
+  var $, namespace, t, tpl, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  namespace = uploadcare.namespace, $ = uploadcare.jQuery;
+  namespace = uploadcare.namespace, $ = uploadcare.jQuery, (_ref = uploadcare.templates, tpl = _ref.tpl);
 
   t = uploadcare.locale.t;
 
@@ -21061,10 +21871,6 @@ var _require = (function() {
       var fixUrl, urlRegexp;
 
       __extends(UrlTab, _super);
-
-      function UrlTab() {
-        return UrlTab.__super__.constructor.apply(this, arguments);
-      }
 
       urlRegexp = /^(http|https):\/\/.+\..+$/i;
 
@@ -21079,36 +21885,39 @@ var _require = (function() {
         }
       };
 
-      UrlTab.prototype.setContent = function(content) {
+      function UrlTab() {
         var button, input,
           _this = this;
-        this.content = content;
-        input = this.content.find('@uploadcare-dialog-url-input');
+        UrlTab.__super__.constructor.apply(this, arguments);
+        this.wrap.append(tpl('tab-url'));
+        input = this.wrap.find('@uploadcare-dialog-url-input');
         input.on('change keyup input', function() {
           return button.attr('disabled', !fixUrl($(this).val()));
         });
-        button = this.content.find('@uploadcare-dialog-url-submit').attr('disabled', true);
-        return this.content.find('@uploadcare-dialog-url-form').on('submit', function() {
+        button = this.wrap.find('@uploadcare-dialog-url-submit').attr('disabled', true);
+        this.wrap.find('@uploadcare-dialog-url-form').on('submit', function() {
           var url;
           if (url = fixUrl(input.val())) {
-            _this.onSelected.fire('url', url);
+            _this.dialogApi.addFiles('url', url);
+            input.val('');
           }
           return false;
         });
-      };
+      }
 
       return UrlTab;
 
-    })(ns.BaseFileTab);
+    })(ns.BaseSourceTab);
   });
 
 }).call(this);
 (function() {
-  var $, locale, namespace, utils,
+  var $, locale, namespace, t, utils, _ref,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  namespace = uploadcare.namespace, locale = uploadcare.locale, utils = uploadcare.utils, $ = uploadcare.jQuery;
+  namespace = uploadcare.namespace, locale = uploadcare.locale, utils = uploadcare.utils, $ = uploadcare.jQuery, (_ref = uploadcare.locale, t = _ref.t);
 
   namespace('uploadcare.widget.tabs', function(ns) {
     return ns.RemoteTabFor = function(service) {
@@ -21118,98 +21927,174 @@ var _require = (function() {
         __extends(RemoteTab, _super);
 
         function RemoteTab() {
-          return RemoteTab.__super__.constructor.apply(this, arguments);
+          this.__createIframe = __bind(this.__createIframe, this);
+
+          var _this = this;
+          RemoteTab.__super__.constructor.apply(this, arguments);
+          this.wrap.addClass('uploadcare-dialog-remote-iframe-wrap');
+          this.dialogApi.onSwitchedToMe.add(this.__createIframe);
+          this.dialogApi.onSwitched.add(function(_, switchedToMe) {
+            return _this.__sendMessage({
+              type: 'visibility-changed',
+              visible: switchedToMe
+            });
+          });
         }
 
-        RemoteTab.prototype.setContent = function(content) {
-          var _this = this;
-          this.content = content;
-          this.dialog.progress(function(tab) {
-            if (tab === service) {
-              return _this.createIframe();
-            }
-          });
-          return this.dialog.fail(function() {
-            return _this.cleanup();
-          });
+        RemoteTab.prototype.__sendMessage = function(messageObj) {
+          var _ref1, _ref2, _ref3;
+          return (_ref1 = this.iframe) != null ? (_ref2 = _ref1[0]) != null ? (_ref3 = _ref2.contentWindow) != null ? _ref3.postMessage(JSON.stringify(messageObj), '*') : void 0 : void 0 : void 0;
         };
 
-        RemoteTab.prototype.createIframe = function() {
-          var src;
+        RemoteTab.prototype.__createIframe = function() {
+          var nos, src,
+            _this = this;
           if (!this.iframe) {
-            this.windowId = utils.uuid();
-            this.createWatcher();
-            src = ("" + this.settings.socialBase + "/window/" + this.windowId + "/") + ("" + service + "?lang=" + locale.lang + "&public_key=" + this.settings.publicKey) + ("&widget_version=" + (encodeURIComponent(uploadcare.version)));
-            return this.iframe = $('<iframe>').attr('src', src).css({
+            src = ("" + this.settings.socialBase + "/window/" + service + "?") + $.param({
+              lang: this.settings.locale,
+              public_key: this.settings.publicKey,
+              widget_version: uploadcare.version
+            });
+            this.iframe = $('<iframe>').attr('src', src).css({
               width: '100%',
               height: '100%',
               border: 0,
               visibility: 'hidden'
-            }).appendTo(this.content).on('load', function() {
+            }).appendTo(this.wrap).on('load', function() {
               return $(this).css('visibility', 'visible');
             });
-          }
-        };
-
-        RemoteTab.prototype.createWatcher = function() {
-          var _this = this;
-          if (!this.watcher) {
-            this.watcher = new utils.pubsub.PubSub(this.settings, 'window', this.windowId);
-            $(this.watcher).on('done', function(e, state) {
-              _this.cleanup();
-              return _this.onSelected.fire('url', state.url);
+            nos = function(str) {
+              return str.toLowerCase().replace(/^https/, 'http');
+            };
+            return $(window).on("message", function(_arg) {
+              var e, goodOrigin, goodSource, message, _ref1, _ref2;
+              e = _arg.originalEvent;
+              goodOrigin = nos(e.origin) === nos(_this.settings.socialBase);
+              goodSource = e.source === ((_ref1 = _this.iframe) != null ? (_ref2 = _ref1[0]) != null ? _ref2.contentWindow : void 0 : void 0);
+              if (goodOrigin && goodSource) {
+                try {
+                  message = JSON.parse(e.data);
+                } catch (_error) {}
+                if ((message != null ? message.type : void 0) === 'file-selected') {
+                  _this.dialogApi.addFiles('url', message.url);
+                  return _this.__sendMessage({
+                    type: 'file-selected-received',
+                    url: message.url
+                  });
+                }
+              }
             });
-            return this.watcher.watch();
           }
-        };
-
-        RemoteTab.prototype.cleanup = function() {
-          var _ref, _ref1;
-          if ((_ref = this.watcher) != null) {
-            _ref.stop();
-          }
-          this.watcher = null;
-          if ((_ref1 = this.iframe) != null) {
-            _ref1.remove();
-          }
-          return this.iframe = null;
         };
 
         return RemoteTab;
 
-      })(ns.BaseFileTab);
+      })(ns.BaseSourceTab);
     };
   });
 
 }).call(this);
 (function() {
-  var $, CropWidget, namespace, progress, t, tpl, utils, _ref, _ref1, _ref2, _ref3;
+  var $, Circle, namespace, _ref, _ref1;
 
-  namespace = uploadcare.namespace, utils = uploadcare.utils, (_ref = uploadcare.ui, progress = _ref.progress), (_ref1 = uploadcare.templates, tpl = _ref1.tpl), $ = uploadcare.jQuery, (_ref2 = uploadcare.crop, CropWidget = _ref2.CropWidget), (_ref3 = uploadcare.locale, t = _ref3.t);
+  namespace = uploadcare.namespace, (_ref = uploadcare.ui, (_ref1 = _ref.progress, Circle = _ref1.Circle)), $ = uploadcare.jQuery;
 
   namespace('uploadcare.widget.tabs', function(ns) {
-    return ns.PreviewTab = (function() {
+    return ns.BasePreviewTab = (function() {
       var PREFIX;
 
       PREFIX = '@uploadcare-dialog-preview-';
 
-      function PreviewTab(dialog, settings) {
-        this.dialog = dialog;
+      function BasePreviewTab(container, tabButton, dialogApi, settings) {
+        var notDisabled;
+        this.container = container;
+        this.tabButton = tabButton;
+        this.dialogApi = dialogApi;
         this.settings = settings;
-        this.onDone = $.Callbacks();
-        this.onBack = $.Callbacks();
-        this.__doCrop = this.settings.__cropParsed.enabled;
+        this.__initTabButtonCircle();
+        notDisabled = ':not(.uploadcare-disabled-el)';
+        this.container.on('click', PREFIX + 'back' + notDisabled, this.dialogApi.clearFiles);
+        this.container.on('click', PREFIX + 'done' + notDisabled, this.dialogApi.done);
       }
 
-      PreviewTab.prototype.setContent = function(content) {
-        var notDisabled;
-        this.content = content;
-        notDisabled = ':not(.uploadcare-disabled-el)';
-        this.content.on('click', PREFIX + 'back' + notDisabled, this.onBack.fire);
-        return this.content.on('click', PREFIX + 'done' + notDisabled, this.onDone.fire);
+      BasePreviewTab.prototype.__initTabButtonCircle = function() {
+        var buttonHovered, circle, circleDf, circleEl, size, tabActive, update, updateTheme,
+          _this = this;
+        size = 28;
+        circleEl = $('<div>').appendTo(this.tabButton).css({
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          marginTop: size / -2,
+          marginLeft: size / -2,
+          width: size,
+          height: size
+        });
+        circleDf = $.Deferred();
+        update = function() {
+          var infos, progress, progressInfo, _i, _len;
+          infos = _this.dialogApi.fileColl.lastProgresses();
+          progress = 0;
+          for (_i = 0, _len = infos.length; _i < _len; _i++) {
+            progressInfo = infos[_i];
+            progress += ((progressInfo != null ? progressInfo.progress : void 0) || 0) / infos.length;
+          }
+          return circleDf.notify({
+            progress: progress
+          });
+        };
+        this.dialogApi.fileColl.onAnyProgress.add(update);
+        this.dialogApi.fileColl.onAdd.add(update);
+        this.dialogApi.fileColl.onRemove.add(update);
+        circle = new Circle(circleEl).listen(circleDf.promise(), 'progress');
+        updateTheme = function() {
+          return circle.setColorTheme(tabActive ? 'default' : buttonHovered ? 'darkGrey' : 'grey');
+        };
+        tabActive = false;
+        this.dialogApi.onSwitched.add(function(_, switchedToMe) {
+          tabActive = switchedToMe;
+          return updateTheme();
+        });
+        buttonHovered = false;
+        return this.tabButton.hover(function() {
+          buttonHovered = true;
+          return updateTheme();
+        }, function() {
+          buttonHovered = false;
+          return updateTheme();
+        });
       };
 
-      PreviewTab.prototype.setFile = function(file) {
+      return BasePreviewTab;
+
+    })();
+  });
+
+}).call(this);
+(function() {
+  var $, CropWidget, namespace, progress, t, tpl, utils, _ref, _ref1, _ref2, _ref3,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  namespace = uploadcare.namespace, utils = uploadcare.utils, (_ref = uploadcare.ui, progress = _ref.progress), (_ref1 = uploadcare.templates, tpl = _ref1.tpl), $ = uploadcare.jQuery, (_ref2 = uploadcare.crop, CropWidget = _ref2.CropWidget), (_ref3 = uploadcare.locale, t = _ref3.t);
+
+  namespace('uploadcare.widget.tabs', function(ns) {
+    return ns.PreviewTab = (function(_super) {
+      var PREFIX;
+
+      __extends(PreviewTab, _super);
+
+      PREFIX = '@uploadcare-dialog-preview-';
+
+      function PreviewTab() {
+        this.__setFile = __bind(this.__setFile, this);
+        PreviewTab.__super__.constructor.apply(this, arguments);
+        this.__doCrop = this.settings.__cropParsed.enabled;
+        this.dialogApi.fileColl.onAdd.add(this.__setFile);
+      }
+
+      PreviewTab.prototype.__setFile = function(file) {
         var _this = this;
         this.file = file;
         this.__setState('unknown');
@@ -21237,7 +22122,7 @@ var _require = (function() {
           data = $.extend({
             file: progressInfo.incompleteFileInfo
           }, data);
-          _this.content.empty().append(tpl("tab-preview-" + state, data));
+          _this.container.empty().append(tpl("tab-preview-" + state, data));
           return _this.__afterRender(state);
         }));
       };
@@ -21255,16 +22140,16 @@ var _require = (function() {
       };
 
       PreviewTab.prototype.__hideDoneButton = function() {
-        return this.content.find(PREFIX + 'done').hide();
+        return this.container.find(PREFIX + 'done').hide();
       };
 
       PreviewTab.prototype.__initCrop = function() {
         var _this = this;
         return setTimeout((function() {
           var container, doneButton, img, widget;
-          img = _this.content.find(PREFIX + 'image');
+          img = _this.container.find(PREFIX + 'image');
           container = img.parent();
-          doneButton = _this.content.find(PREFIX + 'done');
+          doneButton = _this.container.find(PREFIX + 'done');
           widget = new CropWidget($.extend({}, _this.settings.__cropParsed, {
             container: container,
             controls: false
@@ -21290,13 +22175,13 @@ var _require = (function() {
             }
           });
           img.remove();
-          return _this.content.find('.uploadcare-dialog-title').text(t('dialog.tabs.preview.crop.title'));
+          return _this.container.find('.uploadcare-dialog-title').text(t('dialog.tabs.preview.crop.title'));
         }), 100);
       };
 
       PreviewTab.prototype.__initCircle = function() {
         var circle, circleEl;
-        circleEl = this.content.find('@uploadcare-dialog-preview-circle');
+        circleEl = this.container.find('@uploadcare-dialog-preview-circle');
         if (circleEl.length) {
           circle = new progress.Circle(circleEl);
           return circle.listen(this.file);
@@ -21305,48 +22190,176 @@ var _require = (function() {
 
       return PreviewTab;
 
-    })();
+    })(ns.BasePreviewTab);
   });
 
 }).call(this);
 (function() {
-  var $, namespace, t, uploads, utils,
+  var $, CropWidget, MULTIPLE_UPLOAD_FILES_LIMIT, namespace, progress, t, tpl, utils, _ref, _ref1, _ref2, _ref3,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  namespace = uploadcare.namespace, utils = uploadcare.utils, (_ref = uploadcare.ui, progress = _ref.progress), (_ref1 = uploadcare.templates, tpl = _ref1.tpl), $ = uploadcare.jQuery, (_ref2 = uploadcare.crop, CropWidget = _ref2.CropWidget), (_ref3 = uploadcare.locale, t = _ref3.t), MULTIPLE_UPLOAD_FILES_LIMIT = uploadcare.MULTIPLE_UPLOAD_FILES_LIMIT;
+
+  namespace('uploadcare.widget.tabs', function(ns) {
+    return ns.PreviewTabMultiple = (function(_super) {
+      var CLASS_PREFIX, ROLE_PREFIX;
+
+      __extends(PreviewTabMultiple, _super);
+
+      CLASS_PREFIX = 'uploadcare-dpm-';
+
+      ROLE_PREFIX = '@' + CLASS_PREFIX;
+
+      function PreviewTabMultiple() {
+        this.__removeFile = __bind(this.__removeFile, this);
+
+        this.__addFile = __bind(this.__addFile, this);
+
+        this.__updateFileInfo = __bind(this.__updateFileInfo, this);
+
+        this.__fileFailed = __bind(this.__fileFailed, this);
+
+        this.__fileDone = __bind(this.__fileDone, this);
+
+        this.__fileProgress = __bind(this.__fileProgress, this);
+
+        this.__updateContainerView = __bind(this.__updateContainerView, this);
+
+        var file, _i, _len, _ref4;
+        PreviewTabMultiple.__super__.constructor.apply(this, arguments);
+        this.container.append(tpl('tab-preview-multiple'));
+        this.fileListEl = this.__find('file-list');
+        this.filesCountEl = this.__find('files-count');
+        this.footerText = this.__find('footer-text');
+        this.doneBtnEl = this.container.find('@uploadcare-dialog-preview-done');
+        _ref4 = this.dialogApi.fileColl.get();
+        for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+          file = _ref4[_i];
+          this.__addFile(file);
+        }
+        this.dialogApi.fileColl.onAdd.add([this.__addFile, this.__updateContainerView]);
+        this.dialogApi.fileColl.onRemove.add([this.__removeFile, this.__updateContainerView]);
+        this.dialogApi.fileColl.onAnyProgress.add(this.__fileProgress);
+        this.dialogApi.fileColl.onAnyDone.add(this.__fileDone);
+        this.dialogApi.fileColl.onAnyFail.add(this.__fileFailed);
+      }
+
+      PreviewTabMultiple.prototype.__find = function(s, context) {
+        if (context == null) {
+          context = this.container;
+        }
+        return $(ROLE_PREFIX + s, context);
+      };
+
+      PreviewTabMultiple.prototype.__updateContainerView = function() {
+        var toManyFiles;
+        this.filesCountEl.text(t('file', this.dialogApi.fileColl.length()));
+        toManyFiles = this.dialogApi.fileColl.length() > MULTIPLE_UPLOAD_FILES_LIMIT;
+        this.doneBtnEl.toggleClass('uploadcare-disabled-el', toManyFiles);
+        return this.footerText.toggleClass('uploadcare-error', toManyFiles).text(toManyFiles ? t('dialog.tabs.preview.multiple.toManyFiles').replace('%max%', MULTIPLE_UPLOAD_FILES_LIMIT) : t('dialog.tabs.preview.multiple.question'));
+      };
+
+      PreviewTabMultiple.prototype.__fileProgress = function(file, progressInfo) {
+        var fileEl;
+        fileEl = this.__fileToEl(file);
+        this.__find('file-progressbar-value', fileEl).css('width', Math.round(progressInfo.progress * 100) + '%');
+        return this.__updateFileInfo(file, progressInfo.incompleteFileInfo);
+      };
+
+      PreviewTabMultiple.prototype.__fileDone = function(file, info) {
+        this.__fileToEl(file).addClass(CLASS_PREFIX + 'uploaded');
+        return this.__updateFileInfo(file, info);
+      };
+
+      PreviewTabMultiple.prototype.__fileFailed = function(file, error, info) {
+        var fileEl;
+        fileEl = this.__fileToEl(file);
+        fileEl.addClass(CLASS_PREFIX + 'error');
+        this.__find('file-error', fileEl).text(t("errors." + error));
+        return this.__updateFileInfo(file, info);
+      };
+
+      PreviewTabMultiple.prototype.__updateFileInfo = function(file, info) {
+        var fileEl, pWrapEl;
+        fileEl = this.__fileToEl(file);
+        fileEl.toggleClass(CLASS_PREFIX + 'image', !!info.isImage);
+        if (info.isImage) {
+          pWrapEl = this.__find('file-preview-wrap', fileEl);
+          utils.squareImage(pWrapEl, info.previewUrl);
+        }
+        this.__find('file-name', fileEl).text(info.name || t('dialog.tabs.preview.unknownName'));
+        return this.__find('file-size', fileEl).text(utils.readableFileSize(info.size, '–'));
+      };
+
+      PreviewTabMultiple.prototype.__addFile = function(file) {
+        return $(file).data('dmp-el', this.__createFileEl(file));
+      };
+
+      PreviewTabMultiple.prototype.__removeFile = function(file) {
+        return this.__fileToEl(file).remove();
+      };
+
+      PreviewTabMultiple.prototype.__fileToEl = function(file) {
+        return $(file).data('dmp-el');
+      };
+
+      PreviewTabMultiple.prototype.__createFileEl = function(file) {
+        var _this = this;
+        return $(tpl('tab-preview-multiple-file')).appendTo(this.fileListEl).on('click', ROLE_PREFIX + 'file-remove', (function() {
+          return _this.dialogApi.removeFile(file);
+        }));
+      };
+
+      return PreviewTabMultiple;
+
+    })(ns.BasePreviewTab);
+  });
+
+}).call(this);
+(function() {
+  var namespace, tpl, _ref;
+
+  namespace = uploadcare.namespace, (_ref = uploadcare.templates, tpl = _ref.tpl);
+
+  namespace('uploadcare.widget.tabs', function(ns) {
+    return ns.StaticTabWith = function(tplName) {
+      var StaticTab;
+      return StaticTab = (function() {
+
+        function StaticTab(container) {
+          this.container = container;
+          this.container.append(tpl("tab-" + tplName));
+        }
+
+        return StaticTab;
+
+      })();
+    };
+  });
+
+}).call(this);
+(function() {
+  var $, namespace, s, t, utils, _ref,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  namespace = uploadcare.namespace, utils = uploadcare.utils, uploads = uploadcare.uploads, $ = uploadcare.jQuery;
-
-  t = uploadcare.locale.t;
+  namespace = uploadcare.namespace, utils = uploadcare.utils, s = uploadcare.settings, $ = uploadcare.jQuery, (_ref = uploadcare.locale, t = _ref.t);
 
   namespace('uploadcare.widget', function(ns) {
-    return ns.Widget = (function() {
+    return ns.BaseWidget = (function() {
 
-      function Widget(element) {
-        this.__openDialogWithFile = __bind(this.__openDialogWithFile, this);
-
-        this.__fail = __bind(this.__fail, this);
-
-        this.reloadInfo = __bind(this.reloadInfo, this);
-
-        this.__setFile = __bind(this.__setFile, this);
-
+      function BaseWidget(element) {
         this.__reset = __bind(this.__reset, this);
 
-        var __onUploadComplete,
-          _this = this;
+        var _this = this;
         this.element = $(element);
-        this.settings = utils.buildSettings(this.element.data());
+        this.settings = s.build(this.element.data());
         this.__onChange = $.Callbacks();
         this.onChange = utils.publicCallbacks(this.__onChange);
-        __onUploadComplete = $.Callbacks();
-        this.onUploadComplete = utils.publicCallbacks(__onUploadComplete);
-        this.__onChange.add(function(file) {
-          return file != null ? file.done(function(info) {
-            return __onUploadComplete.fire(info);
-          }) : void 0;
-        });
+        this.__initOnUploadComplete();
         this.__setupWidget();
-        this.currentFile = null;
         this.template.reset();
         this.element.on('change.uploadcare', function() {
           return _this.reloadInfo();
@@ -21354,109 +22367,12 @@ var _require = (function() {
         this.reloadInfo();
       }
 
-      Widget.prototype.__reset = function(keepValue) {
-        var _ref;
-        if (keepValue == null) {
-          keepValue = false;
-        }
-        if ((_ref = this.currentFile) != null) {
-          _ref.cancel();
-        }
-        this.currentFile = null;
-        this.template.reset();
-        if (!keepValue) {
-          return this.__setValue('');
-        }
-      };
-
-      Widget.prototype.__setFile = function(newFile, keepValue) {
-        var _this = this;
-        if (keepValue == null) {
-          keepValue = false;
-        }
-        if (newFile === this.currentFile) {
-          if (newFile) {
-            if (!keepValue) {
-              this.__updateValue();
-            }
-          }
-          return;
-        }
-        this.__reset(keepValue);
-        if (newFile) {
-          this.currentFile = newFile;
-          this.template.listen(this.currentFile);
-          this.currentFile.fail(function(error) {
-            if (newFile === _this.currentFile) {
-              return _this.__fail(error);
-            }
-          }).done(function(info) {
-            if (newFile === _this.currentFile) {
-              _this.template.setFileInfo(info);
-              return _this.template.loaded();
-            }
-          });
-          if (!keepValue) {
-            return this.__updateValue();
-          }
-        }
-      };
-
-      Widget.prototype.__updateValue = function() {
-        var file,
-          _this = this;
-        file = this.currentFile;
-        return this.currentFile.done(function(info) {
-          if (file === _this.currentFile) {
-            return _this.__setValue(info.cdnUrlModifiers || _this.settings.pathValue ? info.cdnUrl : info.uuid);
-          }
-        });
-      };
-
-      Widget.prototype.__setValue = function(value) {
-        if (this.element.val() !== value) {
-          this.element.val(value);
-          return this.__onChange.fire(this.currentFile);
-        }
-      };
-
-      Widget.prototype.value = function(value) {
-        if (value != null) {
-          if (this.element.val() !== value) {
-            this.__setFile(value.done && value.fail ? value : uploadcare.fileFrom('url', value, this.settings));
-          }
-          return this;
-        } else {
-          return this.currentFile;
-        }
-      };
-
-      Widget.prototype.reloadInfo = function() {
-        var file;
-        if (this.element.val()) {
-          file = uploadcare.fileFrom('url', this.element.val(), this.settings);
-          this.__setFile(file, true);
-        } else {
-          this.__reset();
-        }
-        return this;
-      };
-
-      Widget.prototype.__fail = function(error) {
-        this.__reset();
-        return this.template.error(error);
-      };
-
-      Widget.prototype.__setupWidget = function() {
+      BaseWidget.prototype.__setupWidget = function() {
         var dialogButton, fileButton,
           _this = this;
         this.template = new ns.Template(this.settings, this.element);
-        this.template.addButton('cancel', t('buttons.cancel')).on('click', function() {
-          return _this.__reset();
-        });
-        this.template.addButton('remove', t('buttons.remove')).on('click', function() {
-          return _this.__reset();
-        });
+        this.template.addButton('cancel', t('buttons.cancel')).on('click', this.__reset);
+        this.template.addButton('remove', t('buttons.remove')).on('click', this.__reset);
         if (this.settings.tabs.length > 0) {
           if (__indexOf.call(this.settings.tabs, 'file') >= 0) {
             fileButton = this.template.addButton('file');
@@ -21469,7 +22385,7 @@ var _require = (function() {
             return _this.openDialog();
           });
         }
-        ns.dragdrop.receiveDrop(this.__openDialogWithFile, this.template.dropArea);
+        ns.dragdrop.receiveDrop(this.__handleDirectSelection, this.template.dropArea);
         this.template.dropArea.on('dragstatechange.uploadcare', function(e, active) {
           if (!(active && uploadcare.isDialogOpened())) {
             return _this.template.dropArea.toggleClass('uploadcare-dragging', active);
@@ -21480,7 +22396,153 @@ var _require = (function() {
         });
       };
 
-      Widget.prototype.__openDialogWithFile = function(type, data) {
+      BaseWidget.prototype.__infoToValue = function(info) {
+        if (info.cdnUrlModifiers || this.settings.pathValue) {
+          return info.cdnUrl;
+        } else {
+          return info.uuid;
+        }
+      };
+
+      BaseWidget.prototype.__setValue = function(value) {
+        if (this.element.val() !== value) {
+          this.element.val(value);
+          return this.__onChange.fire(this.__currentObject());
+        }
+      };
+
+      BaseWidget.prototype.__reset = function() {
+        this.__clearCurrentObj();
+        this.template.reset();
+        return this.__setValue('');
+      };
+
+      BaseWidget.prototype.__watchCurrentObject = function() {
+        var object,
+          _this = this;
+        object = this.__currentFile();
+        if (object) {
+          this.template.listen(object);
+          return object.fail(function(error) {
+            if (object === _this.__currentFile()) {
+              return _this.__onUploadingFailed(error);
+            }
+          }).done(function(info) {
+            if (object === _this.__currentFile()) {
+              return _this.__onUploadingDone(info);
+            }
+          });
+        }
+      };
+
+      BaseWidget.prototype.__onUploadingDone = function(info) {
+        this.__setValue(this.__infoToValue(info));
+        this.template.setFileInfo(info);
+        return this.template.loaded();
+      };
+
+      BaseWidget.prototype.__onUploadingFailed = function(error) {
+        return this.template.error(error);
+      };
+
+      BaseWidget.prototype.api = function() {
+        if (!this.__api) {
+          this.__api = utils.bindAll(this, ['openDialog', 'reloadInfo', 'value']);
+          this.__api.onChange = this.onChange;
+          this.__api.onUploadComplete = this.onUploadComplete;
+        }
+        return this.__api;
+      };
+
+      return BaseWidget;
+
+    })();
+  });
+
+}).call(this);
+(function() {
+  var $, namespace, s, utils,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  namespace = uploadcare.namespace, utils = uploadcare.utils, s = uploadcare.settings, $ = uploadcare.jQuery;
+
+  namespace('uploadcare.widget', function(ns) {
+    return ns.Widget = (function(_super) {
+
+      __extends(Widget, _super);
+
+      function Widget(element) {
+        this.__handleDirectSelection = __bind(this.__handleDirectSelection, this);
+
+        this.reloadInfo = __bind(this.reloadInfo, this);
+
+        this.__setFile = __bind(this.__setFile, this);
+        this.currentFile = null;
+        Widget.__super__.constructor.apply(this, arguments);
+      }
+
+      Widget.prototype.__initOnUploadComplete = function() {
+        var __onUploadComplete,
+          _this = this;
+        __onUploadComplete = $.Callbacks();
+        this.onUploadComplete = utils.publicCallbacks(__onUploadComplete);
+        return this.__onChange.add(function(file) {
+          return file != null ? file.done(function(info) {
+            return __onUploadComplete.fire(info);
+          }) : void 0;
+        });
+      };
+
+      Widget.prototype.__currentObject = function() {
+        return this.currentFile;
+      };
+
+      Widget.prototype.__currentFile = function() {
+        return this.currentFile;
+      };
+
+      Widget.prototype.__clearCurrentObj = function() {
+        var _ref;
+        if ((_ref = this.currentFile) != null) {
+          _ref.cancel();
+        }
+        return this.currentFile = null;
+      };
+
+      Widget.prototype.__setFile = function(newFile) {
+        if (newFile !== this.currentFile) {
+          this.__reset();
+          if (newFile) {
+            this.currentFile = newFile;
+            return this.__watchCurrentObject();
+          }
+        }
+      };
+
+      Widget.prototype.__onUploadingFailed = function() {
+        this.__reset();
+        return Widget.__super__.__onUploadingFailed.apply(this, arguments);
+      };
+
+      Widget.prototype.value = function(value) {
+        if (value != null) {
+          if (this.element.val() !== value) {
+            this.__setFile(utils.anyToFile(value, this.settings));
+          }
+          return this;
+        } else {
+          return this.currentFile;
+        }
+      };
+
+      Widget.prototype.reloadInfo = function() {
+        this.__setFile(utils.anyToFile(this.element.val(), this.settings));
+        return this;
+      };
+
+      Widget.prototype.__handleDirectSelection = function(type, data) {
         var file;
         file = uploadcare.fileFrom(type, data, this.settings);
         if (this.settings.previewStep) {
@@ -21499,84 +22561,219 @@ var _require = (function() {
         });
       };
 
-      Widget.prototype.api = function() {
-        if (!this.__api) {
-          this.__api = utils.bindAll(this, ['openDialog', 'reloadInfo', 'value']);
-          this.__api.onChange = this.onChange;
-          this.__api.onUploadComplete = this.onUploadComplete;
-        }
-        return this.__api;
-      };
-
       return Widget;
 
-    })();
+    })(ns.BaseWidget);
   });
 
 }).call(this);
 (function() {
-  var $, cleanup, dataAttr, initialize, initializeWidget, live;
+  var $, namespace, t, utils, _ref,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  $ = uploadcare.jQuery;
+  namespace = uploadcare.namespace, utils = uploadcare.utils, $ = uploadcare.jQuery, (_ref = uploadcare.locale, t = _ref.t);
 
-  dataAttr = 'uploadcareWidget';
+  namespace('uploadcare.widget', function(ns) {
+    return ns.MultipleWidget = (function(_super) {
 
-  uploadcare.initialize = function(container) {
-    if (container == null) {
-      container = 'body';
-    }
-    return initialize($(container).find('@uploadcare-uploader'));
-  };
+      __extends(MultipleWidget, _super);
 
-  initialize = function(targets) {
-    var target, _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = targets.length; _i < _len; _i++) {
-      target = targets[_i];
-      _results.push(uploadcare.Widget(target));
-    }
-    return _results;
-  };
+      function MultipleWidget(element) {
+        this.__handleDirectSelection = __bind(this.__handleDirectSelection, this);
 
-  uploadcare.Widget = function(target) {
-    var el;
-    el = $(target).eq(0);
-    return initializeWidget(el);
-  };
+        this.reloadInfo = __bind(this.reloadInfo, this);
 
-  initializeWidget = function(el) {
-    var widget;
-    widget = el.data(dataAttr);
-    if (!widget || el[0] !== widget.element[0]) {
-      cleanup(el);
-      widget = new uploadcare.widget.Widget(el);
-      el.data(dataAttr, widget);
-      widget.template.content.data(dataAttr, widget.template);
-    }
-    return widget.api();
-  };
+        this.__setGroup = __bind(this.__setGroup, this);
+        this.currentGroup = null;
+        MultipleWidget.__super__.constructor.apply(this, arguments);
+      }
 
-  cleanup = function(el) {
-    var template;
-    el.off('.uploadcare');
-    el = el.next('.uploadcare-widget');
-    template = el.data(dataAttr);
-    if (el.length && (!template || el[0] !== template.content[0])) {
-      return el.remove();
-    }
-  };
+      MultipleWidget.prototype.__initOnUploadComplete = function() {
+        var __onUploadComplete,
+          _this = this;
+        __onUploadComplete = $.Callbacks();
+        this.onUploadComplete = utils.publicCallbacks(__onUploadComplete);
+        return this.__onChange.add(function(group) {
+          return group != null ? group.promise().done(function(info) {
+            return __onUploadComplete.fire(info);
+          }) : void 0;
+        });
+      };
 
-  live = function() {
-    return initialize($('@uploadcare-uploader'));
-  };
+      MultipleWidget.prototype.__currentObject = function() {
+        return this.currentGroup;
+      };
 
-  if (uploadcare.defaults.live) {
-    $(function() {
-      return setInterval(live, 100);
+      MultipleWidget.prototype.__currentFile = function() {
+        var _ref1;
+        return (_ref1 = this.currentGroup) != null ? _ref1.promise() : void 0;
+      };
+
+      MultipleWidget.prototype.__setGroup = function(group) {
+        if (!utils.isFileGroupsEqual(this.currentGroup, group)) {
+          this.__reset();
+          if (group && group.files().length) {
+            this.currentGroup = group;
+            return this.__watchCurrentObject();
+          }
+        }
+      };
+
+      MultipleWidget.prototype.__setGroupByPromise = function(groupPr) {
+        var _this = this;
+        this.__lastGroupPr = groupPr;
+        this.__reset();
+        this.template.setStatus('started');
+        this.template.statusText.text(t('loadingInfo'));
+        return groupPr.done(function(group) {
+          if (_this.__lastGroupPr === groupPr) {
+            _this.__reset();
+            return _this.__setGroup(group);
+          }
+        }).fail(function() {
+          if (_this.__lastGroupPr === groupPr) {
+            return _this.template.error('createGroup');
+          }
+        });
+      };
+
+      MultipleWidget.prototype.__clearCurrentObj = function() {
+        return this.currentGroup = null;
+      };
+
+      MultipleWidget.prototype.__onUploadingFailed = function(error) {
+        if (error === 'createGroup') {
+          this.__reset();
+        }
+        return MultipleWidget.__super__.__onUploadingFailed.apply(this, arguments);
+      };
+
+      MultipleWidget.prototype.value = function(value) {
+        if (value != null) {
+          if (this.element.val() !== value) {
+            this.__setGroupByPromise(utils.anyToFileGroup(value, this.settings));
+          }
+          return this;
+        } else {
+          return this.currentGroup;
+        }
+      };
+
+      MultipleWidget.prototype.reloadInfo = function() {
+        this.__setGroupByPromise(utils.anyToFileGroup(this.element.val(), this.settings));
+        return this;
+      };
+
+      MultipleWidget.prototype.__handleDirectSelection = function(type, data) {
+        var files;
+        files = uploadcare.filesFrom(type, data, this.settings);
+        if (this.settings.previewStep) {
+          return uploadcare.openDialog(files, this.settings).done(this.__setGroup);
+        } else {
+          return this.__setGroup(uploadcare.FileGroup(files, this.settings));
+        }
+      };
+
+      MultipleWidget.prototype.openDialog = function(tab) {
+        var _this = this;
+        return uploadcare.openDialog(this.currentGroup, tab, this.settings).done(this.__setGroup).fail(function(group) {
+          if (!utils.isFileGroupsEqual(group, _this.currentGroup)) {
+            return _this.__setGroup(null);
+          }
+        });
+      };
+
+      return MultipleWidget;
+
+    })(ns.BaseWidget);
+  });
+
+}).call(this);
+(function() {
+  var $, namespace, s, utils;
+
+  utils = uploadcare.utils, namespace = uploadcare.namespace, s = uploadcare.settings, $ = uploadcare.jQuery;
+
+  namespace('uploadcare', function(ns) {
+    var cleanup, dataAttr, getSettings, initialize, initializeWidget;
+    dataAttr = 'uploadcareWidget';
+    ns.initialize = function(container) {
+      if (container == null) {
+        container = 'body';
+      }
+      return initialize($(container).find('@uploadcare-uploader'));
+    };
+    getSettings = function(el) {
+      return s.build($(el).data());
+    };
+    initialize = function(targets) {
+      var method, target, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = targets.length; _i < _len; _i++) {
+        target = targets[_i];
+        method = getSettings(target).multiple ? 'MultipleWidget' : 'Widget';
+        _results.push(uploadcare[method](target));
+      }
+      return _results;
+    };
+    ns.Widget = function(target) {
+      var el;
+      el = $(target).eq(0);
+      if (!getSettings(el).multiple) {
+        return initializeWidget(el, ns.widget.Widget);
+      } else {
+        throw new Error('Widget can\'t be initialized on this element');
+      }
+    };
+    ns.MultipleWidget = function(target) {
+      var el;
+      el = $(target).eq(0);
+      if (getSettings(el).multiple) {
+        return initializeWidget(el, ns.widget.MultipleWidget);
+      } else {
+        throw new Error('MultipleWidget can\'t be initialized on this element');
+      }
+    };
+    initializeWidget = function(el, Widget) {
+      var widget;
+      widget = el.data(dataAttr);
+      if (!widget || el[0] !== widget.element[0]) {
+        cleanup(el);
+        widget = new Widget(el);
+        el.data(dataAttr, widget);
+        widget.template.content.data(dataAttr, widget.template);
+      }
+      return widget.api();
+    };
+    cleanup = function(el) {
+      var template;
+      el.off('.uploadcare');
+      el = el.next('.uploadcare-widget');
+      template = el.data(dataAttr);
+      if (el.length && (!template || el[0] !== template.content[0])) {
+        return el.remove();
+      }
+    };
+    ns.start = function(settings) {
+      var live;
+      s.common(settings);
+      live = function() {
+        return initialize($('@uploadcare-uploader'));
+      };
+      if (s.build().live) {
+        return setInterval(live, 100);
+      } else {
+        return live();
+      }
+    };
+    return $(function() {
+      if (!s.globals().manualStart) {
+        return ns.start();
+      }
     });
-  } else {
-    $(live);
-  }
+  });
 
 }).call(this);
 (function() {
@@ -21627,17 +22824,23 @@ var _require = (function() {
   var expose, key,
     __hasProp = {}.hasOwnProperty;
 
-  uploadcare.version = '0.6.9.2';
+  uploadcare.version = '0.8';
 
   expose = uploadcare.expose;
 
   expose('whenReady');
 
-  expose('defaults');
+  expose('globals', uploadcare.settings.globals);
+
+  expose('start');
 
   expose('initialize');
 
   expose('fileFrom');
+
+  expose('FileGroup');
+
+  expose('loadFileGroup');
 
   expose('locales', (function() {
     var _ref, _results;
@@ -21655,6 +22858,8 @@ var _require = (function() {
   expose('Circle', uploadcare.ui.progress.Circle);
 
   expose('Widget');
+
+  expose('MultipleWidget');
 
 }).call(this);
 }({}));
