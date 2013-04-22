@@ -11,7 +11,9 @@ This is a Rails gem for using the [Uploadcare.com](https://uploadcare.com) servi
 
 # Usage
 
-This gem provides ability to attach Uploadcare files to your models. To do that, you need a string field in your model, which is going to hold an Uploadcare file's UUID.
+This gem provides ability to attach Uploadcare files to your models. To do that, you need a string field in your model, which is going to hold an Uploadcare file's CDN URL.
+
+## Configuration
 
 The first thing is to configure stuff for Uploadcare. Create a file `config/initializers/uploadcare.rb`:
 
@@ -25,7 +27,9 @@ end
 
 (These are our *demo* keys. You can use them to try things out. Don't forget to change them to your own keys before building anything serious). 
 
-Add such an attribute to your model. First, create and run a migration:
+## Models
+
+Add an attribute to your model. First, create and run a migration:
 
     rails generate migration AddFileToPost file:string
     rake db:migrate
@@ -38,6 +42,8 @@ class Post < ActiveRecord::Base
   is_uploadcare_file :file                        # this is the line you want to add
 end
 ```
+
+## Forms
 
 To display nice widgets for file upload, include the script for desired widget version (here we use 0.8) in your layout.
 
@@ -63,6 +69,8 @@ Now we can use the Uploadcare widget in our forms:
 # or, if you use `simple_form`
 <%= form.input :file, as: :uploadcare_uploader %>
 ```
+
+## Displaying files
 
 Uploadcare-rails gem takes care of storing files when saving a model, so as soon as you add a field to your form, everything should work, and you'll be able to show an image just like that:
 
