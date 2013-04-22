@@ -14,7 +14,7 @@ module Uploadcare
       alias_method :public_url, :cdn_url
 
       def api
-        @api.file(@cdn_url)
+        @file ||= @api.file(@cdn_url)
       end
 
       alias_method :info, :api
