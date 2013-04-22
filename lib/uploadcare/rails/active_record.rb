@@ -8,24 +8,14 @@ module Uploadcare
           force_autostore: false
         }.update options
 
-        get_uuid = lambda do |attributes|
-          re = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i
-          m = re.match(attributes[attribute.to_s])
-          if m.nil?
-            nil
-          else
-            m[0]
-          end
-        end
-
         define_method "#{attribute}" do
-          uuid = get_uuid.call(attributes)
-          return nil unless uuid
+          cdn_url = attributes[attribute.to_s]
+          return nil unless cdn_url
 
           if instance_variable_defined?("@#{attribute}_cached")
             instance_variable_get("@#{attribute}_cached")
           else
-            file_data = ::Rails.application.config.uploadcare.api.file(uuid)
+            file_data = ::Rails.application.config.uploadcare.api.file(cdn_url)
             instance_variable_set("@#{attribute}_cached", file_data)
             file_data
           end
