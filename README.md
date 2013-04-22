@@ -1,5 +1,10 @@
 [![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png?branch=master)](http://travis-ci.org/uploadcare/uploadcare-rails)
 
+# Work in progress
+
+**(!)** This plugin is experimental and in certain parts (esp. related to preformance) is broken.
+We're working on resolve the issues, but please be advised.
+
 # Installation
 
 This is a Rails gem for using the [Uploadcare.com](https://uploadcare.com) service. To install it, add it in your Gemfile: `gem 'uploadcare-rails'`, then run:
