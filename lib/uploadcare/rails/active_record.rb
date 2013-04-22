@@ -1,3 +1,5 @@
+require 'uploadcare/rails/file'
+
 module Uploadcare
   module Rails
     module ActiveRecord
@@ -15,7 +17,8 @@ module Uploadcare
           if instance_variable_defined?("@#{attribute}_cached")
             instance_variable_get("@#{attribute}_cached")
           else
-            file_data = ::Rails.application.config.uploadcare.api.file(cdn_url)
+            api = ::Rails.application.config.uploadcare.api
+            file_data = File.new(api, cdn_url)
             instance_variable_set("@#{attribute}_cached", file_data)
             file_data
           end
@@ -25,13 +28,17 @@ module Uploadcare
           after_save "store_#{attribute}"
 
           define_method "store_#{attribute}" do
-            uuid = get_uuid.call(attributes)
+            re = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i
+            m = re.match(attributes[attribute.to_s])
+            return unless m && m[0]
+
+            uuid = m[0]
             stored = ::Rails.cache.exist?(
               "uploadcare.file.#{uuid}.store",
               force: opts[:force_autostore]
             )
              unless stored
-              send(attribute).store
+              send(attribute).api.store
               ::Rails.cache.write("uploadcare.file.#{uuid}.store", true)
             end
           end

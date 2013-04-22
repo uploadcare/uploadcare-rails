@@ -69,3 +69,9 @@ Uploadcare-rails gem takes care of storing files when saving a model, so as soon
 ```erb
 <%= image_tag @post.file.public_url("scale_crop/500x200", "effect/grayscale/") %>
 ```
+
+[Other information](https://uploadcare.com/documentation/rest/#file) about the file is accessed through the `api` method that makes a single HTTP request to Uploadcare servers **each time it's called**. Use cautiously.
+
+```erb
+File size: <%= @post.file.api.size %> byte(s)
+```

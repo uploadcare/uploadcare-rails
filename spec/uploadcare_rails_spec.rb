@@ -34,7 +34,7 @@ describe Uploadcare::Rails do
       name: 'Ivan Navi',
       attachment: @file
     )
-    @resume.attachment.should be_an_instance_of(Uploadcare::Api::File)
+    @resume.attachment.should be_an_instance_of(Uploadcare::Rails::File)
   end
 
   it 'should cache file data' do
@@ -53,7 +53,7 @@ describe Uploadcare::Rails do
       name: 'Ivan Navi',
       attachment: @file
     )
-    resume.attachment.last_keep_claim.should_not be_nil
+    resume.attachment.api.last_keep_claim.should_not be_nil
 
     class ResumeNew < ActiveRecord::Base
       self.table_name = 'resumes'
@@ -70,6 +70,6 @@ describe Uploadcare::Rails do
       attachment: @file_new
     )
 
-    resume.attachment.last_keep_claim.should be_nil
+    resume.attachment.api.last_keep_claim.should be_nil
   end
 end
