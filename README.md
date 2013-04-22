@@ -1,9 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png?branch=master)](http://travis-ci.org/uploadcare/uploadcare-rails)
 
-# Work in progress
-
-**(!)** This plugin is experimental and in certain parts (esp. related to preformance) is broken.
-We're working on resolve the issues, but please be advised.
+**Warning!** This plugin is of alpha quality. Some things may not work or be unexpectedly slow.
+You are welcome to try it with your projects and report any issues with the latest release.
 
 # Installation
 
