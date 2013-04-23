@@ -2,9 +2,12 @@ module Uploadcare
   module Rails
     class File
 
+      attr_reader :uuid
+
       def initialize(api, cdn_url)
         @api = api
         @cdn_url = cdn_url
+        @uuid = @api.uuid(cdn_url)
       end
 
       def cdn_url(*operations)

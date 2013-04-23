@@ -13,6 +13,8 @@
 <p>
   <%= image_tag @post.file.public_url("scale_crop/500x200", "effect/grayscale/") %>
 </p>
+<p>UUID: <%= @post.file.uuid %></p>
+<p>Size: <%= @post.file.api.size %> byte(s)</p>
 
 
 <%= link_to 'Edit', edit_post_path(@post) %> |

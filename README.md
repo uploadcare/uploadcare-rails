@@ -78,6 +78,13 @@ Uploadcare-rails gem takes care of storing files when saving a model, so as soon
 <%= image_tag @post.file.public_url("scale_crop/500x200", "effect/grayscale/") %>
 ```
 
+If you need the unique identifier that Uploadcare uses to represent a file,
+it is available like so:
+
+```erb
+UUID: <%= @post.file.uuid %>
+```
+
 [Other information](https://uploadcare.com/documentation/rest/#file) about the file is accessed through the `api` method that makes a single HTTP request to Uploadcare servers **for each file**. Use cautiously or cache the returned information somewhere.
 
 ```erb
