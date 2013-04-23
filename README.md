@@ -72,17 +72,19 @@ Now we can use the Uploadcare widget in our forms:
 
 ## Displaying files
 
-Uploadcare-rails gem takes care of storing files when saving a model, so as soon as you add a field to your form, everything should work, and you'll be able to show an image just like that:
+Uploadcare-rails gem takes care of storing files when saving a model, so as soon as you add a field to your form, everything should work.
+You'll be able to show an image with `cdn_url` (or `public_url` alias) just like that:
 
 ```erb
-<%= image_tag @post.file.public_url("scale_crop/500x200", "effect/grayscale/") %>
+<%= image_tag @post.file.cdn_url("scale_crop/500x200", "effect/grayscale/") %>
 ```
 
 If you need the unique identifier that Uploadcare uses to represent a file,
 it is available like so:
 
 ```erb
-UUID: <%= @post.file.file_id %>
+UUID: <%= @post.file.uuid %>
+UUID (alias): <%= @post.file.file_id %>
 ```
 
 [Other information](https://uploadcare.com/documentation/rest/#file) about the file is accessed through the `api` method that makes a single HTTP request to Uploadcare servers **for each file**. Use cautiously or cache the returned information somewhere.
