@@ -13,7 +13,7 @@
 <p>
   <%= image_tag @post.file.public_url("scale_crop/500x200", "effect/grayscale/") %>
 </p>
-<p>UUID: <%= @post.file.uuid %></p>
+<p>UUID: <%= @post.file.file_id %></p>
 <p>Size: <%= @post.file.api.size %> byte(s)</p>
 
 

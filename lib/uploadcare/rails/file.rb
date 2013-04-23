@@ -3,6 +3,7 @@ module Uploadcare
     class File
 
       attr_reader :uuid
+      alias_method :file_id, :uuid
 
       def initialize(api, cdn_url)
         @api = api
