@@ -37,6 +37,15 @@ describe Uploadcare::Rails do
     @resume.attachment.should be_an_instance_of(Uploadcare::Rails::File)
   end
 
+  it 'should return nil for invalid or non-existent filed' do
+    @resume = Resume.create!(
+      description: 'description',
+      name: 'Ivan Navi',
+      attachment: nil
+    )
+    @resume.attachment.should be_nil
+  end
+
   it 'should cache file data' do
     @resume = Resume.create!(
       description: 'description',

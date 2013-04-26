@@ -11,8 +11,8 @@ module Uploadcare
         }.update options
 
         define_method "#{attribute}" do
-          cdn_url = attributes[attribute.to_s]
-          return nil unless cdn_url
+          cdn_url = attributes[attribute.to_s].to_s
+          return nil if cdn_url.empty?
 
           if instance_variable_defined?("@#{attribute}_cached")
             instance_variable_get("@#{attribute}_cached")
