@@ -1,5 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png?branch=master)](http://travis-ci.org/uploadcare/uploadcare-rails)
 
+[Changelog](http://changelog.uploadcare.com/tagged/rails)
+
 **Warning!** This plugin is of alpha quality. Some things may not work or be unexpectedly slow.
 You are welcome to try it with your projects and report any issues with the latest release.
 
