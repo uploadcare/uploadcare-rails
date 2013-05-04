@@ -37,9 +37,19 @@ module Uploadcare
               "uploadcare.file.#{uuid}.store",
               force: opts[:force_autostore]
             )
+
              unless stored
-              send(attribute).api.store
-              ::Rails.cache.write("uploadcare.file.#{uuid}.store", true)
+              begin
+                send(attribute).api.store
+                ::Rails.cache.write("uploadcare.file.#{uuid}.store", true)
+              rescue ArgumentError => e
+
+                logger.error "\nError while saving a file: #{e.class} (#{e.message}):"
+                logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
+
+                raise e unless ::Rails.application.config.uploadcare.silence_save_errors
+              end
+
             end
           end
         end

@@ -22,10 +22,18 @@ Uploadcare::Rails::Engine.configure do
   config.uploadcare.public_key = 'demopublickey'
   config.uploadcare.private_key = 'demoprivatekey'
   config.uploadcare.widget_version = '0.8'
+
+
+  # Set the following to true if you don't want to propagate exceptions
+  # that are happening while storing a file (e.g. storing a file
+  # which no longer exists). They all are written to logger.error anyway.
+
+  config.uploadcare.silence_save_errors = false
+
 end
 ```
 
-(These are our *demo* keys. You can use them to try things out. Don't forget to change them to your own keys before building anything serious). 
+(These are our *demo* keys. You can use them to try things out. Don't forget to change them to your own keys before building anything serious).
 
 ## Models
 
@@ -65,7 +73,7 @@ Now we can use the Uploadcare widget in our forms:
 
 ```erb
 <%= f.uploadcare_uploader_field :file %>
-    
+
 # or, if you use `simple_form`
 <%= form.input :file, as: :uploadcare_uploader %>
 ```
