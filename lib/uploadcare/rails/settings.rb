@@ -20,6 +20,7 @@ module Uploadcare
         :api_version => false,
         :private_key => false,
         :widget_version => false,
+        :silence_save_errors => false,
 
         # Renamed
         :static_url_base => :cdn_base,
