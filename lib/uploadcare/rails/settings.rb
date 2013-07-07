@@ -4,10 +4,10 @@ module Uploadcare
       def initialize(settings = {}, *args)
         super(*args)
         settings = {
-          :public_key => 'demopublickey',
-          :private_key => 'demoprivatekey',
-          :widget_version => '0.8',
-          :silence_save_errors => false
+          public_key:'demopublickey',
+          private_key: 'demoprivatekey',
+          widget_version: '0.8',
+          silence_save_errors: false
         }.update(settings)
         settings.each do |k, v|
           send "#{k}=", v
@@ -16,15 +16,15 @@ module Uploadcare
 
       @@widget_keys = {
         # Excluded
-        :api_url_base => false,
-        :api_version => false,
-        :private_key => false,
-        :widget_version => false,
-        :silence_save_errors => false,
+        api_url_base: false,
+        api_version: false,
+        private_key: false,
+        widget_version: false,
+        silence_save_errors: false,
 
         # Renamed
-        :static_url_base => :cdn_base,
-        :upload_url_base => :url_base
+        static_url_base: :cdn_base,
+        upload_url_base: :url_base
       }
 
       def get_widget_settings

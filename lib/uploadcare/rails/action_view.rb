@@ -13,14 +13,13 @@ module Uploadcare::Rails::ActionView
       min = options[:min].nil? || options[:min]
       url = "https://ucarecdn.com/widget/#{version}/uploadcare/uploadcare-#{version}#{'.min' if min}.js"
       include_code = javascript_include_tag(url)
-
       settings_code + include_code
     end
 
     def uploadcare_uploader_options(options)
       options.symbolize_keys.deep_merge({
-        :role => "#{options[:role]} uploadcare-uploader",
-        :data => {:path_value => true}
+        role: "#{options[:role]} uploadcare-uploader",
+        data: {path_value: true}
       })
     end
 
