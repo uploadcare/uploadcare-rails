@@ -1,5 +1,5 @@
 require 'uploadcare'
-require "uploadcare/rails/engine"
+require 'uploadcare/rails/engine'
 
 module Uploadcare
   module Rails
