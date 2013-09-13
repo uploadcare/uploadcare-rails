@@ -7,7 +7,8 @@ module Uploadcare
         options.symbolize_keys!
         opts = {
           autostore: true,
-          force_autostore: false
+          force_autostore: false,
+          geolocation: false
         }.update options
 
         define_method "#{attribute}" do
@@ -50,6 +51,19 @@ module Uploadcare
                 raise e unless ::Rails.application.config.uploadcare.silence_save_errors
               end
 
+            end
+          end
+        end
+
+        if opts[:geolocation]
+          before_save "geolocate"
+
+          define_method "geolocate" do
+            unless send(:longitude).present?
+              api = send(attribute).api
+
+              self.longitude = api.image_info["geo_location"]["longitude"]
+              self.latitude = api.image_info["geo_location"]["latitude"]
             end
           end
         end
