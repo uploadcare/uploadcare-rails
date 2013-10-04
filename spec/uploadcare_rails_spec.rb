@@ -62,7 +62,7 @@ describe Uploadcare::Rails do
       name: 'Ivan Navi',
       attachment: @file
     )
-    resume.attachment.api.last_keep_claim.should_not be_nil
+    resume.attachment.api.datetime_stored.should_not be_nil
 
     class ResumeNew < ActiveRecord::Base
       self.table_name = 'resumes'
