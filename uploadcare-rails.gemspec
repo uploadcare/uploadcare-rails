@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.name        = "uploadcare-rails"
   s.version     = Uploadcare::Rails::VERSION
   s.authors     = ["@rastyagaev (Vadim Rastyagaev)",
-                       "@dimituri (Dimitry Solovyov)",
-                       "@romanonthego (Roman Dubinin)"]
+                   "@dimituri (Dimitry Solovyov)",
+                   "@romanonthego (Roman Dubinin)"]
   s.email       = ["hello@uploadcare.com"]
   s.homepage    = "http://uploadcare.com"
   s.summary     = "Rails gem for Uploadcare"
