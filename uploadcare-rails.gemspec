@@ -7,16 +7,19 @@ require "uploadcare/rails/version"
 Gem::Specification.new do |s|
   s.name        = "uploadcare-rails"
   s.version     = Uploadcare::Rails::VERSION
-  s.authors     = ["Vadim Rastyagaev"]
-  s.email       = ["abc@oktoberliner.ru"]
+  s.authors     = ["@rastyagaev (Vadim Rastyagaev)",
+                       "@dimituri (Dimitry Solovyov)",
+                       "@romanonthego (Roman Dubinin)"]
+  s.email       = ["hello@uploadcare.com"]
   s.homepage    = "http://uploadcare.com"
-  s.summary     = "Rails gem for uploadcare.com service."
+  s.summary     = "Rails gem for Uploadcare"
   s.description = "Rails gem for uploadcare.com service."
+  s.license = ''
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "rails", ">= 3.2"
-  s.add_dependency "uploadcare-api", ">= 0.1.4"
+  s.add_dependency "uploadcare-api", "~> 0.1.4"
   # s.add_dependency "jquery-rails"
 
   s.add_development_dependency "sqlite3"
