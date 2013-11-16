@@ -1,0 +1,12 @@
+defaults: &defaults
+  public_key: "demo"
+  private_key: "demo"
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
