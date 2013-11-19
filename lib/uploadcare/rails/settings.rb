@@ -33,28 +33,38 @@ module Uploadcare
         end
       end
 
+
       def api_settings
         @api_settings ||= build_api_settings
       end
+
 
       def widget_settings
         @widget_settings ||= build_widget_settings
       end
 
       def build_widget_settings
+        # for now
+        marshal_dump
       end
+      private :build_widget_settings
+
 
       def build_api_settings
         marshal_dump
       end
+      private :build_api_settings
+
 
       def api
         @api ||= build_api
       end
 
+
       def build_api
         Uploadcare::Api.new @api_settings
       end
+      private :build_api
     end
   end
 end

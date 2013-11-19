@@ -34,4 +34,17 @@ describe Uploadcare::Rails do
   end
 
   # TODO: test api settings and widget settings
+  it "should build instanse of UC api" do
+    UPLOADCARE_SETTINGS.api.should be_kind_of(Uploadcare::Api)
+  end
+
+  it "should build api settings hash" do
+    UPLOADCARE_SETTINGS.api_settings.should be_a_kind_of(Hash)
+    UPLOADCARE_SETTINGS.api_settings.should_not be_empty
+  end
+
+  it "should build widget settings hash" do
+    UPLOADCARE_SETTINGS.widget_settings.should be_a_kind_of(Hash)
+    UPLOADCARE_SETTINGS.widget_settings.should_not be_empty
+  end
 end
