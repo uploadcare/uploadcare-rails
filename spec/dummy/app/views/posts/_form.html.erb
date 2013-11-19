@@ -17,7 +17,7 @@
   </div>
   <div class="field">
     <%= f.label :file %><br>
-    <%= f.uploadcare_uploader_field :file %>
+    <%= f.uploadcare_uploader_field :file, {data: {multiple: true}}%>
   </div>
   <div class="actions">
     <%= f.submit %>

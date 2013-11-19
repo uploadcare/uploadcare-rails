@@ -64,7 +64,7 @@ module Uploadcare
 
 
       def build_api
-        Uploadcare::Api.new @api_settings
+        Uploadcare::Api.new api_settings
       end
       private :build_api
     end

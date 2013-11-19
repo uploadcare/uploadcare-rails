@@ -1034,3 +1034,876 @@ Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:29
 
 
 Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:29 +0700
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:17:39 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (2.9ms)
+Completed 200 OK in 53ms (Views: 51.9ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:39 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:17:39 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:39 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:17:39 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:39 +0700
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:17:47 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.1ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (1.8ms)
+Completed 200 OK in 8ms (Views: 7.4ms | ActiveRecord: 0.1ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:47 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:17:47 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:47 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:47 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:17:47 +0700
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:17:54 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (11.0ms)
+Completed 200 OK in 58ms (Views: 55.8ms | ActiveRecord: 0.5ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:54 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:54 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:17:54 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:17:54 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:17:54 +0700
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:18:21 +0700
+Processing by PostsController#index as HTML
+Completed 500 Internal Server Error in 5ms
+
+NoMethodError (undefined method `has_uploadcare_file' for #<Class:0x007fbdceaa7fb0>):
+  app/models/post.rb:2:in `<class:Post>'
+  app/models/post.rb:1:in `<top (required)>'
+  app/controllers/posts_controller.rb:6:in `index'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_source.erb (0.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (12.9ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:18:50 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (13.4ms)
+Completed 500 Internal Server Error in 20ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1818670407165431045_70129859263860'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1818670407165431045_70129859263860'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (19.0ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (27.5ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:19:12 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (12.2ms)
+Completed 500 Internal Server Error in 22ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (18.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (28.1ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:19:13 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (9.7ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:19:13 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.4ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.1ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (2.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (11.0ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:01 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (10.5ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:01 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (40.9ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:02 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (9.8ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:02 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.5ms)
+Completed 500 Internal Server Error in 5ms
+
+ActionView::Template::Error (undefined method `file' for Uploadcare::Api:Class):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1992931884612549298_70233965615740'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (9.6ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:07 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (9.8ms)
+Completed 500 Internal Server Error in 16ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (18.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (27.9ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:08 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.5ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (10.5ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:11 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.8ms)
+Completed 500 Internal Server Error in 5ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (2.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (2.0ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (15.0ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:12 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (3.6ms)
+Completed 500 Internal Server Error in 6ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (2.5ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (2.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (15.3ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:13 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.4ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (2.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (2.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (16.0ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:19 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.3ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (3.0ms)
+Completed 500 Internal Server Error in 5ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb___2414769626640413874_70281323449280'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (10.3ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:25 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (10.2ms)
+Completed 500 Internal Server Error in 18ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__2576403288804900103_70298938452960'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__2576403288804900103_70298938452960'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (26.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (36.9ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:20:27 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (no implicit conversion of nil into Hash):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__2576403288804900103_70298938452960'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__2576403288804900103_70298938452960'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.9ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.8ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (12.2ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:21:04 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (10.0ms)
+Completed 500 Internal Server Error in 16ms
+
+ActionView::Template::Error (undefined local variable or method `bindings' for #<Uploadcare::Api:0x007f816b1234e8>):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1653786827533888780_70096918111500'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1653786827533888780_70096918111500'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (18.9ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (27.5ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:21:19 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (29302.2ms)
+Completed   in 29309ms
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:21:52 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (77701.8ms)
+Completed   in 77709ms
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:23:14 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (16794.8ms)
+Completed   in 16803ms
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:23:35 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (12121.6ms)
+Completed 200 OK in 12173ms (Views: 12171.0ms | ActiveRecord: 0.4ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:23:47 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1089.0ms)
+Completed 200 OK in 1096ms (Views: 1095.3ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:23:49 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:23:49 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:23:49 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:23:49 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:23:49 +0700
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:24:07 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (3.4ms)
+Completed 500 Internal Server Error in 6ms
+
+ActionView::Template::Error (undefined method `cdn_url' for nil:NilClass):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file.cdn_url %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1605263775604372405_70147071775800'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1605263775604372405_70147071775800'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.1ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (9.3ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:24:08 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.6ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (undefined method `cdn_url' for nil:NilClass):
+    15:     <% @posts.each do |post| %>
+    16:       <tr>
+    17:         <td><%= post.title %></td>
+    18:         <td><%= post.file.cdn_url %></td>
+    19:         <td><%= link_to 'Show', post %></td>
+    20:         <td><%= link_to 'Edit', edit_post_path(post) %></td>
+    21:         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  app/views/posts/index.html.erb:18:in `block in _app_views_posts_index_html_erb__1605263775604372405_70147071775800'
+  app/views/posts/index.html.erb:15:in `_app_views_posts_index_html_erb__1605263775604372405_70147071775800'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.1ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (9.4ms)
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:24:20 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.3ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (5214.1ms)
+Completed 200 OK in 5222ms (Views: 5221.6ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:24:25 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:24:25 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:24:25 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:24:25 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:24:25 +0700
+
+
+Started GET "/posts/2" for 127.0.0.1 at 2013-11-19 19:26:13 +0700
+Processing by PostsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[36mPost Load (0.4ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT 1[0m  [["id", "2"]]
+  Rendered posts/show.html.erb within layouts/application (16781.0ms)
+Completed 200 OK in 16792ms (Views: 16789.0ms | ActiveRecord: 0.4ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:26:29 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:26:29 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:26:29 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:26:29 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:26:29 +0700
+
+
+Started GET "/posts/2" for 127.0.0.1 at 2013-11-19 19:26:35 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT 1  [["id", "2"]]
+  Rendered posts/show.html.erb within layouts/application (22.6ms)
+Completed 200 OK in 62ms (Views: 49.7ms | ActiveRecord: 0.5ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:26:35 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:26:35 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:26:35 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:26:35 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:26:35 +0700
+
+
+Started GET "/posts/2" for 127.0.0.1 at 2013-11-19 19:27:21 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT 1  [["id", "2"]]
+  Rendered posts/show.html.erb within layouts/application (786358.0ms)
+Completed 200 OK in 786429ms (Views: 786420.2ms | ActiveRecord: 0.5ms)
+
+
+Started GET "/posts/2" for 127.0.0.1 at 2013-11-19 19:40:27 +0700
+Processing by PostsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT 1[0m  [["id", "2"]]
+  Rendered posts/show.html.erb within layouts/application (1051.6ms)
+Completed 200 OK in 1059ms (Views: 1057.4ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:28 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:28 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:28 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:40:28 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:40:28 +0700
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 19:40:31 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (3120.2ms)
+Completed 200 OK in 3127ms (Views: 3126.8ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:35 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:35 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:40:35 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:40:35 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:35 +0700
+
+
+Started GET "/new" for 127.0.0.1 at 2013-11-19 19:40:39 +0700
+
+ActionController::RoutingError (No route matches [GET] "/new"):
+  actionpack (4.0.1) lib/action_dispatch/middleware/debug_exceptions.rb:21:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/show_exceptions.rb:30:in `call'
+  railties (4.0.1) lib/rails/rack/logger.rb:38:in `call_app'
+  railties (4.0.1) lib/rails/rack/logger.rb:20:in `block in call'
+  activesupport (4.0.1) lib/active_support/tagged_logging.rb:67:in `block in tagged'
+  activesupport (4.0.1) lib/active_support/tagged_logging.rb:25:in `tagged'
+  activesupport (4.0.1) lib/active_support/tagged_logging.rb:67:in `tagged'
+  railties (4.0.1) lib/rails/rack/logger.rb:20:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/request_id.rb:21:in `call'
+  rack (1.5.2) lib/rack/methodoverride.rb:21:in `call'
+  rack (1.5.2) lib/rack/runtime.rb:17:in `call'
+  activesupport (4.0.1) lib/active_support/cache/strategy/local_cache.rb:83:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/static.rb:64:in `call'
+  rack (1.5.2) lib/rack/sendfile.rb:112:in `call'
+  railties (4.0.1) lib/rails/engine.rb:511:in `call'
+  railties (4.0.1) lib/rails/application.rb:97:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  rack (1.5.2) lib/rack/content_length.rb:14:in `call'
+  rack (1.5.2) lib/rack/handler/webrick.rb:60:in `service'
+  /Users/romanonthego/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/webrick/httpserver.rb:138:in `service'
+  /Users/romanonthego/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/webrick/httpserver.rb:94:in `run'
+  /Users/romanonthego/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/webrick/server.rb:295:in `block in start_thread'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/routes/_route.html.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/routes/_table.html.erb (29.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/routing_error.erb within rescues/layout (52.1ms)
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 19:40:47 +0700
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (39.2ms)
+  Rendered posts/new.html.erb within layouts/application (40.8ms)
+Completed 200 OK in 47ms (Views: 46.3ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:47 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:40:47 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:47 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:40:47 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:40:47 +0700
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 19:41:05 +0700
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"123", "file"=>"http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"}, "commit"=>"Create Post"}
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35mSQL (2.7ms)[0m  INSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", Tue, 19 Nov 2013 12:41:05 UTC +00:00], ["file", "http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"], ["title", "123"], ["updated_at", Tue, 19 Nov 2013 12:41:05 UTC +00:00]]
+  [1m[36m (4.0ms)[0m  [1mrollback transaction[0m
+Completed 500 Internal Server Error in 11ms
+
+ArgumentError (Expecting file UUID or CDN url for file.):
+  app/controllers/posts_controller.rb:26:in `create'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_source.erb (0.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (15.8ms)
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 19:42:51 +0700
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"123", "file"=>"http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"}, "commit"=>"Create Post"}
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mSQL (0.4ms)[0m  [1mINSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)[0m  [["created_at", Tue, 19 Nov 2013 12:42:51 UTC +00:00], ["file", "http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"], ["title", "123"], ["updated_at", Tue, 19 Nov 2013 12:42:51 UTC +00:00]]
+  [1m[35m (0.5ms)[0m  rollback transaction
+Completed 500 Internal Server Error in 3ms
+
+ArgumentError (Expecting file UUID or CDN url for file.):
+  app/controllers/posts_controller.rb:26:in `create'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_source.erb (0.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.1ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.0ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (12.1ms)
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 19:43:17 +0700
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"123", "file"=>"http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"}, "commit"=>"Create Post"}
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35mSQL (0.4ms)[0m  INSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", Tue, 19 Nov 2013 12:43:17 UTC +00:00], ["file", "http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"], ["title", "123"], ["updated_at", Tue, 19 Nov 2013 12:43:17 UTC +00:00]]
+  [1m[36m (0.9ms)[0m  [1mrollback transaction[0m
+Completed 500 Internal Server Error in 5ms
+
+ArgumentError (Expecting file UUID or CDN url for file.):
+  app/controllers/posts_controller.rb:26:in `create'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_source.erb (0.9ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.5ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (17.6ms)
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 19:44:14 +0700
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"123", "file"=>"http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"}, "commit"=>"Create Post"}
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mSQL (0.5ms)[0m  [1mINSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)[0m  [["created_at", Tue, 19 Nov 2013 12:44:14 UTC +00:00], ["file", "http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"], ["title", "123"], ["updated_at", Tue, 19 Nov 2013 12:44:14 UTC +00:00]]
+  [1m[35m (0.5ms)[0m  rollback transaction
+Completed 500 Internal Server Error in 4ms
+
+ArgumentError (Expecting file UUID or CDN url for file.):
+  app/controllers/posts_controller.rb:26:in `create'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_source.erb (0.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (15.9ms)
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 19:44:22 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"123", "file"=>"http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"}, "commit"=>"Create Post"}
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mSQL (2.6ms)[0m  [1mINSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)[0m  [["created_at", Tue, 19 Nov 2013 12:44:22 UTC +00:00], ["file", "http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"], ["title", "123"], ["updated_at", Tue, 19 Nov 2013 12:44:22 UTC +00:00]]
+  [1m[35m (2.3ms)[0m  commit transaction
+Redirected to http://localhost:3000/posts/3
+Completed 302 Found in 150300ms (ActiveRecord: 5.3ms)
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 19:46:53 +0700
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"123", "file"=>"http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"}, "commit"=>"Create Post"}
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35mSQL (0.6ms)[0m  INSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", Tue, 19 Nov 2013 12:46:53 UTC +00:00], ["file", "http://www.ucarecdn.com/6e124993-4de5-40c4-8999-6fbafd384e20~3/"], ["title", "123"], ["updated_at", Tue, 19 Nov 2013 12:46:53 UTC +00:00]]
+  [1m[36m (1.7ms)[0m  [1mcommit transaction[0m
+Redirected to http://localhost:3000/posts/4
+Completed 302 Found in 1654ms (ActiveRecord: 2.3ms)
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 19:46:59 +0700
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (11.0ms)
+  Rendered posts/new.html.erb within layouts/application (14.9ms)
+Completed 200 OK in 42ms (Views: 41.0ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 19:46:59 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 19:46:59 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 19:46:59 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 19:46:59 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 19:46:59 +0700
