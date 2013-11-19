@@ -421,3 +421,616 @@ Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:02:08 +
 
 
 Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:02:08 +0700
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 16:24:02 +0700
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (1.9ms)
+  Rendered posts/new.html.erb within layouts/application (2.6ms)
+Completed 200 OK in 8ms (Views: 7.7ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:24:02 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:24:02 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:24:02 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:24:02 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:24:02 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:24:45 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (9.5ms)
+Completed 500 Internal Server Error in 11ms
+
+ActionView::Template::Error (undefined method `uploadcare_uploader_tag' for #<#<Class:0x007f98035a3b18>:0x007f98060353e0>):
+    29: <%= link_to 'New Post', new_post_path %>
+    30: 
+    31: 
+    32: <%= uploadcare_uploader_tag "name" %>
+  app/views/posts/index.html.erb:32:in `_app_views_posts_index_html_erb__3966369179246887612_70145456340340'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.5ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (10.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:26:49 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.9ms)
+Completed 200 OK in 52ms (Views: 48.1ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:26:50 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:26:50 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:26:50 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:26:50 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:26:50 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:27:32 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.6ms)
+Completed 200 OK in 8ms (Views: 7.7ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:27:32 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:27:32 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:27:32 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:27:32 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:27:32 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:28:26 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.3ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (4.4ms)
+Completed 200 OK in 12ms (Views: 11.8ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:28:26 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:28:26 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:28:26 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:28:26 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:28:26 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:28:27 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (0.9ms)
+Completed 200 OK in 38ms (Views: 37.1ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:28:27 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:28:27 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:28:27 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:28:27 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:28:27 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:29:21 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.0ms)
+Completed 200 OK in 9ms (Views: 8.9ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:29:21 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:29:21 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:29:21 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:29:21 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:29:21 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:29:34 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (4.1ms)
+Completed 500 Internal Server Error in 6ms
+
+ActionView::Template::Error (wrong number of arguments (1 for 2..3)):
+    34: 
+    35: <br>
+    36: <p>:uploadcare_uploader_field test</p>
+    37: <%= uploadcare_uploader_field Post.new %>
+  app/views/posts/index.html.erb:37:in `_app_views_posts_index_html_erb___3350220811417207757_70162700402420'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (10.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:29:35 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.1ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (1.7ms)
+Completed 500 Internal Server Error in 3ms
+
+ActionView::Template::Error (wrong number of arguments (1 for 2..3)):
+    34: 
+    35: <br>
+    36: <p>:uploadcare_uploader_field test</p>
+    37: <%= uploadcare_uploader_field Post.new %>
+  app/views/posts/index.html.erb:37:in `_app_views_posts_index_html_erb___3350220811417207757_70162700402420'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.1ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (9.2ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:29:35 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.8ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (wrong number of arguments (1 for 2..3)):
+    34: 
+    35: <br>
+    36: <p>:uploadcare_uploader_field test</p>
+    37: <%= uploadcare_uploader_field Post.new %>
+  app/views/posts/index.html.erb:37:in `_app_views_posts_index_html_erb___3350220811417207757_70162700402420'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.9ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (14.5ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:30:01 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (88.3ms)
+Completed 200 OK in 98ms (Views: 97.1ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:30:01 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:30:01 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:30:01 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:30:01 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:30:01 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:31:22 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (2.4ms)
+Completed 200 OK in 11ms (Views: 9.9ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:31:22 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:31:22 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:31:22 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:31:22 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:31:22 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:32:50 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.0ms)
+Completed 200 OK in 8ms (Views: 7.4ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:32:50 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:32:50 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:32:50 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:32:50 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:32:50 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:33:57 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (8.7ms)
+Completed 200 OK in 64ms (Views: 61.3ms | ActiveRecord: 0.5ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:33:58 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:33:58 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:33:58 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:33:58 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:33:58 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:34:32 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.3ms)
+Completed 200 OK in 7ms (Views: 6.5ms | ActiveRecord: 0.1ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:34:32 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:34:32 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:34:32 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:34:32 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:34:32 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:35:05 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.3ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (5.5ms)
+Completed 200 OK in 15ms (Views: 14.2ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:35:05 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:35:05 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:35:05 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:35:05 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:35:05 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:50:08 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.9ms)
+Completed 200 OK in 37ms (Views: 36.7ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:50:08 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:50:08 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:50:08 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:50:08 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:50:08 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:50:31 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (1.2ms)
+Completed 200 OK in 7ms (Views: 6.8ms | ActiveRecord: 0.1ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:50:31 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:50:31 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:50:31 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:50:31 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:50:31 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:51:03 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.3ms)
+Completed 200 OK in 8ms (Views: 7.8ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:51:03 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:51:03 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:51:03 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:51:03 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:51:03 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:52:34 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.1ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (0.9ms)
+Completed 200 OK in 6ms (Views: 5.8ms | ActiveRecord: 0.1ms)
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:52:34 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:52:34 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:52:34 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:52:34 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:52:34 +0700
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 16:52:36 +0700
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (19.7ms)
+  Rendered posts/new.html.erb within layouts/application (22.8ms)
+Completed 500 Internal Server Error in 26ms
+
+ActionView::Template::Error (undefined method `uploadcare_uploader_field' for #<ActionView::Helpers::FormBuilder:0x007fdfcf8e99a8>):
+    17:   </div>
+    18:   <div class="field">
+    19:     <%= f.label :file %><br>
+    20:     <%= f.uploadcare_uploader_field :file %>
+    21:   </div>
+    22:   <div class="actions">
+    23:     <%= f.submit %>
+  app/views/posts/_form.html.erb:20:in `block in _app_views_posts__form_html_erb___2630695659541383095_70299586580280'
+  app/views/posts/_form.html.erb:1:in `_app_views_posts__form_html_erb___2630695659541383095_70299586580280'
+  app/views/posts/new.html.erb:3:in `_app_views_posts_new_html_erb__1102565065411379397_70299580989980'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (11.9ms)
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 16:52:55 +0700
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (11.3ms)
+  Rendered posts/new.html.erb within layouts/application (12.1ms)
+Completed 500 Internal Server Error in 14ms
+
+ActionView::Template::Error (undefined method `uploadcare_uploader_field' for #<ActionView::Helpers::FormBuilder:0x007fdfcc1b5090>):
+    17:   </div>
+    18:   <div class="field">
+    19:     <%= f.label :file %><br>
+    20:     <%= f.uploadcare_uploader_field :file %>
+    21:   </div>
+    22:   <div class="actions">
+    23:     <%= f.submit %>
+  app/views/posts/_form.html.erb:20:in `block in _app_views_posts__form_html_erb___2630695659541383095_70299589063240'
+  app/views/posts/_form.html.erb:1:in `_app_views_posts__form_html_erb___2630695659541383095_70299589063240'
+  app/views/posts/new.html.erb:3:in `_app_views_posts_new_html_erb__1102565065411379397_70299580989980'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (10.4ms)
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 16:52:56 +0700
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (9.2ms)
+  Rendered posts/new.html.erb within layouts/application (9.9ms)
+Completed 500 Internal Server Error in 12ms
+
+ActionView::Template::Error (undefined method `uploadcare_uploader_field' for #<ActionView::Helpers::FormBuilder:0x007fdfcbbcbe68>):
+    17:   </div>
+    18:   <div class="field">
+    19:     <%= f.label :file %><br>
+    20:     <%= f.uploadcare_uploader_field :file %>
+    21:   </div>
+    22:   <div class="actions">
+    23:     <%= f.submit %>
+  app/views/posts/_form.html.erb:20:in `block in _app_views_posts__form_html_erb___2630695659541383095_70299589063240'
+  app/views/posts/_form.html.erb:1:in `_app_views_posts__form_html_erb___2630695659541383095_70299589063240'
+  app/views/posts/new.html.erb:3:in `_app_views_posts_new_html_erb__1102565065411379397_70299580989980'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (11.8ms)
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 16:53:04 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (62.6ms)
+  Rendered posts/new.html.erb within layouts/application (66.1ms)
+Completed 200 OK in 91ms (Views: 88.8ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:04 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:04 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:04 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:04 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:04 +0700
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 16:53:14 +0700
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"assadasd", "file"=>""}, "commit"=>"Create Post"}
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mSQL (90.8ms)[0m  [1mINSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)[0m  [["created_at", Tue, 19 Nov 2013 09:53:14 UTC +00:00], ["file", ""], ["title", "assadasd"], ["updated_at", Tue, 19 Nov 2013 09:53:14 UTC +00:00]]
+  [1m[35m (1.2ms)[0m  commit transaction
+Redirected to http://localhost:3000/posts/1
+Completed 302 Found in 97ms (ActiveRecord: 92.1ms)
+
+
+Started GET "/posts/1" for 127.0.0.1 at 2013-11-19 16:53:14 +0700
+Processing by PostsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mPost Load (0.3ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT 1[0m  [["id", "1"]]
+  Rendered posts/show.html.erb within layouts/application (1.5ms)
+Completed 200 OK in 42ms (Views: 38.8ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:14 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:14 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:14 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:14 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:14 +0700
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-11-19 16:53:25 +0700
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"gkfG8jx6Kd7FcK9CzHsigKgmo9+SloevoNExkbAJSqE=", "post"=>{"title"=>"assadasd", "file"=>"http://www.ucarecdn.com/ae8b08ff-4c3f-49e6-90da-231eafb0eea6/"}, "commit"=>"Create Post"}
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mSQL (0.4ms)[0m  [1mINSERT INTO "posts" ("created_at", "file", "title", "updated_at") VALUES (?, ?, ?, ?)[0m  [["created_at", Tue, 19 Nov 2013 09:53:25 UTC +00:00], ["file", "http://www.ucarecdn.com/ae8b08ff-4c3f-49e6-90da-231eafb0eea6/"], ["title", "assadasd"], ["updated_at", Tue, 19 Nov 2013 09:53:25 UTC +00:00]]
+  [1m[35m (1.1ms)[0m  commit transaction
+Redirected to http://localhost:3000/posts/2
+Completed 302 Found in 5ms (ActiveRecord: 1.5ms)
+
+
+Started GET "/posts/2" for 127.0.0.1 at 2013-11-19 16:53:25 +0700
+Processing by PostsController#show as HTML
+  Parameters: {"id"=>"2"}
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT 1[0m  [["id", "2"]]
+  Rendered posts/show.html.erb within layouts/application (0.6ms)
+Completed 200 OK in 7ms (Views: 5.7ms | ActiveRecord: 0.1ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:25 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:25 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:25 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:25 +0700
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:25 +0700
+
+
+Started GET "/posts" for 127.0.0.1 at 2013-11-19 16:53:29 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.8ms)
+Completed 200 OK in 9ms (Views: 8.7ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:29 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:29 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:29 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:53:29 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:53:29 +0700

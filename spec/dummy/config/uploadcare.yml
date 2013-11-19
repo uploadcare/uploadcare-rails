@@ -1,6 +1,6 @@
 defaults: &defaults
-  public_key: "demo"
-  private_key: "demo"
+  public_key: "demopublickey"
+  private_key: "demoprivatekey"
 
 development:
   <<: *defaults

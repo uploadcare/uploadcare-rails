@@ -1,5 +1,5 @@
 module Uploadcare::Rails::ActionView
-  module Helpers
+  module IncludeTags
     def include_uploadcare_widget_from_cdn options={}
       settings = {
         min: true,
@@ -33,4 +33,4 @@ module Uploadcare::Rails::ActionView
   end
 end
 
-ActionView::Base.send :include, Uploadcare::Rails::ActionView::Helpers
+ActionView::Base.send :include, Uploadcare::Rails::ActionView::IncludeTags

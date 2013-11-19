@@ -27,3 +27,11 @@
 <br>
 
 <%= link_to 'New Post', new_post_path %>
+
+<br>
+<p>:uploadcare_uploader_tag test</p>
+<%= uploadcare_uploader_tag :file %>
+
+<br>
+<p>:uploadcare_uploader_field test</p>
+<%= uploadcare_uploader_field :post, :file %>

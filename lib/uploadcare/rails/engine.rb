@@ -9,14 +9,14 @@ module Uploadcare
 
         # active record extention for stand-alone file models and models has files
         ActiveSupport.on_load :active_record do
-          require 'uploadcare/rails/active_record_attribute'
-          require 'uploadcare/rails/active_record_standalone'
+          require 'uploadcare/rails/active_record_has_attribute'
+          require 'uploadcare/rails/active_record_acts_as_uploadcare'
         end
 
         # # JS options, widets from cdn etc
         ActiveSupport.on_load :action_view do
           require 'uploadcare/rails/action_view_include_tags'
-        #   require 'uploadcare/rails/helpers'
+          require 'uploadcare/rails/action_view_uploader_tags'
 
         #   # form helpers
         #   require 'uploadcare/rails/form_helpers'

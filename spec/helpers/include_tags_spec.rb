@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Uploadcare::Rails do
   it "should include widget from cdn" do
+    binding.pry
     tag = helper.include_uploadcare_widget_from_cdn
     tag.should be_kind_of(String)
     tag.should == ("<script src=\"https://ucarecdn.com/widget/#{UPLOADCARE_SETTINGS.widget_version}/uploadcare/uploadcare-#{UPLOADCARE_SETTINGS.widget_version}.min.js\"></script>")
@@ -29,5 +30,4 @@ describe Uploadcare::Rails do
   end
 
   # TODO: check if settings is valid throught regexes
-  
 end
