@@ -13,6 +13,9 @@ module Uploadcare
       validates :public_key, :presence => true
       validates :private_key, :presence => true
 
+      # TODO: ALL the keys god damn it
+      PUBLIC_ALLOWED_KEYS = [:public_key]
+
       def initialize config
         # extract envaroments settings
         settings = config["#{::Rails.env}"]
@@ -44,8 +47,7 @@ module Uploadcare
       end
 
       def build_widget_settings
-        # for now
-        marshal_dump
+        settings = marshal_dump.slice(*PUBLIC_ALLOWED_KEYS)
       end
       private :build_widget_settings
 

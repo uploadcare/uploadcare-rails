@@ -14,14 +14,14 @@ module Uploadcare
         end
 
         # # JS options, widets from cdn etc
-        # ActiveSupport.on_load(:action_view) do
-        #   require 'uploadcare/rails/include_tags'
+        ActiveSupport.on_load :action_view do
+          require 'uploadcare/rails/action_view_include_tags'
         #   require 'uploadcare/rails/helpers'
 
         #   # form helpers
         #   require 'uploadcare/rails/form_helpers'
         #   require 'uploadcare/rails/simple_form' if defined?(SimpleForm)
-        # end
+        end
       end
     end
   end

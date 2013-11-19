@@ -1,0 +1,423 @@
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:02:56 +0700
+Processing by Rails::WelcomeController#index as HTML
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/railties-4.0.1/lib/rails/templates/rails/welcome/index.html.erb (2.0ms)
+Completed 200 OK in 21ms (Views: 20.1ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:04:15 +0700
+
+ActiveRecord::PendingMigrationError (Migrations are pending; run 'bin/rake db:migrate RAILS_ENV=development' to resolve this issue.):
+  activerecord (4.0.1) lib/active_record/migration.rb:379:in `check_pending!'
+  activerecord (4.0.1) lib/active_record/migration.rb:366:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/callbacks.rb:29:in `block in call'
+  activesupport (4.0.1) lib/active_support/callbacks.rb:373:in `_run__1765057832764150390__call__callbacks'
+  activesupport (4.0.1) lib/active_support/callbacks.rb:80:in `run_callbacks'
+  actionpack (4.0.1) lib/action_dispatch/middleware/callbacks.rb:27:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/reloader.rb:64:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/remote_ip.rb:76:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/debug_exceptions.rb:17:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/show_exceptions.rb:30:in `call'
+  railties (4.0.1) lib/rails/rack/logger.rb:38:in `call_app'
+  railties (4.0.1) lib/rails/rack/logger.rb:20:in `block in call'
+  activesupport (4.0.1) lib/active_support/tagged_logging.rb:67:in `block in tagged'
+  activesupport (4.0.1) lib/active_support/tagged_logging.rb:25:in `tagged'
+  activesupport (4.0.1) lib/active_support/tagged_logging.rb:67:in `tagged'
+  railties (4.0.1) lib/rails/rack/logger.rb:20:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/request_id.rb:21:in `call'
+  rack (1.5.2) lib/rack/methodoverride.rb:21:in `call'
+  rack (1.5.2) lib/rack/runtime.rb:17:in `call'
+  activesupport (4.0.1) lib/active_support/cache/strategy/local_cache.rb:83:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  actionpack (4.0.1) lib/action_dispatch/middleware/static.rb:64:in `call'
+  rack (1.5.2) lib/rack/sendfile.rb:112:in `call'
+  railties (4.0.1) lib/rails/engine.rb:511:in `call'
+  railties (4.0.1) lib/rails/application.rb:97:in `call'
+  rack (1.5.2) lib/rack/lock.rb:17:in `call'
+  rack (1.5.2) lib/rack/content_length.rb:14:in `call'
+  rack (1.5.2) lib/rack/handler/webrick.rb:60:in `service'
+  /Users/romanonthego/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/webrick/httpserver.rb:138:in `service'
+  /Users/romanonthego/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/webrick/httpserver.rb:94:in `run'
+  /Users/romanonthego/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/webrick/server.rb:295:in `block in start_thread'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_source.erb (0.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.0ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (19.7ms)
+  [1m[36m (1.6ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) [0m
+  [1m[35m (1.3ms)[0m  CREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Migrating to CreatePosts (20131119080328)
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.4ms)[0m  [1mCREATE TABLE "posts" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar(255), "file" varchar(255), "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35mSQL (0.3ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES (?)  [["version", "20131119080328"]]
+  [1m[36m (1.3ms)[0m  [1mcommit transaction[0m
+  [1m[35mActiveRecord::SchemaMigration Load (0.1ms)[0m  SELECT "schema_migrations".* FROM "schema_migrations"
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:04:44 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.5ms)
+Completed 500 Internal Server Error in 115ms
+
+ActionView::Template::Error (undefined local variable or method `include_uploadcare_widget_from_cdn' for #<#<Class:0x007fc498b6e2c0>:0x007fc498b6d690>):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___437846332041536624_70241176318580'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (2.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.5ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (16.9ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:06:25 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.4ms)
+Completed 500 Internal Server Error in 88ms
+
+ActionView::Template::Error (undefined local variable or method `include_uploadcare_widget_from_cdn' for #<#<Class:0x007f95fa44d6e8>:0x007f95fa44ca90>):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___21770248709546120_70141062953900'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (11.7ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:06:26 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.1ms)
+Completed 500 Internal Server Error in 13ms
+
+ActionView::Template::Error (undefined local variable or method `include_uploadcare_widget_from_cdn' for #<#<Class:0x007f95fa44d6e8>:0x007f95fb35e3d0>):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___21770248709546120_70141062953900'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (2.1ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.0ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (12.2ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:08:58 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.3ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.9ms)
+Completed 500 Internal Server Error in 52ms
+
+ActionView::Template::Error (undefined method `extend!' for {:min=>true, :version=>"0.15.3"}:Hash):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___3580390937196029418_70248519932880'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (2.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.0ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (13.5ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:08:59 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.0ms)
+Completed 500 Internal Server Error in 7ms
+
+ActionView::Template::Error (undefined method `extend!' for {:min=>true, :version=>"0.15.3"}:Hash):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___3580390937196029418_70248519932880'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.7ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (13.3ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:09:01 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (1.1ms)
+Completed 500 Internal Server Error in 6ms
+
+ActionView::Template::Error (undefined method `extend!' for {:min=>true, :version=>"0.15.3"}:Hash):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___3580390937196029418_70248519932880'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.3ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (12.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:09:48 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.0ms)
+Completed 500 Internal Server Error in 6ms
+
+ActionView::Template::Error (undefined method `extend!' for {:min=>true, :version=>"0.15.3"}:Hash):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___3580390937196029418_70248519932880'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.6ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.5ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (12.9ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:09:49 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.1ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (1.0ms)
+Completed 500 Internal Server Error in 6ms
+
+ActionView::Template::Error (undefined method `extend!' for {:min=>true, :version=>"0.15.3"}:Hash):
+     5:   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+     6:   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+     7:   <%= csrf_meta_tags %>
+     8:   <%= include_uploadcare_widget_from_cdn %>
+     9: </head>
+    10: <body>
+    11: 
+  app/views/layouts/application.html.erb:8:in `_app_views_layouts_application_html_erb___3580390937196029418_70248519932880'
+
+
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.4ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.2ms)
+  Rendered /Users/romanonthego/.rvm/gems/ruby-2.0.0-p247@uc2/gems/actionpack-4.0.1/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (10.8ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:09:54 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 200 OK in 55ms (Views: 53.0ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 15:09:54 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 15:09:54 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 15:09:54 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 15:09:54 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 15:09:54 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 15:59:30 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.3ms)
+Completed 200 OK in 50ms (Views: 47.4ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 15:59:30 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 15:59:30 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 15:59:30 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 15:59:30 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 15:59:31 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:00:52 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (1.2ms)
+Completed 200 OK in 9ms (Views: 8.1ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:52 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:52 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:52 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:00:52 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:00:52 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (1.3ms)
+Completed 200 OK in 9ms (Views: 8.1ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (0.7ms)
+Completed 200 OK in 6ms (Views: 5.9ms | ActiveRecord: 0.1ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:00:58 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:01:07 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (2.7ms)
+Completed 200 OK in 12913ms (Views: 12910.6ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:01:21 +0700
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts"[0m
+  Rendered posts/index.html.erb within layouts/application (0.9ms)
+Completed 200 OK in 1071ms (Views: 1070.1ms | ActiveRecord: 0.1ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:01:22 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:01:22 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:01:22 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:01:22 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:01:22 +0700
+
+
+Started GET "/" for 127.0.0.1 at 2013-11-19 16:02:03 +0700
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by PostsController#index as HTML
+  [1m[35mPost Load (0.2ms)[0m  SELECT "posts".* FROM "posts"
+  Rendered posts/index.html.erb within layouts/application (3.1ms)
+Completed 200 OK in 57ms (Views: 55.1ms | ActiveRecord: 0.2ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:02:04 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:02:04 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:02:04 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:02:04 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:02:04 +0700
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-11-19 16:02:07 +0700
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (74.6ms)
+  Rendered posts/new.html.erb within layouts/application (132.3ms)
+Completed 200 OK in 139ms (Views: 137.8ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-11-19 16:02:08 +0700
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-11-19 16:02:08 +0700
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-11-19 16:02:08 +0700
+
+
+Started GET "/assets/scaffold.css?body=1" for 127.0.0.1 at 2013-11-19 16:02:08 +0700
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-11-19 16:02:08 +0700
