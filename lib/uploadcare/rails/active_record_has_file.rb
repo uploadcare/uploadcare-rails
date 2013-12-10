@@ -6,9 +6,9 @@ module Uploadcare
         define_method "#{attribute}" do
           cdn_url = attributes[attribute.to_s].to_s
           
-          # return nil if cdn_url.empty?
+          return nil if cdn_url.empty?
 
-          # cdn_url
+          cdn_url
 
           # api = UPLOADCARE_SETTINGS.api
 
@@ -34,7 +34,7 @@ module Uploadcare
           url = self.attributes[attribute.to_s]
           unless url.empty?
             result = Uploadcare::Parser.parse(url)
-            raise 
+            raise "Invalid file uuid" if result.is_a?(Uploadcare::Parser::Group)
           end
         end
       end

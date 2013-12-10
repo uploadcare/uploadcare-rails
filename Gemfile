@@ -7,6 +7,9 @@ gemspec
 
 gem 'uploadcare-ruby', "~> 1.0.0", path: "/Users/romanonthego/Code/uc/new/uploadcare-ruby"
 
+group :development do
+  gem 'binding_of_caller'
+end
 
 # Declare any dependencies that are still in development here instead of in
 # your gemspec. These might include edge Rails or gems from your path or
