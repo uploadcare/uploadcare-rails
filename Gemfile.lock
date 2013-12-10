@@ -8,7 +8,7 @@ PATH
 PATH
   remote: /Users/romanonthego/Code/uc/new/uploadcare-ruby
   specs:
-    uploadcare-ruby (1.0.0)
+    uploadcare-ruby (1.0.1)
       faraday
       faraday_middleware
       mime-types
@@ -43,6 +43,9 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.1)
     atomic (1.1.14)
+    better_errors (1.0.1)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
     builder (3.1.4)
     coderay (1.1.0)
     diff-lcs (1.2.5)
@@ -124,6 +127,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  better_errors
   pry
   pry-rails
   rspec
