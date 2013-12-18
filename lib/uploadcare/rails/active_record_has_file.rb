@@ -1,28 +1,29 @@
+require "uploadcare/rails/file"
+
 module Uploadcare
   module Rails
     module ActiveRecord
       def has_uploadcare_file attribute, options={}
+  
+        define_method "has_uploadcare_file?" do
+          true
+        end
+
+        define_method "has_uploadcare_group?" do
+          false
+        end
+
         # attribute method - return file object
+        # it is not the ::File but ::Rails::File
+        # it has some helpers for rails enviroment
+        # but it also has all the methods of Uploadcare::File so no worries.
         define_method "#{attribute}" do
           cdn_url = attributes[attribute.to_s].to_s
           
           return nil if cdn_url.empty?
 
-          cdn_url
-
-          # api = UPLOADCARE_SETTINGS.api
-
-          # if Uploadcare::CDN_URL_GROUP_REGEX.match(cdn_url)
-          #   object = api.group(cdn_url)
-          # elsif Uploadcare::CDN_URL_FILE_REGEX.match(cdn_url)
-          #   object = api.file(cdn_url)
-          # else
-          #   raise "Invalid cdn url was given"
-          # end
-
-          # binding.pry
-          # object
-
+          api = UPLOADCARE_SETTINGS.api
+          file = Uploadcare::Rails::File.new api, cdn_url
         end
 
         # before saving we checking what it is a actually file cdn url
@@ -34,7 +35,7 @@ module Uploadcare
           url = self.attributes[attribute.to_s]
           unless url.empty?
             result = Uploadcare::Parser.parse(url)
-            raise "Invalid file uuid" if result.is_a?(Uploadcare::Parser::Group)
+            raise "Invalid Uploadcare file uuid" unless result.is_a?(Uploadcare::Parser::File)
           end
         end
       end

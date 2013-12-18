@@ -7,7 +7,7 @@
 
 <p>
   <strong>File:</strong>
-  <%= @post.file %>
+  <%= @post.file.try :image, false, width: "180px" %>
 </p>
 
 <%= link_to 'Edit', edit_post_path(@post) %> |
