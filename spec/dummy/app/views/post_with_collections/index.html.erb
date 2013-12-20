@@ -1,0 +1,29 @@
+<h1>Listing post_with_collections</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>File</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @post_with_collections.each do |post_with_collection| %>
+      <tr>
+        <td><%= post_with_collection.title %></td>
+        <td><%= post_with_collection.file %></td>
+        <td><%= link_to 'Show', post_with_collection %></td>
+        <td><%= link_to 'Edit', edit_post_with_collection_path(post_with_collection) %></td>
+        <td><%= link_to 'Destroy', post_with_collection, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Post with collection', new_post_with_collection_path %>

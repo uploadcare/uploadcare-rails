@@ -1,0 +1,2 @@
+module PostWithCollectionsHelper
+end
