@@ -5,9 +5,9 @@ module Uploadcare
     class Group < Uploadcare::Api::Group
 
       # override default to string method
-      # instead of string representation of object it will return simple cdn url of a file
+      # for group we just will return the uuid
       def to_s
-        cdn_url
+        uuid
       end
     end
   end

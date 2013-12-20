@@ -9,10 +9,8 @@ module Uploadcare
 
         # active record extention for stand-alone file models and models has files
         ActiveSupport.on_load :active_record do
-          require 'uploadcare/rails/active_record_has_object'
           require 'uploadcare/rails/active_record_has_file'
           require 'uploadcare/rails/active_record_has_group'
-          require 'uploadcare/rails/active_record_acts_as_uploadcare'
         end
 
         # # JS options, widets from cdn etc

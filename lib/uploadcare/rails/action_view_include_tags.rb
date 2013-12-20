@@ -16,8 +16,8 @@ module Uploadcare::Rails::ActionView
     end
 
     # PENDING due some issues with assets pipeline
-    def include_uploadcare_widget_from_assets options={}
-    end
+    # def include_uploadcare_widget_from_assets options={}
+    # end
 
     
     def uploadcare_settings options={}

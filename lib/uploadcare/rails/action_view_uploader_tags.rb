@@ -3,10 +3,21 @@
 module Uploadcare::Rails::ActionView
   module UploaderTags
     def uploadcare_uploader_options options
-      options.symbolize_keys.deep_merge({
-        :role => "uploadcare-uploader #{options[:role]}",
+      options = options.symbolize_keys.deep_merge({
+        :role => "uploadcare-uploader #{options[:role]}".strip,
         :data => {:path_value => true}
       })
+      
+      # merge uploadcare options into data-attributes
+      # IMPORTANT: custome data-attrs will be overriden by
+      # the uploadcare options in case of collision.
+      if options[:uploadcare]
+        # options[:uploadcare] ||= {}
+        options[:data] = options[:data].merge!(options[:uploadcare])
+        options.tap {|options| options.delete(:uploadcare)}
+      else
+        options
+      end
     end
 
     def uploadcare_uploader_tag name, options = {}
@@ -26,8 +37,38 @@ module Uploadcare::Rails::ActionView
 
 
   module FormBuilder
-    def uploadcare_uploader_field(method, options = {})
+    # call uploadcare_uploader field for form object
+    # none of options will be overriden and given as-is
+    def uploadcare_uploader method, options={}
       @template.uploadcare_uploader_field(@object_name, method, objectify_options(options))
+    end
+
+    # forse-set the data-multiple="false" for uploader
+    def uploadcare_single_uploader_field method, options={}
+      options[:uploadcare] ||= {}
+      options[:uploadcare][:multiple] = false
+      uploadcare_uploader(method, options)
+    end
+
+    # forse-set the data-multiple="true" for uploader
+    def uploadcare_multiple_uploader_field method, options={}
+      options[:uploadcare] ||= {}
+      options[:uploadcare][:multiple] = true
+      uploadcare_uploader(method, options)
+    end
+
+    # smart method to detect wich of - file or group - pesent
+    # and then choose either multiple or single-file upload.
+    # not that this method WILL override custom settings in order
+    # to prevent method collisions
+    def uploadcare_field method, options={}
+      if @object.try(:has_uploadcare_file?) && !@object.try(:as_uploadcare_group?)
+        uploadcare_single_uploader_field(method, options)
+      elsif !@object.try(:has_uploadcare_file?) && @object.try(:has_uploadcare_group?)
+        uploadcare_multiple_uploader_field(method, options)
+      else
+        uploadcare_uploader(method, options)
+      end
     end
   end
 end

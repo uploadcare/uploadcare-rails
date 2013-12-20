@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Uploadcare::Rails, type: :helper do
+describe Uploadcare::Rails do
   it "should include widget from cdn" do
     tag = helper.include_uploadcare_widget_from_cdn
     tag.should be_kind_of(String)
