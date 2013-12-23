@@ -104,6 +104,101 @@ Next step is including application-wide settings in page. Just call **:uploadcar
 
 # Using
 
+## Basic tag
+Basic usage of uploadcare gem is very simple. Remember that uploader returns you a simple string with cdn url of a file or group.
 
-## Simple uploader
-You can always just put 
+```html
+<%= uploadcare_uploader_field :post, :file %>
+<!-- 
+  results in:
+  <input data-path-value="true" id="post_file" name="post[file]" role="uploadcare-uploader" type="hidden">
+  <div class="uploadcare-widget" style="display: none;" data-status="ready">
+      ....
+  </div>
+ -->
+```
+
+This tag will result in:
+
+```ruby
+params[:post][:file]
+# => http://www.ucarecdn.com/19cde26d-e41b-4cf5-923e-f58729c0522a/
+```
+
+## Form tags
+We have smart and fancy form builder helpers for you.
+
+
+```html
+<%= form_for(@post) do |f| %>
+
+  <div class="field">
+    <%= f.label :title %><br>
+    <%= f.text_field :title %>
+  </div>
+  <div class="field">
+    <%= f.label :file %><br>
+    <%= f.uploadcare_field :file %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+```
+
+This wil result in uploadcare uploader with ethier single file uploader (if model has uploadcare file attribute) or multiple uploader (if model has uploadcare group attribute). Note that groups and single files behave very differently, so you can not mix one with another (in version 1.0 anyway).
+
+You can also use universal builder helper:
+
+```ruby
+# simple uploadcare uploader with no smart suggestions about type of result object:
+f.uploadcare_uploader :file
+
+# you can set multiple options as you want:
+f.uploadcare_uploader :file, :data => {:multiple => true}
+
+# also there is uploadcare namespace for options
+# note that this namespace will be translated into data- attributes
+f.uploadcare_uploader :file, :uploadcare => {:multiple => true}
+# => will result in "data-multiple"="true"
+
+#uploadcare namespace have a higher priority and will override data- attributes
+f.uploadcare_uploader :file, :data => {:multiple => true}, :uploadcare => {:multiple => false}
+# => will result in "data-multiple"="false"
+```
+
+And two other helpers:
+
+```ruby
+# forse-set "data-multiple" to false
+f.uploadcare_single_uploader_field :file
+
+# forse-set "data-multiple" to false
+f.uploadcare_multiple_uploader_field :file
+```
+
+What options are avaliable with *uploadcare* namespace for uploader? Well, honestly there is no validation in version 1.0 and all option from that namespace simple translated into data- attributes.
+More on valid options you can read here https://uploadcare.com/documentation/widget/#advanced-configuration.
+
+
+## Output
+Both :has_uploadcare_file and :has_uploadcare_group defined for model will return an either Uploadcare::Rails::File or Uploadcare::Rails::Group objects. Both are derrivative from Uploadcare::File
+and Uploadcare::Group respectfully, with some helpers to fit in Rails enviroment.
+
+### File object
+Basicly has the same methods as Uploadcare::File object, with several additions.
+Firstly, string representation of file is cdn url.
+
+```ruby
+# calling the object in templates will respond with cdn_url string
+# instead of object serialization
+post.file
+# => http://www.ucarecdn.com/19cde26d-e41b-4cf5-923e-f58729c0522a/
+
+# so
+image_tag(post.file)
+# is a perfectly valid usage 
+# => <img src="http://www.ucarecdn.com/19cde26d-e41b-4cf5-923e-f58729c0522a/">
+```
+
+
