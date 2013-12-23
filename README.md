@@ -52,7 +52,7 @@ First you should load our awesome widget to the page. There is two way of doing 
 ### Load widget from our cdn
 Just call helper in head of application layout (or anywhere else if needed):
 
-```html
+```erb
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,7 +80,7 @@ Note that only last and stable version of widget is publised with gem. If you ne
 
 Next step is including application-wide settings in page. Just call **:uploadcare_settings** helper in head of layout:
 
-```html
+```erb
 <!DOCTYPE html>
 <html>
 <head>
@@ -107,7 +107,7 @@ Next step is including application-wide settings in page. Just call **:uploadcar
 ## Basic tag
 Basic usage of uploadcare gem is very simple. Remember that uploader returns you a simple string with cdn url of a file or group.
 
-```html
+```erb
 <%= uploadcare_uploader_field :post, :file %>
 <!-- 
   results in:
@@ -129,7 +129,7 @@ params[:post][:file]
 We have smart and fancy form builder helpers for you.
 
 
-```html
+```erb
 <%= form_for(@post) do |f| %>
 
   <div class="field">
