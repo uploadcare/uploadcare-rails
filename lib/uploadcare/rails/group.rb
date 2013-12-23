@@ -9,6 +9,19 @@ module Uploadcare
       def to_s
         uuid
       end
+
+      private
+        def map_files data
+          data["files"].map! do |file|
+            unless file.nil?
+              Uploadcare::Rails::File.new(@api, file["uuid"], file)
+            else
+              file
+            end
+          end
+
+          data
+        end
     end
   end
 end

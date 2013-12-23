@@ -192,6 +192,7 @@ Firstly, string representation of file is cdn url.
 ```ruby
 # calling the object in templates will respond with cdn_url string
 # instead of object serialization
+# in the template call:
 post.file
 # => http://www.ucarecdn.com/19cde26d-e41b-4cf5-923e-f58729c0522a/
 
@@ -199,6 +200,35 @@ post.file
 image_tag(post.file)
 # is a perfectly valid usage 
 # => <img src="http://www.ucarecdn.com/19cde26d-e41b-4cf5-923e-f58729c0522a/">
+```
+
+### Group object
+What is different? not much.
+
+```ruby
+# calling group (or thatever attribute name you choose) in the template
+post.group
+# => 19cde26d-e41b-4cf5-923e-f58729c0522a~2
+
+```
+Note that explicite loading of group is requered for getting access for group files:
+
+```ruby
+# calling group (or thatever attribute name you choose) in the template
+@post.group.load unless @post.group.is_loaded?
+@post.group.files
+# => [#<Uploadcare::Rails::File ...]
+```
+Then you can iterate through files:
+
+```erb
+<ul>
+  <% @post.group.files.each do |file|%>
+    <li>
+      <%= image_tag(file.cdn_url) %>
+    </li>
+  <% end %>
+</ul>
 ```
 
 
