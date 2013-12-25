@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.test_files = Dir["spec/**/*"]
 
   gem.add_dependency "rails", "~> 4.0.1"
-  gem.add_dependency "uploadcare-ruby", "~> 1.0.0"
+  gem.add_dependency "uploadcare-ruby", "~> 1.0"
 
   gem.add_development_dependency "sqlite3"
   gem.add_development_dependency 'rspec'
