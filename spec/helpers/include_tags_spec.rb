@@ -28,5 +28,15 @@ describe Uploadcare::Rails do
     settings.should_not be_empty
   end
 
-  # TODO: check if settings is valid throught regexes
+  it "should include all uplaodcare settings" do
+    settings = helper.uploadcare_settings
+    settings.should have_selector("script", :content => "UPLOADCARE_PUBLIC_KEY")
+    settings.should have_selector("script", :content => "UPLOADCARE_LOCALE")
+    settings.should have_selector("script", :content => "UPLOADCARE_PREVIEW_STEP")
+    settings.should have_selector("script", :content => "UPLOADCARE_CLEARABLE")
+    settings.should have_selector("script", :content => "UPLOADCARE_TABS")
+    settings.should have_selector("script", :content => "UPLOADCARE_AUTOSTORE")
+    settings.should have_selector("script", :content => "UPLOADCARE_MANUAL_START")
+    settings.should have_selector("script", :content => "UPLOADCARE_PATH_VALUE")
+  end
 end

@@ -8,13 +8,13 @@ defaults: &defaults
   # But it also will not break anything.
 
   # for preview step use:
-  # preview_step: false # true or false
+  preview_step: false # true or false
 
   # for clearable option (allows user to remove uploaded file from widget) use:
-  # clearable: false # true or false
+  clearable: false # true or false
 
   # for setting tabs use tabs option:
-  # tabs: "url file facebook" # etc
+  tabs: "url file facebook" # etc
   # read more here: https://uploadcare.com/documentation/widget/#tabs
   # 
   #   Full list of tabs: 
@@ -34,16 +34,16 @@ defaults: &defaults
   # |________________________________________|
 
   # for locale option use:
-  # locale: "en"
+  locale: "en"
 
   # for autostore option use:
-  # autostore: true #true or false
+  autostore: true #true or false
 
   # for manual start (which means you will need to initialize uploaders yourself) use:
-  # manual_start: false # true or false
+  manual_start: false # true or false
 
   # for path value use:
-  # path_value: true # true or false
+  path_value: true # true or false
   # (important for input values - see https://uploadcare.com/documentation/widget/#input-value)
 
 development:
