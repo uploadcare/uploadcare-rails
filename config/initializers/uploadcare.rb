@@ -5,8 +5,11 @@ if File.exists?(config_file)
   # defaults = YAML.load_file(defaults_file)
   config = YAML.load_file(config_file)
   UPLOADCARE_SETTINGS = Uploadcare::Rails::Settings.new config
+  # shortcut for later usage
+  Rails.application.config.uploadcare = UPLOADCARE_SETTINGS
 else
-  # puts "\e[31mWarning: no uploadcare.yml config file found.\e[0m/n"
+  # output warning in red color
+  # use default settings just to boot up
   puts <<-eos
     \e[31mWarning: no uploadcare.yml config file found.\e[0m
     \e[31mwhile we will use default settings please run\e[0m

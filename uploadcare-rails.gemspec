@@ -5,17 +5,26 @@ require "uploadcare/rails/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |gem|
-  gem.name        = "uploadcare-rails"
-  gem.version     = Uploadcare::Rails::VERSION
-  gem.authors     = ["TODO: Your name"]
-  gem.email       = ["TODO: Your email"]
-  gem.homepage    = "TODO"
-  gem.summary     = "TODO: Summary of UploadcareRails."
-  gem.description = "TODO: Description of UploadcareRails."
+  gem.name          = "uploadcare-rails"
+  gem.authors       = ["@rastyagaev (Vadim Rastyagaev)",
+                       "@dimituri (Dimitry Solovyov)",
+                       "@romanonthego (Roman Dubinin)"]
+  gem.email         = ["hello@uploadcare.com"]
+  gem.summary       = "Rails gem for Uploadcare"
+  gem.description   = <<-EOF
+                        Rails wrapper for Uploadcare service.
+                        Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby) 
+                      EOF
+  gem.metadata       =  { 
+                          "github" => "https://github.com/uploadcare/uploadcare-rails", 
+                          "issue_tracker" => "https://github.com/uploadcare/uploadcare-rails/issues" 
+                        }
+  gem.homepage      = "https://uploadcare.com/documentation/libs/"
+  gem.license       = "MIT"
 
   gem.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
   gem.test_files = Dir["spec/**/*"]
-
+  gem.version       = Uploadcare::Rails::VERSION
   gem.add_dependency "rails", "~> 4.0.1"
   gem.add_dependency "uploadcare-ruby", "~> 1.0"
 

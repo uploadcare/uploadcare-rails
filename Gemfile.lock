@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    uploadcare-rails (1.0.0)
+    uploadcare-rails (1.0.0.rc1)
       rails (~> 4.0.1)
-      uploadcare-ruby (~> 1.0.0)
+      uploadcare-ruby (~> 1.0)
 
 PATH
   remote: /Users/romanonthego/Code/uc/new/uploadcare-ruby
   specs:
-    uploadcare-ruby (1.0.1)
+    uploadcare-ruby (1.0.1.rc1)
       faraday
       faraday_middleware
       mime-types
