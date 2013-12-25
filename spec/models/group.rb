@@ -1,0 +1,36 @@
+require "spec_helper"
+
+describe Uploadcare::Rails::Group do
+  before(:each) do
+    @post = PostWithCollection.new title: "Post title", file: "8e1f6ccb-0c4a-471e-934e-ac6ba030d33c~2" 
+    @group = @post.file
+  end
+
+  it "should be Uploadcare::Rails::File" do
+    @group.should be_kind_of(Uploadcare::Rails::Group)
+  end
+
+  it "should be not loaded by default" do
+    @group.loaded?.should == false
+  end
+
+  it "should load itself" do
+    @group.load
+    @group.loaded?.should == true
+  end
+
+  it "file should respond to :uuid and :to_s methods" do
+    @group.to_s.should == @group.uuid
+  end
+
+  it "group should have files" do
+    @group.load
+    @group.files.should be_kind_of(Array)
+    @group.files.sample.should be_kind_of(Uploadcare::Rails::File)
+  end
+
+  it "loaded group files should be loaded too" do
+    @group.load
+    @group.files.sample.loaded?.should == true
+  end
+end
