@@ -1,7 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png?branch=master)](http://travis-ci.org/uploadcare/uploadcare-rails)
 
-An awesome Rails plugin for Uploadcare service.
-Based on uploadcare-ruby gem (general purpose wrapper for Uploadcare API)
+An awesome Rails plugin for [Uploadcare](https://uploadcare.com) service.
+Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
 # Installation
 Add this line to your application's Gemfile:
@@ -16,20 +16,20 @@ And then execute:
 $ bundle install
 ```
 
-Or install it yourself as:
+Or install it yourself:
 
 ```shell
 $ gem install uploadcare-rails -v 1.0.0
 ```
 
 # Configuration
-Uploadcare *required* to store all related config in one single yml file.
+Uploadcare *requires* to store all related config in one single yml file.
 You should create **uploadcare.yml** in your **config** folder. Just run 
 
 ```shell
 $ bundle exec rails g uploadcare_config
 ```
-Or create it by yourself - it should contain something like that:
+Or create it yourself - it should contain something like:
 
 ```yaml
 # config/uploadcare.yml
@@ -48,13 +48,13 @@ production:
   <<: *defaults
 ```
 
-Only two config are required for work: public and private key. All other posible options are listed here: https://uploadcare.com/documentation/widget/ . Config file created by generator also contains list of all options with default values. Note that it is global settings used for internal api calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
+Only two config settings are required: public and private keys. All other posible options are listed [here](https://uploadcare.com/documentation/widget/). Config file created by generator also contains a list of all options with default values. Note that global settings are used for internal API calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
 
 
 # Including widgets and widget configuration
-First you should load our awesome widget to the page. There is two way of doing that:
+First you should add Uploadcare widget to the page. There are two way of doing that:
 
-### Load widget from our cdn
+### Load widget from our CDN
 Just call helper in head of application layout (or anywhere else if needed):
 
 ```erb
@@ -65,10 +65,10 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn {version: "0.16.2", min: true } %>
+  <%= include_uploadcare_widget_from_cdn {version: "0.17.0", min: true } %>
   <!-- 
     results in: 
-    <script src="https://ucarecdn.com/widget/0.16.2/uploadcare/uploadcare-0.16.2.min.js"></script>
+    <script src="https://ucarecdn.com/widget/0.17.0/uploadcare/uploadcare-0.17.0.min.js"></script>
   -->
 </head>
 ```
@@ -81,9 +81,14 @@ In case you don't wont use cdn-stored version for any reason - you could easily 
 
 // require ./uploadcare
 ```
-Note that only last and stable version of widget is publised with gem. If you need old version for some reasone you could download it and put somewhere in assets/javascripts/vendor and include it via assets pipeline.
+Note that only last and stable version of widget is published with gem.
+If you need an older (or newer) version for some reason you can
+download it and put somewhere in
+`assets/javascripts/vendor` and include it via assets pipeline.
 
-Next step is including application-wide settings in page. Just call **:uploadcare_settings** helper in head of layout:
+### Widget configuration
+Next step is including application-wide settings in page.
+Just call `:uploadcare_settings` helper in head of layout:
 
 ```erb
 <!DOCTYPE html>
@@ -93,7 +98,7 @@ Next step is including application-wide settings in page. Just call **:uploadcar
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn {version: "0.15.3", min: true } %>
+  <%= include_uploadcare_widget_from_cdn {version: "0.17.0", min: true } %>
   <%= uploadcare_settings %>
   <!-- 
     results in:
@@ -110,7 +115,7 @@ Next step is including application-wide settings in page. Just call **:uploadcar
 # Using
 
 ## Basic tag
-Basic usage of uploadcare gem is very simple. Remember that uploader returns you a simple string with cdn url of a file or group.
+Basic usage of Uploadcare gem is very simple. Remember that uploader returns you a simple string with cdn url of a file or group.
 
 ```erb
 <%= uploadcare_uploader_field :post, :file %>
@@ -151,7 +156,7 @@ We have smart and fancy form builder helpers for you.
 <% end %>
 ```
 
-This wil result in uploadcare uploader with ethier single file uploader (if model has uploadcare file attribute) or multiple uploader (if model has uploadcare group attribute). Note that groups and single files behave very differently, so you can not mix one with another (in version 1.0 anyway).
+This wil result in Uploadcare uploader with ethier single file uploader (if model has uploadcare file attribute) or multiple uploader (if model has uploadcare group attribute). Note that groups and single files behave differently, so you can not mix one with another (in version 1.0 anyway).
 
 You can also use universal builder helper:
 
@@ -182,16 +187,20 @@ f.uploadcare_single_uploader_field :file
 f.uploadcare_multiple_uploader_field :file
 ```
 
-What options are avaliable with *uploadcare* namespace for uploader? Well, honestly there is no validation in version 1.0 and all option from that namespace simple translated into data- attributes.
-More on valid options you can read here https://uploadcare.com/documentation/widget/#advanced-configuration.
+What options are avaliable with `uploadcare` namespace for uploader?
+Well, honestly there is no validation in version 1.0 and all options
+from that namespace are simply translated into `data-` attributes.
+More on valid options you can read in [widget docs](https://uploadcare.com/documentation/widget/#advanced-configuration).
 
 
 ## Output
-Both :has_uploadcare_file and :has_uploadcare_group defined for model will return an either Uploadcare::Rails::File or Uploadcare::Rails::Group objects. Both are derrivative from Uploadcare::File
-and Uploadcare::Group respectfully, with some helpers to fit in Rails enviroment.
+Both `:has_uploadcare_file` and `:has_uploadcare_group` defined for model will
+return an either `Uploadcare::Rails::File` or `Uploadcare::Rails::Group` objects.
+Both are derrived from `Uploadcare::File` and `Uploadcare::Group` respectively,
+with some helpers to fit in Rails enviroment.
 
 ### File object
-Basicly has the same methods as Uploadcare::File object, with several additions.
+Basicly it has same methods as `Uploadcare::File` object, with several additions.
 Firstly, string representation of file is cdn url.
 
 ```ruby
@@ -208,7 +217,7 @@ image_tag(post.file)
 ```
 
 ### Group object
-What is different? not much.
+What is different? Not much.
 
 ```ruby
 # calling group (or thatever attribute name you choose) in the template
@@ -216,7 +225,7 @@ post.group
 # => 19cde26d-e41b-4cf5-923e-f58729c0522a~2
 
 ```
-Note that explicite loading of group is requered for getting access for group files:
+Note that explicit loading of group is required for getting access for group files:
 
 ```ruby
 # calling group (or thatever attribute name you choose) in the template
@@ -237,7 +246,7 @@ Then you can iterate through files:
 ```
 
 
-# Future releses:
+# Future releases:
 We have big plans for future:
 * Form helpers for Formastic and Simple Forms;
 * Localizations for widget directly from rails i18n;
@@ -245,3 +254,7 @@ We have big plans for future:
 * More render and output helpers for html pages and api responses;
 
 So stay tuned!
+
+#Contributing
+
+This is open source, fork, hack, request a pull, receive a discount)
