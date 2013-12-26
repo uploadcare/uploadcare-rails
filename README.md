@@ -24,14 +24,18 @@ $ gem install uploadcare-rails -v 1.0.0
 
 # Configuration
 Uploadcare *required* to store all related config in one single yml file.
-You should create **uploadcare.yml** in your **config** folder. It should contain something like that:
+You should create **uploadcare.yml** in your **config** folder. Just run 
+
+```shell
+$ bundle exec rails g uploadcare_config
+```
+Or create it by yourself - it should contain something like that:
 
 ```yaml
 # config/uploadcare.yml
 defaults: &defaults
   public_key: "demopublickey"
   private_key: "demoprivatekey"
-  autostore: true
 
 development:
   <<: *defaults
@@ -44,7 +48,8 @@ production:
   <<: *defaults
 ```
 
-Only two config are required for work: public and private key. All other posible options are listed here: https://uploadcare.com/documentation/widget/ . Note that it is global settings used for internal api calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
+Only two config are required for work: public and private key. All other posible options are listed here: https://uploadcare.com/documentation/widget/ . Config file created by generator also contains list of all options with default values. Note that it is global settings used for internal api calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
+
 
 # Including widgets and widget configuration
 First you should load our awesome widget to the page. There is two way of doing that:
@@ -60,10 +65,10 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn {version: "0.15.3", min: true } %>
+  <%= include_uploadcare_widget_from_cdn {version: "0.16.2", min: true } %>
   <!-- 
     results in: 
-    <script src="https://ucarecdn.com/widget/0.15.3/uploadcare/uploadcare-0.15.3.min.js"></script>
+    <script src="https://ucarecdn.com/widget/0.16.2/uploadcare/uploadcare-0.16.2.min.js"></script>
   -->
 </head>
 ```
@@ -162,7 +167,7 @@ f.uploadcare_uploader :file, :data => {:multiple => true}
 f.uploadcare_uploader :file, :uploadcare => {:multiple => true}
 # => will result in "data-multiple"="true"
 
-#uploadcare namespace have a higher priority and will override data- attributes
+# uploadcare namespace have a higher priority and will override data- attributes
 f.uploadcare_uploader :file, :data => {:multiple => true}, :uploadcare => {:multiple => false}
 # => will result in "data-multiple"="false"
 ```
@@ -215,15 +220,15 @@ Note that explicite loading of group is requered for getting access for group fi
 
 ```ruby
 # calling group (or thatever attribute name you choose) in the template
-@post.group.load unless @post.group.is_loaded?
-@post.group.files
+@group = @post.group.load
+@group.files
 # => [#<Uploadcare::Rails::File ...]
 ```
 Then you can iterate through files:
 
 ```erb
 <ul>
-  <% @post.group.files.each do |file|%>
+  <% @group.files.each do |file|%>
     <li>
       <%= image_tag(file.cdn_url) %>
     </li>
@@ -232,3 +237,11 @@ Then you can iterate through files:
 ```
 
 
+# Future releses:
+We have big plans for future:
+* Form helpers for Formastic and Simple Forms;
+* Localizations for widget directly from rails i18n;
+* Smart caching for loaded groups and files;
+* More render and output helpers for html pages and api responses;
+
+So stay tuned!
