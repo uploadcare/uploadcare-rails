@@ -5,8 +5,6 @@ source "https://rubygems.org"
 # development dependencies will be added by default to the :development group.
 gemspec
 
-gem 'uploadcare-ruby', "~> 1.0.0", path: "/Users/romanonthego/Code/uc/new/uploadcare-ruby"
-
 group :development do
   gem 'binding_of_caller'
 end
