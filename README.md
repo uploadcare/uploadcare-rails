@@ -48,7 +48,7 @@ production:
   <<: *defaults
 ```
 
-Only two config settings are required: public and private keys. All other posible options are listed [here]: (https://uploadcare.com/documentation/widget/). Config file created by generator also contains a list of all options with default values. Note that global settings are used for internal API calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
+Only two config settings are required: public and private keys. All other posible options are listed [here](https://uploadcare.com/documentation/widget/). Config file created by generator also contains a list of all options with default values. Note that global settings are used for internal API calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
 
 
 # Including widgets and widget configuration
@@ -82,10 +82,11 @@ In case you don't wont use cdn-stored version for any reason - you could easily 
 // require ./uploadcare
 ```
 Note that only last and stable version of widget is published with gem.
-If you need an older (or newer) version for some reasone you can
+If you need an older (or newer) version for some reason you can
 download it and put somewhere in
 `assets/javascripts/vendor` and include it via assets pipeline.
 
+### Widget configuration
 Next step is including application-wide settings in page.
 Just call `:uploadcare_settings` helper in head of layout:
 
@@ -216,7 +217,7 @@ image_tag(post.file)
 ```
 
 ### Group object
-What is different? not much.
+What is different? Not much.
 
 ```ruby
 # calling group (or thatever attribute name you choose) in the template
@@ -224,7 +225,7 @@ post.group
 # => 19cde26d-e41b-4cf5-923e-f58729c0522a~2
 
 ```
-Note that explicit loading of group is requered for getting access for group files:
+Note that explicit loading of group is required for getting access for group files:
 
 ```ruby
 # calling group (or thatever attribute name you choose) in the template
