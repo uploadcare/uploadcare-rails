@@ -4,7 +4,7 @@ require "uploadcare"
 module Uploadcare
   module Rails
     DEFAULT_SETTINGS = {
-      widget_version: "0.16.2"
+      widget_version: "0.17.0"
     }
   end
 end

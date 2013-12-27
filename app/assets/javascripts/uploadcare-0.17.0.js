@@ -1,7 +1,7 @@
 /*
- * Uploadcare (0.16.2)
- * Date: 2013-12-16 19:35:26 +0400
- * Rev: 36127b6481
+ * Uploadcare (0.17.0)
+ * Date: 2013-12-25 16:02:02 +0400
+ * Rev: becd92d456
  */
 ;(function(uploadcare, SCRIPT_BASE){(function() {
 
@@ -5617,29 +5617,40 @@ var _require = (function() {
   namespace = uploadcare.namespace, $ = uploadcare.jQuery, utils = uploadcare.utils;
 
   namespace('uploadcare.files', function(ns) {
-    return ns.EventFile = (function(_super) {
+    return ns.ObjectFile = (function(_super) {
 
-      __extends(EventFile, _super);
+      __extends(ObjectFile, _super);
 
-      function EventFile(settings, __file) {
+      ObjectFile.prototype.MP_MIN_SIZE = 25 * 1024 * 1024;
+
+      ObjectFile.prototype.MP_PART_SIZE = 5 * 1024 * 1024;
+
+      ObjectFile.prototype.MP_CONCURRENCY = 4;
+
+      function ObjectFile(settings, __file) {
         this.__file = __file;
-        EventFile.__super__.constructor.apply(this, arguments);
+        ObjectFile.__super__.constructor.apply(this, arguments);
         this.fileSize = this.__file.size;
-        this.fileName = this.__file.name;
+        this.fileName = this.__file.name || 'original';
+        this.fileType = this.__file.type || 'application/octet-stream';
         this.__notifyApi();
       }
 
-      EventFile.prototype.__startUpload = function() {
+      ObjectFile.prototype.__startUpload = function() {
+        if (this.fileSize < this.MP_MIN_SIZE) {
+          return this.directUpload();
+        } else {
+          return this.multipartUpload();
+        }
+      };
+
+      ObjectFile.prototype.directUpload = function() {
         var formData,
           _this = this;
-        if (this.fileSize > 100 * 1024 * 1024) {
-          this.__rejectApi('size');
-          return;
-        }
         formData = new FormData();
         formData.append('UPLOADCARE_PUB_KEY', this.settings.publicKey);
         if (this.settings.autostore) {
-          formData.append('UPLOADCARE_STORE', 1);
+          formData.append('UPLOADCARE_STORE', '1');
         }
         formData.append('file', this.__file);
         return $.ajax({
@@ -5648,7 +5659,6 @@ var _require = (function() {
             xhr = $.ajaxSettings.xhr();
             if (xhr.upload) {
               xhr.upload.addEventListener('progress', function(e) {
-                _this.fileSize = e.totalSize || e.total;
                 return _this.__uploadDf.notify(e.loaded / _this.fileSize);
               });
             }
@@ -5682,7 +5692,93 @@ var _require = (function() {
         });
       };
 
-      return EventFile;
+      ObjectFile.prototype.multipartUpload = function() {
+        var _this = this;
+        return this.multipartStart().done(function(data) {
+          return _this.uploadParts(data.parts).done(function() {
+            return _this.multipartComplete(data.uuid).done(function(data) {
+              _this.fileId = data.uuid;
+              _this.__handleFileData(data);
+              return _this.__completeUpload();
+            }).fail(_this.__uploadDf.reject);
+          }).fail(_this.__uploadDf.reject);
+        }).fail(this.__uploadDf.reject);
+      };
+
+      ObjectFile.prototype.multipartStart = function() {
+        var data;
+        data = {
+          UPLOADCARE_PUB_KEY: this.settings.publicKey,
+          filename: this.fileName,
+          size: this.fileSize,
+          content_type: this.fileType
+        };
+        if (this.settings.autostore) {
+          data.UPLOADCARE_STORE = '1';
+        }
+        return utils.jsonp("" + this.settings.urlBase + "/multipart/start/?jsonerrors=1", 'POST', data);
+      };
+
+      ObjectFile.prototype.uploadParts = function(parts) {
+        var blob, blobCount, blobOffset, blobSize, i, progress, requests, updateProgress,
+          _this = this;
+        blobCount = Math.min(parts.length, this.MP_CONCURRENCY);
+        blobSize = Math.max(Math.ceil(this.__file.size / blobCount), this.MP_PART_SIZE);
+        blobOffset = 0;
+        progress = [];
+        updateProgress = function(i, loaded) {
+          var total, _i, _len;
+          progress[i] = loaded;
+          total = 0;
+          for (_i = 0, _len = progress.length; _i < _len; _i++) {
+            loaded = progress[_i];
+            total += loaded;
+          }
+          return _this.__uploadDf.notify(total / _this.fileSize);
+        };
+        requests = (function() {
+          var _i, _results,
+            _this = this;
+          _results = [];
+          for (i = _i = 0; 0 <= blobCount ? _i < blobCount : _i > blobCount; i = 0 <= blobCount ? ++_i : --_i) {
+            progress.push(0);
+            blob = this.__file.slice(blobOffset, blobOffset + blobSize);
+            blobOffset += blobSize;
+            _results.push($.ajax({
+              xhr: function() {
+                var xhr;
+                xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                  xhr.upload._part = i;
+                  xhr.upload.addEventListener('progress', function(e) {
+                    return updateProgress(e.target._part, e.loaded);
+                  });
+                }
+                return xhr;
+              },
+              url: parts[i],
+              crossDomain: true,
+              type: 'PUT',
+              processData: false,
+              contentType: this.fileType,
+              data: blob
+            }));
+          }
+          return _results;
+        }).call(this);
+        return $.when.apply(null, requests);
+      };
+
+      ObjectFile.prototype.multipartComplete = function(uuid) {
+        var data;
+        data = {
+          UPLOADCARE_PUB_KEY: this.settings.publicKey,
+          uuid: uuid
+        };
+        return utils.jsonp("" + this.settings.urlBase + "/multipart/complete/?jsonerrors=1", "POST", data);
+      };
+
+      return ObjectFile;
 
     })(ns.BaseFile);
   });
@@ -6302,7 +6398,7 @@ var _require = (function() {
           _results = [];
           for (_i = 0, _len = files.length; _i < _len; _i++) {
             file = files[_i];
-            _results.push(new f.EventFile(settings, file));
+            _results.push(new f.ObjectFile(settings, file));
           }
           return _results;
         } else {
@@ -8091,7 +8187,7 @@ var _require = (function() {
   var expose, key,
     __hasProp = {}.hasOwnProperty;
 
-  uploadcare.version = '0.16.2';
+  uploadcare.version = '0.17.0';
 
   expose = uploadcare.expose;
 
@@ -8149,4 +8245,4 @@ var _require = (function() {
   });
 
 }).call(this);
-}({}, '//ucarecdn.com/widget/0.16.2/uploadcare/'));
+}({}, '//ucarecdn.com/widget/0.17.0/uploadcare/'));
