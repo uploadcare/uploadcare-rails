@@ -7,7 +7,7 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'uploadcare-rails', "~> 1.0"
+gem 'uploadcare-rails', "~> 1.0.0.rc4"
 ```
 
 And then execute:
