@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131220083857) do
+ActiveRecord::Schema.define(version: 20140320092807) do
 
   create_table "post_with_collections", force: true do |t|
     t.string   "title"
@@ -23,6 +23,14 @@ ActiveRecord::Schema.define(version: 20131220083857) do
   create_table "posts", force: true do |t|
     t.string   "title"
     t.string   "file"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "posts_with_collection_and_files", force: true do |t|
+    t.string   "title"
+    t.string   "file"
+    t.string   "group"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

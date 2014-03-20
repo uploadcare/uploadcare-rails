@@ -1,4 +1,6 @@
 Dummy::Application.routes.draw do
+  resources :posts_with_collection_and_files
+
   root to: "posts#index"
   resources :posts
   resources :post_with_collections

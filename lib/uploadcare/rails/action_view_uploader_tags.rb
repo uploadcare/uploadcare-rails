@@ -62,9 +62,9 @@ module Uploadcare::Rails::ActionView
     # not that this method WILL override custom settings in order
     # to prevent method collisions
     def uploadcare_field method, options={}
-      if @object.try(:has_uploadcare_file?) && !@object.try(:as_uploadcare_group?)
+      if @object.try("has_#{method}_as_uploadcare_file?".to_sym) && !@object.try("has_#{method}_as_uploadcare_group?".to_sym)
         uploadcare_single_uploader_field(method, options)
-      elsif !@object.try(:has_uploadcare_file?) && @object.try(:has_uploadcare_group?)
+      elsif !@object.try("has_#{method}_as_uploadcare_file?".to_sym) && @object.try("has_#{method}_as_uploadcare_group?".to_sym)
         uploadcare_multiple_uploader_field(method, options)
       else
         uploadcare_uploader(method, options)

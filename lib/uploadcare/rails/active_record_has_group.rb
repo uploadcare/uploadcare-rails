@@ -5,11 +5,11 @@ module Uploadcare
     module ActiveRecord
       def has_uploadcare_group attribute, options={}
 
-        define_method "has_uploadcare_file?" do
+        define_method "has_#{attribute}_as_uploadcare_file?" do
           false
         end
 
-        define_method "has_uploadcare_group?" do
+        define_method "has_#{attribute}_as_uploadcare_group?" do
           true
         end
 

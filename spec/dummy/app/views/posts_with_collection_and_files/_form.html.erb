@@ -1,0 +1,17 @@
+<%= form_for(@posts_with_collection_and_file) do |f| %>
+  <% if @posts_with_collection_and_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@posts_with_collection_and_file.errors.count, "error") %> prohibited this posts_with_collection_and_file from being saved:</h2>
+
+      <ul>
+      <% @posts_with_collection_and_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
