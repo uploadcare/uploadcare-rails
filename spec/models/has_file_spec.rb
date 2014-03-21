@@ -1,8 +1,13 @@
 require "spec_helper"
 
 describe :has_uploadcare_file do
+  before(:all) do
+    @uploaded = UPLOADCARE_SETTINGS.api.upload 'http://www.gametech.ru/sadm_images/00jin/2014/march/10/21-03-2014%207-58-17.jpg'
+    @cdn_url = @uploaded.cdn_url
+  end
+
   before(:each) do
-    @post = Post.new title: "Post title", file: " http://www.ucarecdn.com/19cde26d-e41b-4cf5-923e-f58729c0522a/" 
+    @post = Post.new title: "Post title", file: @cdn_url 
     @method = "file"
   end
 
