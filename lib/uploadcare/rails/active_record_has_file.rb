@@ -21,9 +21,24 @@ module Uploadcare
           cdn_url = attributes[attribute.to_s].to_s
           
           return nil if cdn_url.empty?
+          # api = UPLOADCARE_SETTINGS.api
 
+          # binding.pry
           api = UPLOADCARE_SETTINGS.api
           file = Uploadcare::Rails::File.new api, cdn_url
+          
+          # file = ::Rails.cache.fetch cdn_url, expires_in: 1.minute do 
+          #   api = UPLOADCARE_SETTINGS.api
+          #   file = Uploadcare::Rails::File.new api, cdn_url
+          # end
+
+          # binding.pry
+          # if ::Rails.cache.exist?(cdn_url)
+          #   file = ::Rails.cache.read(cdn_url)
+          # else
+          #   api = UPLOADCARE_SETTINGS.api
+          #   file = Uploadcare::Rails::File.new api, cdn_url
+          # end
         end
 
         # before saving we checking what it is a actually file cdn url

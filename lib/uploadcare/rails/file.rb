@@ -20,6 +20,16 @@ module Uploadcare
         
         image_tag url, options
       end
+
+      def load_data
+        super
+        ::Rails.cache.write uuid, self
+      end
+
+      def load_data!
+        super
+        ::Rails.cache.write uuid, self
+      end
     end
   end
 end
