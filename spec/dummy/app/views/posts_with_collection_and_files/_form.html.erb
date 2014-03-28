@@ -11,6 +11,16 @@
     </div>
   <% end %>
 
+  <div class="field">
+    <%= f.label :title %><br>
+    <%= f.text_field :title %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :file %><br>
+    <%= f.uploadcare_field :file, {uploadcare: {multiple: false}, data: {multiple: true}} %>
+  </div>
+
   <div class="actions">
     <%= f.submit %>
   </div>

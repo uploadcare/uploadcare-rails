@@ -23,3 +23,9 @@
     <%= f.submit %>
   </div>
 <% end %>
+
+
+
+<%= simple_form_for(@post) do |f| %>
+  <%= f.input :uploadcare_uploader_input %>
+<% end %>

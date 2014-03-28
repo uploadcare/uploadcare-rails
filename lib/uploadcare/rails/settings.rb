@@ -46,7 +46,7 @@ module Uploadcare
 
         # validates settings atributes.
         unless valid?
-          raise ArgumentError.new "Private or public key options was not provaided"
+          raise ArgumentError.new "Private or public key options was not provided"
         end
       end
 

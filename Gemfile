@@ -18,3 +18,4 @@ end
 # gem 'debugger'
 
 gem 'uploadcare-ruby', path: "/Users/romanonthego/Code/uploadcare/uploadcare-ruby/"
+gem 'simple_form'
