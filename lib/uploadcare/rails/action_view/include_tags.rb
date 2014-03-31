@@ -25,7 +25,11 @@ module Uploadcare::Rails::ActionView
       settings.merge!(options)
       js_settings = String.new
       settings.each do |k, v|
-        js_settings << "UPLOADCARE_#{k.to_s.underscore.upcase} = \"#{v}\";\n"
+        if v.is_a?(TrueClass) || v.is_a?(FalseClass)
+          js_settings << "UPLOADCARE_#{k.to_s.underscore.upcase} = #{v};\n"
+        else
+          js_settings << "UPLOADCARE_#{k.to_s.underscore.upcase} = \"#{v}\";\n"
+        end
       end
 
       uc_settings = javascript_tag(js_settings)

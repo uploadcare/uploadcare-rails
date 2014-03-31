@@ -46,6 +46,8 @@ defaults: &defaults
   path_value: true # true or false
   # (important for input values - see https://uploadcare.com/documentation/widget/#input-value)
 
+  live: true
+
 development:
   <<: *defaults
 
