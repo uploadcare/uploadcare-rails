@@ -2,6 +2,8 @@ defaults: &defaults
   public_key: "demopublickey" # replace it with your public key
   private_key: "demoprivatekey" # replace it with your private key
 
+  live: true
+  
   # Avaliable options are listed at https://uploadcare.com/documentation/widget/#advanced-configuration
   # please note, that for options marker as Global: N/A - there is no practical meaning
   # of putting this option here, as it will not have any effect. 

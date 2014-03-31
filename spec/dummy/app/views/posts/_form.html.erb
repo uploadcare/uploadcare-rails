@@ -27,5 +27,5 @@
 
 
 <%= simple_form_for(@post) do |f| %>
-  <%= f.input :file, as: :uploadcare_uploader %>
+  <%= f.input :file, as: :uploadcare_uploader, uploadcare: {multiple: true} %>
 <% end %>

@@ -35,7 +35,6 @@ module Uploadcare::Rails::ActionView
     end
   end
 
-
   module FormBuilder
     # call uploadcare_uploader field for form object
     # none of options will be overriden and given as-is

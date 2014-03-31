@@ -14,11 +14,9 @@ module Uploadcare::Rails::ActionView
     
       javascript_include_tag(url)
     end
-
-    # PENDING due some issues with assets pipeline
-    # def include_uploadcare_widget_from_assets options={}
-    # end
-
+    alias_method :inlude_uploadcare_widget, :include_uploadcare_widget_from_cdn
+    alias_method :uplodacare_widget, :include_uploadcare_widget_from_cdn
+    
     
     def uploadcare_settings options={}
       settings = UPLOADCARE_SETTINGS.widget_settings
