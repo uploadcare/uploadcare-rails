@@ -32,7 +32,7 @@ module Uploadcare
           url = self.attributes[attribute.to_s]
           unless url.empty?
             result = Uploadcare::Parser.parse(url)
-            raise "Invalid file uuid" if result.is_a?(Uploadcare::Parser::File)
+            raise "Invalid group uuid" if result.is_a?(Uploadcare::Parser::Group)
           end
         end
       end
