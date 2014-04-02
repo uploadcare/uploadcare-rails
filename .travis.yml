@@ -9,8 +9,6 @@ before_install:
   - bundle install
   
 env:
-  - DB=sqlite
-  - DB=mysql
   - DB=postgresql
 
 before_script:
