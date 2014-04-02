@@ -1,5 +1,5 @@
 before_install:
-  - gem update --system
-  - gem --version
   - gem install bundler --version 1.6.1
+  - rake db:create
+  - rake db:migrate
 script: rspec spec
