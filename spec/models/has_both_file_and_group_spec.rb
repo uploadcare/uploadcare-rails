@@ -2,7 +2,8 @@ require "spec_helper"
 
 describe :has_both_file_and_group_spec do
   before(:all) do
-    @uploaded_file = UPLOADCARE_SETTINGS.api.upload 'http://www.gametech.ru/sadm_images/00jin/2014/march/10/21-03-2014%207-58-17.jpg'
+    @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
+    @uploaded_file = UPLOADCARE_SETTINGS.api.upload @file
     @file_cdn_url = @uploaded_file.cdn_url
 
     @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))

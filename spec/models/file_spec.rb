@@ -2,7 +2,8 @@ require "spec_helper"
 
 describe Uploadcare::Rails::File do
   before(:all) do
-    @uploaded = UPLOADCARE_SETTINGS.api.upload 'http://www.gametech.ru/sadm_images/00jin/2014/march/10/21-03-2014%207-58-17.jpg'
+    @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
+    @uploaded = UPLOADCARE_SETTINGS.api.upload @file
     @cdn_url = @uploaded.cdn_url
   end
 
