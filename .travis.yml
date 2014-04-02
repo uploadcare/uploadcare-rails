@@ -1,6 +1,6 @@
 before_install:
   - gem install bundler --version 1.6.1
   - bundle install
-  - bundle exec rake db:create
-  - bundle exec rake db:migrate
+  - "cd spec/dummy && bundle exec rake db:create"
+  - "cd spec/dummy && bundle exec rake db:migrate"
 script: bundle exec rspec
