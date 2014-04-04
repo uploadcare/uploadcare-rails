@@ -24,6 +24,7 @@ describe Uploadcare::Rails::Group do
   end
 
   it "should load itself" do
+    binding.pry
     @group.load
     @group.loaded?.should == true
   end

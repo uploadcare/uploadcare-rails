@@ -20,7 +20,14 @@ module Uploadcare
           return nil if cdn_url.empty?
 
           api = UPLOADCARE_SETTINGS.api
-          file = Uploadcare::Rails::Group.new api, cdn_url
+          cache = ::Rails.cache
+          if file_obj = cache.read(cdn_url)
+            group = Uploadcare::Rails::Group.new api, cdn_url, file_obj
+          else
+            group = Uploadcare::Rails::Group.new api, cdn_url            
+            # cache.write(group.cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
+            group
+          end
         end
 
         # before saving we checking what it is a actually file cdn url
