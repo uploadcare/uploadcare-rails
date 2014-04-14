@@ -15,10 +15,9 @@ describe Uploadcare::Rails::Group do
     @post.file.loaded?.should == false
   end
 
-  it "rails cache should contain unloaded file" do
+  it "rails cache should be nil" do
     cached = Rails.cache.read @post.file.cdn_url
-    cached.should be_kind_of(Hash)
-    cached["uuid"].should == @post.file.uuid
+    cached.should == nil
   end
 
   it "rails cache should updates after load call" do

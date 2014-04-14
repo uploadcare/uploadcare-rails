@@ -21,6 +21,7 @@ module Uploadcare
           cdn_url = attributes[attribute.to_s].to_s
           
           return nil if cdn_url.empty?
+          
           api = UPLOADCARE_SETTINGS.api
           cache = ::Rails.cache
 
@@ -28,10 +29,6 @@ module Uploadcare
             file = Uploadcare::Rails::File.new api, cdn_url, file_obj
           else
             file = Uploadcare::Rails::File.new api, cdn_url
-            
-            # cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
-            
-            file
           end
         end
 

@@ -11,26 +11,30 @@ module Uploadcare
       end
 
       def load_data
-        super
-        ::Rails.cache.write(cdn_url, self.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
+        unless is_loaded?
+          load_data!
+        end
         self
       end
       alias_method :load, :load_data
 
       def load_data!
-        super
+        data = @api.get "/groups/#{uuid}/"
+        set_data data
         ::Rails.cache.write(cdn_url, self.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
         self
       end
       alias_method :load!, :load_data!
 
       def marshal_dump
-        table = @table.stringify_keys
+        table = @table.clone.stringify_keys!
         if table["files"]
           table["files"].map! do |file|
-            file.marshal_dump
+            # file.marshal_dump
+            file
           end
         end
+        # binding.pry
         table
       end
 

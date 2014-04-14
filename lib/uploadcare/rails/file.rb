@@ -23,14 +23,14 @@ module Uploadcare
 
       def load_data
         super
-        ::Rails.cache.write cdn_url, self.marshal_dump if UPLOADCARE_SETTINGS.cache_files
+        ::Rails.cache.write(cdn_url, self.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
         self
       end
       alias_method :load, :load_data
 
       def load_data!
         super
-        ::Rails.cache.write cdn_url, self.marshal_dump if UPLOADCARE_SETTINGS.cache_files
+        ::Rails.cache.write(cdn_url, self.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
         self
       end
       alias_method :load!, :load_data!

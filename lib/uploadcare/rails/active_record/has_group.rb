@@ -24,9 +24,7 @@ module Uploadcare
           if file_obj = cache.read(cdn_url)
             group = Uploadcare::Rails::Group.new api, cdn_url, file_obj
           else
-            group = Uploadcare::Rails::Group.new api, cdn_url            
-            # cache.write(group.cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
-            group
+            group = Uploadcare::Rails::Group.new api, cdn_url
           end
         end
 
