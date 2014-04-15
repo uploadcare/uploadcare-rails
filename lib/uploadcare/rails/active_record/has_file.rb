@@ -1,4 +1,4 @@
-require "uploadcare/rails/file"
+require "uploadcare/rails/objects/file"
 
 module Uploadcare
   module Rails

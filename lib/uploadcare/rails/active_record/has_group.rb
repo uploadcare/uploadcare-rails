@@ -1,4 +1,4 @@
-require "uploadcare/rails/group"
+require "uploadcare/rails/objects/group"
 
 module Uploadcare
   module Rails
@@ -21,8 +21,9 @@ module Uploadcare
 
           api = UPLOADCARE_SETTINGS.api
           cache = ::Rails.cache
-          if file_obj = cache.read(cdn_url)
-            group = Uploadcare::Rails::Group.new api, cdn_url, file_obj
+          if group_obj = cache.read(cdn_url)
+            binding.pry
+            group = Uploadcare::Rails::Group.new api, cdn_url, group_obj
           else
             group = Uploadcare::Rails::Group.new api, cdn_url
           end

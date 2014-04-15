@@ -22,8 +22,6 @@ module Uploadcare
           require 'uploadcare/rails/simple_form/simple_form' if defined?(SimpleForm)
           # Formastic helpers
           require 'uploadcare/rails/formastic/formastic' if defined?(Formastic)
-
-          # Formastic helpers
         end
       end
     end

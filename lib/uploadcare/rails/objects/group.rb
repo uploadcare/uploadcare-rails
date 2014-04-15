@@ -27,14 +27,12 @@ module Uploadcare
       alias_method :load!, :load_data!
 
       def marshal_dump
-        table = @table.clone.stringify_keys!
+        table = @table.deep_dup.stringify_keys!
         if table["files"]
           table["files"].map! do |file|
-            # file.marshal_dump
-            file
+            file.marshal_dump.stringify_keys
           end
         end
-        # binding.pry
         table
       end
 
