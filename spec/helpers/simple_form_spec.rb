@@ -10,7 +10,7 @@ if req
   require 'uploadcare/rails/simple_form/simple_form'
   
   describe "Uploadcare::Rails::SimpleForm", type: :helper  do
-    before(:each) do
+    before :each  do
       @post = Post.new
       @form = SimpleForm::FormBuilder.new(:post, @post, helper, {}, nil)
     end

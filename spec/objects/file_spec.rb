@@ -1,15 +1,13 @@
 require "spec_helper"
 
 describe Uploadcare::Rails::File do
-  before(:all) do
-    @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
-    @uploaded = UPLOADCARE_SETTINGS.api.upload @file
-    @cdn_url = @uploaded.cdn_url
+  before :each do
+    @post = Post.new title: "Post title", file: FILE_CDN_URL 
+    @file = @post.file
   end
 
-  before(:each) do
-    @post = Post.new title: "Post title", file: @cdn_url 
-    @file = @post.file
+  after :each do
+    Rails.cache.delete FILE_CDN_URL
   end
 
   it "should be Uploadcare::Rails::File" do

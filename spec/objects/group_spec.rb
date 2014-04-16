@@ -1,15 +1,13 @@
 require "spec_helper"
 
 describe Uploadcare::Rails::Group do
-  before(:each) do
-    @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
-    @file2 = File.open(File.join(File.dirname(__FILE__), 'view2.jpg'))
-    @files_ary = [@file, @file2]
-    @files = UPLOADCARE_SETTINGS.api.upload @files_ary
-    @uploaded_group = UPLOADCARE_SETTINGS.api.create_group @files
-    @uuid = @uploaded_group.uuid
-    @post = PostWithCollection.new title: "Post title", file: @uuid 
+  before :each do
+    @post = PostWithCollection.new title: "Post title", file: GROUP_CDN_URL
     @group = @post.file
+  end
+
+  after :each do 
+    Rails.cache.delete GROUP_CDN_URL
   end
 
   it "should be Uploadcare::Rails::File" do

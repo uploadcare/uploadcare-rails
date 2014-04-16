@@ -1,15 +1,13 @@
 require "spec_helper"
 
 describe :has_uploadcare_file do
-  before(:all) do
-    @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
-    @uploaded = UPLOADCARE_SETTINGS.api.upload @file
-    @cdn_url = @uploaded.cdn_url
+  before :each do
+    @post = Post.new title: "Post title", file: FILE_CDN_URL 
+    @method = "file"
   end
 
-  before(:each) do
-    @post = Post.new title: "Post title", file: @cdn_url 
-    @method = "file"
+  after :each do
+    Rails.cache.delete FILE_CDN_URL
   end
 
   it "should respond to has_uploadcare_file? method" do

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Uploadcare::Rails::ActionView::FormBuilder, type: :helper do
-  before(:each) do
+  before :each do
     @post = Post.new
     @form = ActionView::Helpers::FormBuilder.new(:post, @post, helper, {}, nil)
   end

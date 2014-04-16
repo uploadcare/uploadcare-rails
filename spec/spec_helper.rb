@@ -10,6 +10,20 @@ require 'rspec/autorun'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+@file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
+@uploaded_file = UPLOADCARE_SETTINGS.api.upload @file
+@file_cdn_url = @uploaded_file.cdn_url
+
+@file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
+@file2 = File.open(File.join(File.dirname(__FILE__), 'view2.jpg'))
+@files_ary = [@file, @file2]
+@files = UPLOADCARE_SETTINGS.api.upload @files_ary
+@uploaded_group = UPLOADCARE_SETTINGS.api.create_group @files
+@group_cdn_url = @uploaded_group.cdn_url
+
+GROUP_CDN_URL = @group_cdn_url
+FILE_CDN_URL = @file_cdn_url
+
 RSpec.configure do |config|
   # ## Mock Framework
   #

@@ -1,12 +1,13 @@
 require "spec_helper"
 
 describe Uploadcare::Rails::File do
-  before(:each) do
-    @file = File.open(File.join(File.dirname(__FILE__), '../view.png'))
-    @uploaded = UPLOADCARE_SETTINGS.api.upload @file
-    @cdn_url = @uploaded.cdn_url
 
-    @post = Post.new title: "Post title", file: @cdn_url
+  before :each do
+    @post = Post.new title: "Post title", file: FILE_CDN_URL
+  end
+
+  after :each do
+    Rails.cache.delete FILE_CDN_URL
   end
 
   it "should be not loaded by default" do
@@ -20,7 +21,7 @@ describe Uploadcare::Rails::File do
 
   it "rails cache should updates after load call" do
     @post.file.load!
-    cached = Rails.cache.read @cdn_url
+    cached = Rails.cache.read FILE_CDN_URL
     cached.should be_kind_of(Hash)
     cached["datetime_uploaded"].should be_kind_of(String)
   end

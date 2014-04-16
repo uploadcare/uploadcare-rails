@@ -1,25 +1,17 @@
 require "spec_helper"
 
 describe :has_both_file_and_group_spec do
-  before(:all) do
-    @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
-    @uploaded_file = UPLOADCARE_SETTINGS.api.upload @file
-    @file_cdn_url = @uploaded_file.cdn_url
-
-    @file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
-    @file2 = File.open(File.join(File.dirname(__FILE__), 'view2.jpg'))
-    @files_ary = [@file, @file2]
-    @files = UPLOADCARE_SETTINGS.api.upload @files_ary
-    @uploaded_group = UPLOADCARE_SETTINGS.api.create_group @files
-    @group_uuid = @uploaded_group.uuid
-  end
-
-  before(:each) do
+  before :each do
     @post = PostsWithCollectionAndFile.new title: "Post title", 
-      group: @group_uuid, 
-      file: @file_cdn_url 
+      group: GROUP_CDN_URL, 
+      file: FILE_CDN_URL 
     @file_method = "file"
     @group_method = "group"
+  end
+
+  after :each do
+    Rails.cache.delete FILE_CDN_URL
+    Rails.cache.delete GROUP_CDN_URL
   end
 
   it "should respond to has_uploadcare_file? method" do

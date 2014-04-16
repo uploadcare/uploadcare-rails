@@ -1,15 +1,13 @@
 require "spec_helper"
 
 describe Uploadcare::Rails::Group do
-  before(:each) do
-      @file = File.open(File.join(File.dirname(__FILE__), '../view.png'))
-      @file2 = File.open(File.join(File.dirname(__FILE__), '../view2.jpg'))
-      @files_ary = [@file, @file2]
-      @files = UPLOADCARE_SETTINGS.api.upload @files_ary
-      @uploaded_group = UPLOADCARE_SETTINGS.api.create_group @files
-      @cdn_url = @uploaded_group.cdn_url
-      @post = PostWithCollection.new title: "Post title", file: @cdn_url 
-    end
+  before :each do
+    @post = PostWithCollection.new title: "Post title", file: GROUP_CDN_URL
+  end
+
+  after :each do
+    Rails.cache.delete GROUP_CDN_URL
+  end
 
   it "should be not loaded by default" do
     @post.file.loaded?.should == false
@@ -22,7 +20,7 @@ describe Uploadcare::Rails::Group do
 
   it "rails cache should updates after load call" do
     @post.file.load!
-    cached = Rails.cache.read @cdn_url
+    cached = Rails.cache.read GROUP_CDN_URL
     cached.should be_kind_of(Hash)
     cached["datetime_created"].should be_kind_of(String)
   end
@@ -35,7 +33,7 @@ describe Uploadcare::Rails::Group do
 
   it 'cached group should contained json representation of files' do
     @post.file.load!
-    cached = Rails.cache.read @cdn_url
+    cached = Rails.cache.read GROUP_CDN_URL
     cached.should be_kind_of(Hash)
     cached["files"].sample.should be_kind_of(Hash)
   end
