@@ -22,7 +22,6 @@ module Uploadcare
           api = UPLOADCARE_SETTINGS.api
           cache = ::Rails.cache
           if group_obj = cache.read(cdn_url)
-            binding.pry
             group = Uploadcare::Rails::Group.new api, cdn_url, group_obj
           else
             group = Uploadcare::Rails::Group.new api, cdn_url
