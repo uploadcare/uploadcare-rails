@@ -5,6 +5,13 @@ defaults: &defaults
   cache_files: true
 
   cache_groups: true
+
+  # store file or group after model is created or updated
+  store_after_save: true
+
+  # deletes file or group after model object is deleted
+  delete_after_destroy: true
+  
   # Avaliable options are listed at https://uploadcare.com/documentation/widget/#advanced-configuration
   # please note, that for options marker as Global: N/A - there is no practical meaning
   # of putting this option here, as it will not have any effect. 

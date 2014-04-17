@@ -2,6 +2,7 @@ defaults: &defaults
   public_key: "demopublickey" # replace it with your public key
   private_key: "demoprivatekey" # replace it with your private key
 
+  # instances of widget initialized for you on page load
   live: true
   
   # cache files json dumps to prevent calling to server if it posible
@@ -9,6 +10,12 @@ defaults: &defaults
 
   # cache groups json dumps to prevent calling to server if it posible
   cache_groups: true
+
+  # store file or group after model is created or updated
+  store_after_save: true
+
+  # deletes file or group after model object is deleted
+  delete_after_destroy: true
 
   # Avaliable options are listed at https://uploadcare.com/documentation/widget/#advanced-configuration
   # please note, that for options marker as Global: N/A - there is no practical meaning

@@ -32,11 +32,6 @@ module Uploadcare
           end
         end
 
-        # before saving we checking what it is a actually file cdn url
-        # or uuid. uuid will do.
-        # group url or uuid should raise an erorr
-        before_save "check_#{attribute}_for_uuid"
-
         define_method "check_#{attribute}_for_uuid" do
           url = self.attributes[attribute.to_s]
           unless url.empty?
@@ -44,6 +39,37 @@ module Uploadcare
             raise "Invalid Uploadcare file uuid" unless result.is_a?(Uploadcare::Parser::File)
           end
         end
+
+        define_method "store_#{attribute}" do
+          binding.pry
+          cdn_url = attributes[attribute.to_s].to_s
+          api = UPLOADCARE_SETTINGS.api
+
+          file = Uploadcare::Rails::File.new api, cdn_url
+          file.store
+
+          ::Rails.cache.write(cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+        end
+
+        define_method "delete_#{attribute}" do
+          binding.pry
+          cdn_url = attributes[attribute.to_s].to_s
+          api = UPLOADCARE_SETTINGS.api
+
+          file = Uploadcare::Rails::File.new api, cdn_url
+          file.delete
+
+          ::Rails.cache.write(cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+        end
+
+        # before saving we checking what it is a actually file cdn url
+        # or uuid. uuid will do.
+        # group url or uuid should raise an erorr
+        before_save "check_#{attribute}_for_uuid"
+        
+        after_save "store_#{attribute}" if UPLOADCARE_SETTINGS.store_after_save
+
+        after_destroy "delete_#{attribute}" if UPLOADCARE_SETTINGS.delete_after_destroy
       end
     end
   end
