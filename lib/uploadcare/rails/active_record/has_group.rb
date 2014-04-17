@@ -32,7 +32,7 @@ module Uploadcare
           url = self.attributes[attribute.to_s]
           unless url.empty?
             result = Uploadcare::Parser.parse(url)
-            raise "Invalid group uuid" if result.is_a?(Uploadcare::Parser::Group)
+            raise "Invalid group uuid" unless result.is_a?(Uploadcare::Parser::Group)
           end
         end
 
@@ -40,16 +40,20 @@ module Uploadcare
           cdn_url = attributes[attribute.to_s].to_s
           api = UPLOADCARE_SETTINGS.api
 
-          file = Uploadcare::Rails::File.new api, cdn_url
-          file.store
+          group = Uploadcare::Rails::Group.new api, cdn_url
+          group.store
+
+          ::Rails.cache.write(cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
         end
 
         define_method "delete_#{attribute}" do
           cdn_url = attributes[attribute.to_s].to_s
           api = UPLOADCARE_SETTINGS.api
 
-          file = Uploadcare::Rails::File.new api, cdn_url
-          file.delete
+          group = Uploadcare::Rails::Group.new api, cdn_url
+          group.delete
+
+          ::Rails.cache.write(cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
         end
 
         # before saving we checking what it is a actually file cdn url

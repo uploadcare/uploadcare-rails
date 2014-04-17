@@ -29,7 +29,6 @@ describe Uploadcare::Rails::Group do
 
   it "group should have files" do
     @group.load
-    # binding.pry
     @group.files.should be_kind_of(Array)
     @group.files.sample.should be_kind_of(Uploadcare::Rails::File)
   end

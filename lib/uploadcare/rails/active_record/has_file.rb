@@ -41,7 +41,6 @@ module Uploadcare
         end
 
         define_method "store_#{attribute}" do
-          binding.pry
           cdn_url = attributes[attribute.to_s].to_s
           api = UPLOADCARE_SETTINGS.api
 
@@ -52,7 +51,6 @@ module Uploadcare
         end
 
         define_method "delete_#{attribute}" do
-          binding.pry
           cdn_url = attributes[attribute.to_s].to_s
           api = UPLOADCARE_SETTINGS.api
 

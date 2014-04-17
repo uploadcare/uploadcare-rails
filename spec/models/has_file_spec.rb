@@ -33,4 +33,15 @@ describe :has_uploadcare_file do
   it "file should not be loaded by default" do
     @post.file.loaded?.should == false
   end
+
+  it 'file should be stored after save' do
+    @post.save
+    @post.file.stored?.should == true
+  end
+
+  it 'file should be deleted after destroy' do
+    @post.save if @post.new_record?
+    @post.destroy
+    @post.file.deleted?.should == true
+  end
 end
