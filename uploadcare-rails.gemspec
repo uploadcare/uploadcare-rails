@@ -39,4 +39,5 @@ Gem::Specification.new do |gem|
 
   # for testing Simple Form gem addons
   gem.add_development_dependency 'simple_form'
+  gem.add_development_dependency 'formtastic'
 end
