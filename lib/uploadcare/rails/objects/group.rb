@@ -36,6 +36,14 @@ module Uploadcare
         table
       end
 
+      def to_json
+        marshal_dump
+      end
+
+      def as_json options={}
+        marshal_dump
+      end
+
       private
         def map_files data
           data.stringify_keys!

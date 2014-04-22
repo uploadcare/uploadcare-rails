@@ -39,6 +39,14 @@ module Uploadcare
         marshal_dump
       end
 
+      def to_json
+        marshal_dump
+      end
+
+      def as_json options={}
+        marshal_dump
+      end
+
       def marshal_dump
         @table.stringify_keys
       end
