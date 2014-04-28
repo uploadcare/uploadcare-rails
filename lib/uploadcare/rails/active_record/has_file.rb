@@ -45,19 +45,29 @@ module Uploadcare
           api = UPLOADCARE_SETTINGS.api
 
           file = Uploadcare::Rails::File.new api, cdn_url
-          file.store
+          begin
+            file.store
+            ::Rails.cache.write(cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+          rescue Exception => e
+            logger.error "\nError while saving a file #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
+          end
 
-          ::Rails.cache.write(cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+          file
         end
 
         define_method "delete_#{attribute}" do
           cdn_url = attributes[attribute.to_s].to_s
           api = UPLOADCARE_SETTINGS.api
-
           file = Uploadcare::Rails::File.new api, cdn_url
-          file.delete
 
-          ::Rails.cache.write(cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+          begin
+            file.delete
+            ::Rails.cache.write(cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+          rescue Exception => e
+            logger.error "\nError while deleting a file #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
+          end
         end
 
         # before saving we checking what it is a actually file cdn url

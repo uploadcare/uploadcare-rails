@@ -41,9 +41,14 @@ module Uploadcare
           api = UPLOADCARE_SETTINGS.api
 
           group = Uploadcare::Rails::Group.new api, cdn_url
-          group.store
 
-          ::Rails.cache.write(cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
+          begin
+            group.store
+            ::Rails.cache.write(cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
+          rescue Exception => e
+            logger.error "\nError while storing a group #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
+          end
         end
 
         define_method "delete_#{attribute}" do
@@ -51,9 +56,14 @@ module Uploadcare
           api = UPLOADCARE_SETTINGS.api
 
           group = Uploadcare::Rails::Group.new api, cdn_url
-          group.delete
 
-          ::Rails.cache.write(cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
+          begin
+            group.delete
+            ::Rails.cache.write(cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
+          rescue Exception => e
+            logger.error "\nError while deleting a group #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
+          end
         end
 
         # before saving we checking what it is a actually file cdn url
