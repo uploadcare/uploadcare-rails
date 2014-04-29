@@ -1,12 +1,9 @@
-# require "../../lib/generators/uploadcare_config_generator"
 config_file = "#{Rails.root}/config/uploadcare.yml"
 
 if File.exists?(config_file)
   # defaults = YAML.load_file(defaults_file)
   config = YAML.load_file(config_file)
   UPLOADCARE_SETTINGS = Uploadcare::Rails::Settings.new config
-  # shortcut for later usage
-  Rails.application.config.uploadcare = UPLOADCARE_SETTINGS
 else
   # output warning in red color
   # use default settings just to boot up
@@ -18,10 +15,13 @@ else
   eos
 
   config = {
-    "defaults" => {"public_key"=>"demopublickey", "private_key"=>"demoprivatekey"},
+    "defaults"    => {"public_key"=>"demopublickey", "private_key"=>"demoprivatekey"},
     "development" => {"public_key"=>"demopublickey", "private_key"=>"demoprivatekey"},
-    "test" => {"public_key"=>"demopublickey", "private_key"=>"demoprivatekey"},
-    "production" => {"public_key"=>"demopublickey", "private_key"=>"demoprivatekey"}
+    "test"        => {"public_key"=>"demopublickey", "private_key"=>"demoprivatekey"},
+    "production"  => {"public_key"=>"demopublickey", "private_key"=>"demoprivatekey"}
   }
   UPLOADCARE_SETTINGS = Uploadcare::Rails::Settings.new config
 end
+
+# shortcut for later usage
+Rails.application.config.uploadcare = UPLOADCARE_SETTINGS
