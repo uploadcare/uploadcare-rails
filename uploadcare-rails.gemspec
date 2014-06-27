@@ -25,12 +25,12 @@ Gem::Specification.new do |gem|
   gem.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
   gem.test_files = Dir["spec/**/*"]
   gem.version       = Uploadcare::Rails::VERSION
-  gem.add_dependency "rails", "~> 4.0.1"
+  gem.add_dependency "rails", "~> 4"
   gem.add_dependency "uploadcare-ruby", "~> 1.0"
 
   gem.add_development_dependency 'bundler', '~> 1.6'
   gem.add_development_dependency "sqlite3"
-  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rspec', "~> 2"
   gem.add_development_dependency 'rspec-rails'
   gem.add_development_dependency 'webrat'
   gem.add_development_dependency 'pry'

@@ -3,7 +3,7 @@ require "spec_helper"
 describe Uploadcare::Rails::ActionView::FormBuilder, type: :helper do
   before :each do
     @post = Post.new
-    @form = ActionView::Helpers::FormBuilder.new(:post, @post, helper, {}, nil)
+    @form = ActionView::Helpers::FormBuilder.new(:post, @post, helper, {})
   end
 
   it "should include uploader tag for name" do

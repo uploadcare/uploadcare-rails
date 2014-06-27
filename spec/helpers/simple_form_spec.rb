@@ -12,7 +12,7 @@ if req
   describe "Uploadcare::Rails::SimpleForm", type: :helper  do
     before :each  do
       @post = Post.new
-      @form = SimpleForm::FormBuilder.new(:post, @post, helper, {}, nil)
+      @form = SimpleForm::FormBuilder.new(:post, @post, helper, {})
     end
 
     it 'should create smart uploader field' do

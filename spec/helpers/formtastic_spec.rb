@@ -11,7 +11,7 @@ if req
   describe "Uploadcare::Rails::Formtastic", type: :helper  do
     before :each  do
       @post = Post.new
-      @form = Formtastic::FormBuilder.new(:post, @post, helper, {}, nil)
+      @form = Formtastic::FormBuilder.new(:post, @post, helper, {})
     end
 
     it 'should create smart uploader field' do
