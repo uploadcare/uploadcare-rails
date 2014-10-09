@@ -2,7 +2,7 @@ config_file = "#{Rails.root}/config/uploadcare.yml"
 
 if File.exists?(config_file)
   # defaults = YAML.load_file(defaults_file)
-  config = YAML.load_file(config_file)
+  config = YAML.load(ERB.new(File.new(config_file).read).result)
   UPLOADCARE_SETTINGS = Uploadcare::Rails::Settings.new config
 else
   # output warning in red color
