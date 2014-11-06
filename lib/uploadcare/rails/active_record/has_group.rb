@@ -44,6 +44,7 @@ module Uploadcare
 
         define_method "store_#{attribute}" do
           group = build_group
+          return unless group.present?
 
           begin
             group.store
