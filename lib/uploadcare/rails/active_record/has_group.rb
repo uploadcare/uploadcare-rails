@@ -44,12 +44,13 @@ module Uploadcare
 
         define_method "store_#{attribute}" do
           group = build_group
+          return unless group.present?
 
           begin
             group.store
             ::Rails.cache.write(group.cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
           rescue Exception => e
-            logger.error "\nError while storing a group #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "\nError while storing a group #{group.cdn_url}: #{e.class} (#{e.message}):"
             logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
           end
         end
@@ -61,7 +62,7 @@ module Uploadcare
             group.delete
             ::Rails.cache.write(group.cdn_url, group.marshal_dump) if UPLOADCARE_SETTINGS.cache_groups
           rescue Exception => e
-            logger.error "\nError while deleting a group #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "\nError while deleting a group #{group.cdn_url}: #{e.class} (#{e.message}):"
             logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
           end
         end
