@@ -2973,7 +2973,18 @@ var _require = (function() {
       buttons: {
         cancel: 'Cancelar',
         remove: 'Excluir',
-        file: 'Computador'
+        file: 'Computador',
+        choose: {
+          files: {
+            one: 'Escolha um arquivo',
+            other: 'Escolher arquivos'
+          },
+          images: {
+            one: 'Escolha uma imagem',
+            other: 'Escolher imagens'
+          }
+        }
+
       },
       dialog: {
         done: 'OK',

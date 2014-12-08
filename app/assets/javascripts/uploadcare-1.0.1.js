@@ -3110,7 +3110,17 @@ var _require = (function() {
       },
       buttons: {
         cancel: 'Cancelar',
-        remove: 'Excluir'
+        remove: 'Excluir',
+        choose: {
+          files: {
+            one: 'Escolha um arquivo',
+            other: 'Escolher arquivos'
+          },
+          images: {
+            one: 'Escolha uma imagem',
+            other: 'Escolher imagens'
+          }
+        }
       },
       dialog: {
         done: 'OK',
