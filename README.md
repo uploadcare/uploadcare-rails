@@ -24,7 +24,7 @@ $ gem install uploadcare-rails -v 1.0.0
 
 # Configuration
 Uploadcare *requires* to store all related config in one single yml file.
-You should create **uploadcare.yml** in your **config** folder. Just run 
+You should create **uploadcare.yml** in your **config** folder. Just run
 
 ```shell
 $ bundle exec rails g uploadcare_config
@@ -66,8 +66,8 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
   <%= include_uploadcare_widget_from_cdn {version: "1.0.1", min: true } %>
-  <!-- 
-    results in: 
+  <!--
+    results in:
     <script src="https://ucarecdn.com/widget/1.0.1/uploadcare/uploadcare-1.0.1.min.js"></script>
   -->
 </head>
@@ -100,7 +100,7 @@ Just call `:uploadcare_settings` helper in head of layout:
   <%= csrf_meta_tags %>
   <%= include_uploadcare_widget_from_cdn {version: "1.0.1", min: true } %>
   <%= uploadcare_settings %>
-  <!-- 
+  <!--
     results in:
     <script>
       //<![CDATA[
@@ -119,7 +119,7 @@ Basic usage of Uploadcare gem is very simple. Remember that uploader returns you
 
 ```erb
 <%= uploadcare_uploader_field :post, :file %>
-<!-- 
+<!--
   results in:
   <input data-path-value="true" id="post_file" name="post[file]" role="uploadcare-uploader" type="hidden">
   <div class="uploadcare-widget" style="display: none;" data-status="ready">
@@ -212,7 +212,7 @@ post.file
 
 # so
 image_tag(post.file)
-# is a perfectly valid usage 
+# is a perfectly valid usage
 # => <img src="http://www.ucarecdn.com/19cde26d-e41b-4cf5-923e-f58729c0522a/">
 ```
 
@@ -220,7 +220,7 @@ image_tag(post.file)
 What is different? Not much.
 
 ```ruby
-# calling group (or thatever attribute name you choose) in the template
+# calling group (or whatever attribute name you choose) in the template
 post.group
 # => 19cde26d-e41b-4cf5-923e-f58729c0522a~2
 
@@ -228,7 +228,7 @@ post.group
 Note that explicit loading of group is required for getting access for group files:
 
 ```ruby
-# calling group (or thatever attribute name you choose) in the template
+# calling group (or whatever attribute name you choose) in the template
 @group = @post.group.load
 @group.files
 # => [#<Uploadcare::Rails::File ...]
