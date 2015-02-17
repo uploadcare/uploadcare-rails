@@ -65,10 +65,10 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn {version: "1.0.1", min: true } %>
+  <%= include_uploadcare_widget_from_cdn version: "1.5.5", min: true %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/widget/1.0.1/uploadcare/uploadcare-1.0.1.min.js"></script>
+    <script src="https://ucarecdn.com/widget/1.5.5/uploadcare/uploadcare-1.5.5.min.js"></script>
   -->
 </head>
 ```
@@ -98,7 +98,7 @@ Just call `:uploadcare_settings` helper in head of layout:
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn {version: "1.0.1", min: true } %>
+  <%= include_uploadcare_widget_from_cdn version: "1.5.5", min: true %>
   <%= uploadcare_settings %>
   <!--
     results in:
