@@ -21,13 +21,13 @@ if req
     end
 
     it 'should create single uploader field' do
-      tag = @form.input :file, as: :uploadcare_uploader
-      tag.should have_selector("input", :role => "uploadcare-uploader")
+      tag = @form.input :file, as: :uploadcare_single_uploader
+      tag.should have_selector("input", :role => "uploadcare-uploader", "data-multiple" => "false")
     end
 
     it 'should create multiple uploader field' do
-      tag = @form.input :file, as: :uploadcare_uploader
-      tag.should have_selector("input", :role => "uploadcare-uploader")
+      tag = @form.input :file, as: :uploadcare_multiple_uploader
+      tag.should have_selector("input", :role => "uploadcare-uploader", "data-multiple" => "true")
     end
   end
 end 
