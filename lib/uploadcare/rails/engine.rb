@@ -17,7 +17,7 @@ module Uploadcare
         ActiveSupport.on_load :action_view do
           require 'uploadcare/rails/action_view/include_tags'
           require 'uploadcare/rails/action_view/uploader_tags'
-          
+
           # Simple Form helpers
           require 'uploadcare/rails/simple_form/simple_form' if defined?(SimpleForm)
 
