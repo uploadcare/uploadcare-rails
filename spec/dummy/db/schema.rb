@@ -13,21 +13,21 @@
 
 ActiveRecord::Schema.define(version: 20140320092807) do
 
-  create_table "post_with_collections", force: true do |t|
+  create_table "post_with_collections", force: :cascade do |t|
     t.string   "title"
     t.string   "file"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "posts", force: true do |t|
+  create_table "posts", force: :cascade do |t|
     t.string   "title"
     t.string   "file"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "posts_with_collection_and_files", force: true do |t|
+  create_table "posts_with_collection_and_files", force: :cascade do |t|
     t.string   "title"
     t.string   "file"
     t.string   "group"

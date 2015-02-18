@@ -2,7 +2,7 @@ module Uploadcare::Rails::SimpleForm
   class UploadcareInput < SimpleForm::Inputs::HiddenInput
     include Uploadcare::Rails::ActionView::UploaderTags
 
-    def input
+    def input wrapper_options=nil
       @options = uploadcare_uploader_options(@options)
       super
     end
@@ -27,7 +27,7 @@ module Uploadcare::Rails::SimpleForm
 
 
   class UploadcareUploaderInput < Uploadcare::Rails::SimpleForm::UploadcareInput
-    def input
+    def input wrapper_options=nil
       @options ||= {}
       @options[:uploadcare] ||= {}
       if is_file?
@@ -40,7 +40,7 @@ module Uploadcare::Rails::SimpleForm
   end
 
   class UploadcareSingleUploaderInput < Uploadcare::Rails::SimpleForm::UploadcareInput 
-    def input
+    def input wrapper_options=nil
       @options ||= {}
       @options[:uploadcare] ||= {}
       @options[:uploadcare][:multiple] = false
@@ -49,7 +49,7 @@ module Uploadcare::Rails::SimpleForm
   end
 
   class UploadcareMultipleUploaderInput < Uploadcare::Rails::SimpleForm::UploadcareInput
-    def input
+    def input wrapper_options=nil
       @options ||= {}
       @options[:uploadcare] ||= {}
       @options[:uploadcare][:multiple] = true
