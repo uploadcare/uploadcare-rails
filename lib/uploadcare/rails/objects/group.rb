@@ -1,5 +1,3 @@
-include ActionView::Helpers::AssetTagHelper
-
 module Uploadcare
   module Rails
     class Group < Uploadcare::Api::Group
