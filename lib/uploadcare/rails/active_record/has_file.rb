@@ -90,9 +90,13 @@ module Uploadcare
         # group url or uuid should raise an erorr
         before_save "check_#{attribute}_for_uuid"
 
-        after_save "store_#{attribute}" if UPLOADCARE_SETTINGS.store_after_save
+        if UPLOADCARE_SETTINGS.store_after_save
+          after_save "store_#{attribute}", if: Proc.new{ |obj| obj.send(attribute).present? }
+        end
 
-        after_destroy "delete_#{attribute}" if UPLOADCARE_SETTINGS.delete_after_destroy
+        if UPLOADCARE_SETTINGS.delete_after_destroy
+          after_destroy "delete_#{attribute}", if: Proc.new{ |obj| obj.send(attribute).present? }
+        end
       end
     end
   end

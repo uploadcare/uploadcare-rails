@@ -44,4 +44,18 @@ describe :has_uploadcare_file do
     @post.destroy
     @post.file.deleted?.should == true
   end
+
+  describe :without_file_present do
+    before :each do
+      @post = Post.new title: "Post title", file: nil
+    end
+
+    it "should not try to store file if one is not present" do
+      expect(@post).to_not have_received(:store_file)
+    end
+
+    it "should not try to delete file if one is not present" do
+      expect(@post).to_not have_received(:delete_file)
+    end
+  end
 end
