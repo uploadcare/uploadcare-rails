@@ -13,8 +13,8 @@ module Uploadcare
           false
         end
 
-        define_method "build_file" do
-          cdn_url = attributes[attribute.to_s].to_s
+        define_method "build_file" do |attr_name|
+          cdn_url = attributes[attr_name.to_s].to_s
           return nil if cdn_url.empty?
 
           api = ::Rails.application.config.uploadcare.api
@@ -46,7 +46,7 @@ module Uploadcare
           # else
           #   file = Uploadcare::Rails::File.new api, cdn_url
           # end
-          build_file
+          build_file(attribute)
         end
 
         define_method "check_#{attribute}_for_uuid" do
@@ -58,7 +58,7 @@ module Uploadcare
         end
 
         define_method "store_#{attribute}" do
-          file = build_file
+          file = build_file(attribute)
 
           begin
             file.store
@@ -72,7 +72,7 @@ module Uploadcare
         end
 
         define_method "delete_#{attribute}" do
-          file = build_file
+          file = build_file(attribute)
 
           begin
             file.delete
