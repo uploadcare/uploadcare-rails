@@ -74,12 +74,12 @@ Just call helper in head of application layout (or anywhere else if needed):
 ```
 
 ### Include widget with assets pipeline
-In case you don't wont use cdn-stored version for any reason - you could easily use local widget script from you assets pipeline:
+In case you don't want to use cdn-stored version for any reason - you could easily use local widget script from you assets pipeline:
 
 ```js
 // in assets/javascripts/application.js
 
-// require ./uploadcare
+//= require ./uploadcare
 ```
 Note that only last and stable version of widget is published with gem.
 If you need an older (or newer) version for some reason you can
