@@ -79,7 +79,7 @@ In case you don't want to use cdn-stored version for any reason - you could easi
 ```js
 // in assets/javascripts/application.js
 
-// require ./uploadcare
+//= require ./uploadcare
 ```
 Note that only last and stable version of widget is published with gem.
 If you need an older (or newer) version for some reason you can
