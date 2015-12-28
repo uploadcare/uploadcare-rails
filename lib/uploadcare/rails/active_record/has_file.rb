@@ -15,7 +15,7 @@ module Uploadcare
 
         define_method "build_file" do
           cdn_url = attributes[attribute.to_s].to_s
-          return nil if cdn_url.empty?
+          return nil if cdn_url.blank?
 
           api = ::Rails.application.config.uploadcare.api
           cache = ::Rails.cache
@@ -61,10 +61,12 @@ module Uploadcare
           file = build_file
 
           begin
-            file.store
-            ::Rails.cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+            if file
+              file.store
+              ::Rails.cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+            end
           rescue Exception => e
-            logger.error "\nError while saving a file #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "\nError while saving a file #{file}: #{e.class} (#{e.message}):"
             logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
           end
 
@@ -75,10 +77,12 @@ module Uploadcare
           file = build_file
 
           begin
-            file.delete
-            ::Rails.cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+            if file
+              file.delete
+              ::Rails.cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
+            end
           rescue Exception => e
-            logger.error "\nError while deleting a file #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "\nError while deleting a file : #{e.class} (#{e.message}):"
             logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
           end
 

@@ -15,7 +15,7 @@ module Uploadcare
 
         define_method "build_group" do
           cdn_url = attributes[attribute.to_s].to_s
-          return nil if cdn_url.empty?
+          return nil if cdn_url.blank?
           
           api = ::Rails.application.config.uploadcare.api
           cache = ::Rails.cache
@@ -36,7 +36,7 @@ module Uploadcare
 
         define_method "check_#{attribute}_for_uuid" do
           url = self.attributes[attribute.to_s]
-          unless url.empty?
+          unless url.blank?
             result = Uploadcare::Parser.parse(url)
             raise "Invalid group uuid" unless result.is_a?(Uploadcare::Parser::Group)
           end
