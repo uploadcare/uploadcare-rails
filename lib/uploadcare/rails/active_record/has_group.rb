@@ -13,10 +13,10 @@ module Uploadcare
           true
         end
 
-        define_method "build_group" do
+        define_method "build_group_#{attribute}" do
           cdn_url = attributes[attribute.to_s].to_s
           return nil if cdn_url.blank?
-          
+
           api = ::Rails.application.config.uploadcare.api
           cache = ::Rails.cache
 
@@ -31,7 +31,7 @@ module Uploadcare
 
         # attribute method - return file object
         define_method "#{attribute}" do
-          build_group
+          send(:"build_group_#{attribute}")
         end
 
         define_method "check_#{attribute}_for_uuid" do
@@ -43,7 +43,7 @@ module Uploadcare
         end
 
         define_method "store_#{attribute}" do
-          group = build_group
+          group = send(:"build_group_#{attribute}")
           return unless group.present?
 
           begin
@@ -56,7 +56,7 @@ module Uploadcare
         end
 
         define_method "delete_#{attribute}" do
-          group = build_group
+          group = send(:"build_group_#{attribute}")
 
           begin
             group.delete
