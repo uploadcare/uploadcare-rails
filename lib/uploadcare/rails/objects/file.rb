@@ -37,8 +37,12 @@ module Uploadcare
         marshal_dump
       end
 
-      def to_json
-        marshal_dump
+      # def to_json
+      #   marshal_dump
+      # end
+
+      def to_json options={}
+        marshal_dump.to_json
       end
 
       def as_json options={}
