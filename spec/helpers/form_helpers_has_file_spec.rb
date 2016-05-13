@@ -1,30 +1,41 @@
 require "spec_helper"
 
+def should_have_expected_selector(args, expected)
+  expect(form.uploadcare_field(:file, args)).
+    to have_selector(:input, expected)
+end
+
 describe Uploadcare::Rails::ActionView::FormBuilder, type: :helper do
-  before :each do
-    @post = Post.new
-    @form = ActionView::Helpers::FormBuilder.new(:post, @post, helper, {})
+  let(:post) { Post.new }
+  let(:form) { ActionView::Helpers::FormBuilder.new(:post, post, helper, {}) }
+
+  it { expect(form.uploadcare_field(:file)).to be_a(String) }
+
+  it 'includes uploader tag for name' do
+    args = {}
+    expected = {type: 'hidden', 'data-multiple' => 'false'}
+
+    should_have_expected_selector(args, expected)
   end
 
-  it "should include uploader tag for name" do
-    # not that post has uc file
-    tag = @form.uploadcare_field :file
-    tag.should be_kind_of(String)
-    tag.should have_selector("input", :type => "hidden", "data-multiple" => "false")
+  it 'should override uploadcare- attribute' do
+    args = { uploadcare: { multiple: true } }
+    expected = { type: 'hidden', 'data-multiple' => 'false' }
+
+    should_have_expected_selector(args, expected)
   end
 
-  it "should override uploadcare- attribute" do
-    tag = @form.uploadcare_field :file, :uploadcare => {:multiple => true}
-    tag.should have_selector("input", :type => "hidden", "data-multiple" => "false")
+  it 'should override data- attribute' do
+    args = { data: { multiple: true} }
+    expected = { type: 'hidden', 'data-multiple' => 'false' }
+
+    should_have_expected_selector(args, expected)
   end
 
-  it "should override data- attribute" do
-    tag = @form.uploadcare_field :file, :data => {:multiple => true}
-    tag.should have_selector("input", :type => "hidden", "data-multiple" => "false")
-  end
+  it 'should override data- and uploadcare- attributes' do
+    args = { data: { multiple: true }, uploadcare: { multiple: true } }
+    expected = { type: 'hidden', 'data-multiple' => 'false' }
 
-  it "should override data- and uploadcare- attributes" do
-    tag = @form.uploadcare_field :file, :data => {:multiple => true}, :uploadcare => {:multiple => true}
-    tag.should have_selector("input", :type => "hidden", "data-multiple" => "false")
+    should_have_expected_selector(args, expected)
   end
 end

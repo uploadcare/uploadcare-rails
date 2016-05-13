@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Uploadcare::Rails::File do
+describe 'Uploadcare::Rails::File' do
 
   before :each do
     @post = Post.new title: "Post title", file: FILE_CDN_URL

@@ -7,7 +7,7 @@ module Uploadcare::Rails::ActionView
         :role => "uploadcare-uploader #{options[:role]}".strip,
         :data => {:path_value => true}
       })
-      
+
       # merge uploadcare options into data-attributes
       # IMPORTANT: custome data-attrs will be overriden by
       # the uploadcare options in case of collision.

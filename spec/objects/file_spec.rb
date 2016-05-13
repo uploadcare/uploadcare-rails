@@ -1,29 +1,27 @@
 require "spec_helper"
 
 describe Uploadcare::Rails::File do
-  before :each do
-    @post = Post.new title: "Post title", file: FILE_CDN_URL 
-    @file = @post.file
-  end
+  let(:post) { Post.new(title: 'Post title', file: FILE_CDN_URL) }
+  let(:subject) { post.file }
 
   after :each do
     Rails.cache.delete FILE_CDN_URL
   end
 
   it "should be Uploadcare::Rails::File" do
-    @file.should be_kind_of(Uploadcare::Rails::File)
+    is_expected.to be_a(Uploadcare::Rails::File)
   end
 
   it "should be not loaded by default" do
-    @file.loaded?.should == false
+    is_expected.to_not be_loaded
   end
 
   it "should load itself" do
-    @file.load
-    @file.loaded?.should == true
+    subject.load
+    is_expected.to be_loaded
   end
 
   it "file should respond to :cdn_url and :to_s methods" do
-    @file.to_s.should == @file.cdn_url
+    expect(subject.to_s).to eq(subject.cdn_url)
   end
 end

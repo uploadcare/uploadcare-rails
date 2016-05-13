@@ -4,7 +4,7 @@ defaults: &defaults
 
   # instances of widget initialized for you on page load
   live: true
-  
+
   # cache files json dumps to prevent calling to server if it posible
   cache_files: true
 
@@ -19,7 +19,7 @@ defaults: &defaults
 
   # Avaliable options are listed at https://uploadcare.com/documentation/widget/#advanced-configuration
   # please note, that for options marker as Global: N/A - there is no practical meaning
-  # of putting this option here, as it will not have any effect. 
+  # of putting this option here, as it will not have any effect.
   # But it also will not break anything.
 
   # for preview step use:
@@ -31,8 +31,8 @@ defaults: &defaults
   # for setting tabs use tabs option:
   # tabs: "url file facebook" # etc
   # read more here: https://uploadcare.com/documentation/widget/#tabs
-  # 
-  #   Full list of tabs: 
+  #
+  #   Full list of tabs:
   # |----------------------------------------|
   # | Code       | File Source     | Default |
   # |------------|-----------------|---------|
