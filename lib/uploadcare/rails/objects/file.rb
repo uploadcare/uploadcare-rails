@@ -9,14 +9,10 @@ module Uploadcare
       end
 
       # construct image tag for file
-      def image with_operations=true, options={}
-        if with_operations
-          url = cdn_url_with_operations
-        else
-          url = cdn_url
-        end
-        
-        image_tag url, options
+      def image(with_operations=true, options={})
+        return image_tag(cdn_url, options) unless with_operations
+
+        image_tag(cdn_url_with_operations, options)
       end
 
       def load_data

@@ -3,7 +3,7 @@ require "uploadcare/rails/objects/file"
 module Uploadcare
   module Rails
     module ActiveRecord
-      def has_uploadcare_file attribute, options={}
+      def has_uploadcare_file(attribute, options={})
 
         define_method "has_#{attribute}_as_uploadcare_file?" do
           true
@@ -21,9 +21,9 @@ module Uploadcare
           cache = ::Rails.cache
 
           if file_obj = cache.read(cdn_url)
-            file = Uploadcare::Rails::File.new api, cdn_url, file_obj
+            file = Uploadcare::Rails::File.new(api, cdn_url, file_obj)
           else
-            file = Uploadcare::Rails::File.new api, cdn_url
+            file = Uploadcare::Rails::File.new(api, cdn_url)
           end
 
           file
@@ -34,18 +34,6 @@ module Uploadcare
         # it has some helpers for rails enviroment
         # but it also has all the methods of Uploadcare::File so no worries.
         define_method "#{attribute}" do
-          # cdn_url = attributes[attribute.to_s].to_s
-
-          # return nil if cdn_url.empty?
-
-          # api = Rails.application.config.uploadcare
-          # cache = ::Rails.cache
-
-          # if file_obj = cache.read(cdn_url)
-          #   file = Uploadcare::Rails::File.new api, cdn_url, file_obj
-          # else
-          #   file = Uploadcare::Rails::File.new api, cdn_url
-          # end
           build_file
         end
 

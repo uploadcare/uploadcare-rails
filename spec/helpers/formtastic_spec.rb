@@ -1,7 +1,7 @@
 require "spec_helper"
 
 begin
-  req = require 'formtastic' 
+  req = require 'formtastic'
 rescue Exception => e
   req = nil
 end

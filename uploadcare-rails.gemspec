@@ -13,11 +13,11 @@ Gem::Specification.new do |gem|
   gem.summary       = "Rails gem for Uploadcare"
   gem.description   = <<-EOF
                         Rails wrapper for Uploadcare service.
-                        Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby) 
+                        Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby)
                       EOF
-  gem.metadata       =  { 
-                          "github" => "https://github.com/uploadcare/uploadcare-rails", 
-                          "issue_tracker" => "https://github.com/uploadcare/uploadcare-rails/issues" 
+  gem.metadata       =  {
+                          "github" => "https://github.com/uploadcare/uploadcare-rails",
+                          "issue_tracker" => "https://github.com/uploadcare/uploadcare-rails/issues"
                         }
   gem.homepage      = "https://uploadcare.com/documentation/libs/"
   gem.license       = "MIT"
@@ -36,6 +36,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'pry-rails'
   gem.add_development_dependency 'better_errors'
+  gem.add_development_dependency 'guard-rspec'
 
   # for testing Simple Form gem addons
   gem.add_development_dependency 'simple_form'

@@ -11,13 +11,13 @@ module Uploadcare::Rails::ActionView
       v = settings[:version]
       m = settings[:min] ? ".min" : ""
       url = "https://ucarecdn.com/widget/#{v}/uploadcare/uploadcare-#{v}#{m}.js"
-    
+
       javascript_include_tag(url)
     end
     alias_method :inlude_uploadcare_widget, :include_uploadcare_widget_from_cdn
     alias_method :uplodacare_widget, :include_uploadcare_widget_from_cdn
-    
-    
+
+
     def uploadcare_settings options={}
       settings = UPLOADCARE_SETTINGS.widget_settings
       settings.merge!(options)
