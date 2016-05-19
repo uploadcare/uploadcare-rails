@@ -1,42 +1,54 @@
 require 'spec_helper'
 
 describe Uploadcare::Rails do
-  it "should include widget from cdn" do
+  it 'includes widget from cdn' do
     tag = helper.include_uploadcare_widget_from_cdn
-    tag.should be_kind_of(String)
-    tag.should == ("<script src=\"https://ucarecdn.com/widget/#{UPLOADCARE_SETTINGS.widget_version}/uploadcare/uploadcare-#{UPLOADCARE_SETTINGS.widget_version}.min.js\"></script>")
+
+    expect(tag).to eq(
+      [
+        "<script src=\"https://ucarecdn.com/widget/",
+        UPLOADCARE_SETTINGS.widget_version,
+        '/uploadcare/uploadcare.min.js"></script>'
+      ].join
+    )
   end
 
-  it "should specify widget version" do
-    version = "0.13.3"
+  describe 'for specifyed version' do
+    let(:version) { '0.13.3' }
 
-    tag = helper.include_uploadcare_widget_from_cdn({version: version})
-    tag.should == ("<script src=\"https://ucarecdn.com/widget/#{version}/uploadcare/uploadcare-#{version}.min.js\"></script>")
+    it 'uses widget version' do
+      tag = helper.include_uploadcare_widget_from_cdn(version: version)
+
+      expect(tag).to eq(
+        "<script src=\"https://ucarecdn.com/widget/#{ version }/"\
+        'uploadcare/uploadcare.min.js"></script>'
+      )
+    end
+
+    it 'loads not minified version' do
+      tag =
+        helper.include_uploadcare_widget_from_cdn(version: version, min: false)
+
+      expect(tag).to eq(
+        "<script src=\"https://ucarecdn.com/widget/#{ version }/"\
+        'uploadcare/uploadcare.js"></script>'
+      )
+    end
   end
 
-  it "should load not minified version" do
-    version = "0.13.3"
-    min = false
+  describe 'uploadcare settings' do
+    let(:subject) { helper.uploadcare_settings }
 
-    tag = helper.include_uploadcare_widget_from_cdn({version: version, min: min})
-    tag.should == ("<script src=\"https://ucarecdn.com/widget/#{version}/uploadcare/uploadcare-#{version}.js\"></script>")
-  end
-
-  it "should return js settings" do
-    settings = helper.uploadcare_settings
-    settings.should be_kind_of(String)
-    settings.should_not be_empty
-  end
-
-  it "should include all uplaodcare settings" do
-    settings = helper.uploadcare_settings
-    settings.should have_selector("script", :content => "UPLOADCARE_PUBLIC_KEY")
-    settings.should have_selector("script", :content => "UPLOADCARE_LOCALE")
-    settings.should have_selector("script", :content => "UPLOADCARE_PREVIEW_STEP")
-    settings.should have_selector("script", :content => "UPLOADCARE_CLEARABLE")
-    settings.should have_selector("script", :content => "UPLOADCARE_TABS")
-    settings.should have_selector("script", :content => "UPLOADCARE_AUTOSTORE")
-    settings.should have_selector("script", :content => "UPLOADCARE_MANUAL_START")
-    settings.should have_selector("script", :content => "UPLOADCARE_PATH_VALUE")
+    it { is_expected.to be_a(String) }
+    it { is_expected.not_to be_empty }
+    %w(
+      UPLOADCARE_LOCALE UPLOADCARE_PREVIEW_STEP
+      UPLOADCARE_PUBLIC_KEY UPLOADCARE_CLEARABLE
+      UPLOADCARE_TABS UPLOADCARE_AUTOSTORE
+      UPLOADCARE_MANUAL_START UPLOADCARE_PATH_VALUE).each do |content|
+      it 'contains expected selector' do
+        is_expected.to have_selector('script', content: content)
+      end
+    end
   end
 end

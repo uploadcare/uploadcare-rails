@@ -73,19 +73,6 @@ Just call helper in head of application layout (or anywhere else if needed):
 </head>
 ```
 
-### Include widget with assets pipeline
-In case you don't want to use cdn-stored version for any reason - you could easily use local widget script from you assets pipeline:
-
-```js
-// in assets/javascripts/application.js
-
-//= require ./uploadcare
-```
-Note that only last and stable version of widget is published with gem.
-If you need an older (or newer) version for some reason you can
-download it and put somewhere in
-`assets/javascripts/vendor` and include it via assets pipeline.
-
 ### Widget configuration
 Next step is including application-wide settings in page.
 Just call `:uploadcare_settings` helper in head of layout:
