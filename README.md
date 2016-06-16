@@ -232,7 +232,8 @@ Then you can iterate through files:
 </ul>
 ```
 
-
+#Operations
+https://uploadcare.com/documentation/cdn/#operation-preview
 # Future releases:
 We have big plans for future:
 * Form helpers for Formastic and Simple Forms;

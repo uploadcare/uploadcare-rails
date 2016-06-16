@@ -1,10 +1,10 @@
 Dummy::Application.routes.draw do
   resources :posts_with_collection_and_files
 
-  root to: "posts#index"
+  root to: "posts#new"
   resources :posts
   resources :post_with_collections
-  
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

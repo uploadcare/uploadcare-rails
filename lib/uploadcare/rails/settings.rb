@@ -16,7 +16,8 @@ module Uploadcare
       # TODO: ALL the keys god damn it
       PUBLIC_ALLOWED_KEYS =
         %i(public_key locale images_only multiple multiple_min multiple_max
-        preview_step crop clearable tabs autostore live manual_start path_value)
+           preview_step crop clearable tabs autostore live manual_start
+           path_value)
 
       def initialize(config)
         # extract envaroments settings
