@@ -1,34 +1,26 @@
-require "spec_helper"
+require 'spec_helper'
 
-describe Uploadcare::Rails::File do
+describe Uploadcare::Rails::File, :vcr do
+  let(:post) { Post.new(title: 'Post title', file: FILE_CDN_URL) }
 
-  before :each do
-    @post = Post.new title: "Post title", file: FILE_CDN_URL
+  context 'when object is not persisted' do
+    it 'its file is not loaded' do
+      expect(post.file).not_to be_loaded
+    end
   end
 
-  after :each do
-    Rails.cache.delete FILE_CDN_URL
-  end
+  skip { expect(Rails.cache.read(post.file.cdn_url)).to be_nil }
 
-  it "should be not loaded by default" do
-    @post.file.loaded?.should == false
-  end
-
-  it "rails cache for unloaded file should be nil" do
-    cached = Rails.cache.read @post.file.cdn_url
-    cached.should == nil
-  end
-
-  it "rails cache should updates after load call" do
-    @post.file.load!
+  skip 'rails cache should updates after load call' do
+    post.file.load!
     cached = Rails.cache.read FILE_CDN_URL
     cached.should be_kind_of(Hash)
-    cached["datetime_uploaded"].should be_kind_of(String)
+    cached['datetime_uploaded'].should be_kind_of(String)
   end
 
-  it "file should stay loaded" do
-    @post.file.loaded?.should == false
-    @post.file.load!
-    @post.file.loaded?.should == true
+  skip 'file should stay loaded' do
+    post.file.loaded?.should == false
+    post.file.load!
+    post.file.loaded?.should == true
   end
 end

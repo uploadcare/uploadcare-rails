@@ -11,5 +11,7 @@ Gemfile.lock
 
 .ruby-version
 .ruby-gemset
-
+vcs.log
+/spec/cassettes
 *.gem
+/bin

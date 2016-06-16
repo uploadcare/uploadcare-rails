@@ -2,7 +2,7 @@
 
 module Uploadcare::Rails::ActionView
   module UploaderTags
-    def uploadcare_uploader_options options
+    def uploadcare_uploader_options(options)
       options = options.symbolize_keys.deep_merge(
         role: "uploadcare-uploader #{ options[:role] }".strip,
         data: { path_value: true }
@@ -14,17 +14,15 @@ module Uploadcare::Rails::ActionView
       return options unless options[:uploadcare]
 
       options[:data] = options[:data].merge!(options[:uploadcare])
-      options.tap { |options| options.delete(:uploadcare)}
+      options.except(:uploadcare)
     end
 
     def uploadcare_uploader_tag(name, options = {})
-      options = uploadcare_uploader_options(options)
-      hidden_field_tag(name, nil, options)
+      hidden_field_tag(name, nil, uploadcare_uploader_options(options))
     end
 
     def uploadcare_uploader_field(object_name, method, options = {})
-      options = uploadcare_uploader_options(options)
-      hidden_field(object_name, method, options)
+      hidden_field(object_name, method, uploadcare_uploader_options(options))
     end
 
     def self.included(_)
@@ -51,7 +49,7 @@ module Uploadcare::Rails::ActionView
     end
 
     # forse-set the data-multiple="true" for uploader
-    def uploadcare_multiple_uploader_field method, options={}
+    def uploadcare_multiple_uploader_field(method, options = {})
       options[:uploadcare] ||= {}
       options[:uploadcare][:multiple] = true
       uploadcare_uploader(method, options)
@@ -62,9 +60,11 @@ module Uploadcare::Rails::ActionView
     # not that this method WILL override custom settings in order
     # to prevent method collisions
     def uploadcare_field(method, options = {})
-      if @object.try("has_#{method}_as_uploadcare_file?".to_sym) && !@object.try("has_#{method}_as_uploadcare_group?".to_sym)
+      if @object.try("has_#{ method }_as_uploadcare_file?".to_sym) &&
+          !@object.try("has_#{ method }_as_uploadcare_group?".to_sym)
         uploadcare_single_uploader_field(method, options)
-      elsif !@object.try("has_#{method}_as_uploadcare_file?".to_sym) && @object.try("has_#{method}_as_uploadcare_group?".to_sym)
+      elsif !@object.try("has_#{ method }_as_uploadcare_file?".to_sym) &&
+          @object.try("has_#{ method }_as_uploadcare_group?".to_sym)
         uploadcare_multiple_uploader_field(method, options)
       else
         uploadcare_uploader(method, options)

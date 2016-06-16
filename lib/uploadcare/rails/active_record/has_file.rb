@@ -3,7 +3,7 @@ require "uploadcare/rails/objects/file"
 module Uploadcare
   module Rails
     module ActiveRecord
-      def has_uploadcare_file attribute, options={}
+      def has_uploadcare_file(attribute, options={})
 
         define_method "has_#{attribute}_as_uploadcare_file?" do
           true
@@ -13,51 +13,37 @@ module Uploadcare
           false
         end
 
-        define_method "build_file" do
+        define_method 'build_file' do
           cdn_url = attributes[attribute.to_s].to_s
           return nil if cdn_url.empty?
 
           api = ::Rails.application.config.uploadcare.api
           cache = ::Rails.cache
 
-          if file_obj = cache.read(cdn_url)
-            file = Uploadcare::Rails::File.new api, cdn_url, file_obj
+          if file_obj ||= cache.read(cdn_url)
+            Uploadcare::Rails::File.new(api, cdn_url, file_obj)
           else
-            file = Uploadcare::Rails::File.new api, cdn_url
+            Uploadcare::Rails::File.new(api, cdn_url)
           end
-
-          file
         end
 
         # attribute method - return file object
         # it is not the ::File but ::Rails::File
         # it has some helpers for rails enviroment
         # but it also has all the methods of Uploadcare::File so no worries.
-        define_method "#{attribute}" do
-          # cdn_url = attributes[attribute.to_s].to_s
-
-          # return nil if cdn_url.empty?
-
-          # api = Rails.application.config.uploadcare
-          # cache = ::Rails.cache
-
-          # if file_obj = cache.read(cdn_url)
-          #   file = Uploadcare::Rails::File.new api, cdn_url, file_obj
-          # else
-          #   file = Uploadcare::Rails::File.new api, cdn_url
-          # end
+        define_method "#{ attribute }" do
           build_file
         end
 
-        define_method "check_#{attribute}_for_uuid" do
-          url = self.attributes[attribute.to_s]
+        define_method "check_#{ attribute }_for_uuid" do
+          url = attributes[attribute.to_s]
           if url.present?
             result = Uploadcare::Parser.parse(url)
-            raise "Invalid Uploadcare file uuid" unless result.is_a?(Uploadcare::Parser::File)
+            raise 'Invalid Uploadcare file uuid' unless result.is_a?(Uploadcare::Parser::File)
           end
         end
 
-        define_method "store_#{attribute}" do
+        define_method "store_#{ attribute }" do
           file = build_file
 
           begin
@@ -71,7 +57,7 @@ module Uploadcare
           file
         end
 
-        define_method "delete_#{attribute}" do
+        define_method "delete_#{ attribute }" do
           file = build_file
 
           begin

@@ -1,5 +1,6 @@
 require 'uploadcare/rails/engine'
 require 'uploadcare/rails/settings'
+require 'uploadcare/rails/operations'
 require 'uploadcare'
 
 module Uploadcare
