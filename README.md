@@ -54,7 +54,7 @@ Only two config settings are required: public and private keys. All other posibl
 # Including widgets and widget configuration
 First you should add Uploadcare widget to the page. There are two way of doing that:
 
-### Load widget from our CDN
+### Load widget from our CDN (recomendet)
 Just call helper in head of application layout (or anywhere else if needed):
 
 ```erb
@@ -72,6 +72,10 @@ Just call helper in head of application layout (or anywhere else if needed):
   -->
 </head>
 ```
+### Download and append widget manualy to your pipeline.
+
+All version of widget can be downloaded for version 1.5.5 [here](https://ucarecdn.com/widget/1.5.5/uploadcare/uploadcare.full.min.js).
+Information about the features and current versions of the widget is available [here](https://uploadcare.com/documentation/widget/)
 
 ### Widget configuration
 Next step is including application-wide settings in page.
@@ -98,6 +102,7 @@ Just call `:uploadcare_settings` helper in head of layout:
    -->
 </head>
 ```
+[Here](https://uploadcare.com/documentation/widget/) you can read more about configuration.
 
 # Using
 
@@ -231,14 +236,59 @@ Then you can iterate through files:
   <% end %>
 </ul>
 ```
+However, you can get links to all of the images without API calls.
+
+```erb
+<ul>
+  <%- @post.group.images.each do |url|%>
+    <li>
+      <%= image_tag(url) %>
+    </li>
+  <% end %>
+</ul>
+```
 
 #Operations
-https://uploadcare.com/documentation/cdn/#operation-preview
+The full documentation is available [here](https://uploadcare.com/documentation/cdn/#operations).
+
+Existing in gem operations are:
+  * format: (jpeg|png)
+  * quality: (normal|better|best|lighter|lightest)
+  * progressive: (yes|no)
+  * preview: ('200x150')
+  * resize: ('150x'|'x200'|'150x200')
+  * inline: [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+
+For single file you can pass additional arguments while calling file url:
+  * ```@post.file.url(preview: '300x300')```
+  * ```@post.file.url(quality: :normal)```
+  * ```@post.file.url(resize: '150x')```
+
+<<<<<<< HEAD
+Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+```@post.file.url(preview: '900x900', resize: '150x', inline: "/progressive/yes/")```
+=======
+Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+```ruby
+  @post.file.url(preview: '900x900', resize: '150x', inline: "/progressive/yes/")
+```
+>>>>>>> Update README.md
+
+You can pass operations to all images in group:
+```erb
+<ul>
+  <%- @post.group.images(resize: '150x').each do |url|%>
+    <li>
+      <%= image_tag(url) %>
+    </li>
+  <% end %>
+</ul>
+```
+
 # Future releases:
 We have big plans for future:
 * Form helpers for Formastic and Simple Forms;
 * Localizations for widget directly from rails i18n;
-* Smart caching for loaded groups and files;
 * More render and output helpers for html pages and api responses;
 
 So stay tuned!
