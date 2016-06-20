@@ -38,11 +38,11 @@ describe Uploadcare::Rails::Group, :vcr do
 
   describe 'images workaround' do
     it 'is an array' do
-      expect(subject.images).to be_an(Array)
+      expect(subject.urls).to be_an(Array)
     end
 
     it 'builds images url' do
-      expect(subject.images(size: '200x200').first).
+      expect(subject.urls(size: '200x200').first).
         to eq(
           "http://www.ucarecdn.com/#{ subject.uuid }/nth/0/-/resize/200x200/"
         )

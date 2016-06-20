@@ -5,7 +5,7 @@ describe Uploadcare::Rails do
     {
       format: :jpeg,
       quality: :normal,
-      progressive: true,
+      progressive: :yes,
       preview: '200x150',
       resize: '150x',
       inline: '//overlay/:uuid/50%x50%/center/'
@@ -16,13 +16,13 @@ describe Uploadcare::Rails do
 
   it { is_expected.to include('format/jpeg') }
   it { is_expected.to include('quality/normal') }
-  it { is_expected.to include('progressive/true') }
+  it { is_expected.to include('progressive/yes') }
   it { is_expected.to include('preview/200x150') }
   it { is_expected.to include('resize/150x') }
   it { is_expected.to include('/overlay/:uuid/50%x50%/center/') }
 
   it do
     is_expected.
-      to eq('-/format/jpeg/-/quality/normal/-/progressive/true/-/preview/200x150/-/resize/150x/-/overlay/:uuid/50%x50%/center/')
+      to eq('-/format/jpeg/-/quality/normal/-/progressive/yes/-/preview/200x150/-/resize/150x/-/overlay/:uuid/50%x50%/center/')
   end
 end

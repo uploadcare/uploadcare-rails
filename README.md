@@ -240,7 +240,7 @@ However, you can get links to all of the images without API calls.
 
 ```erb
 <ul>
-  <%- @post.group.images.each do |url|%>
+  <%- @post.group.urls.each do |url|%>
     <li>
       <%= image_tag(url) %>
     </li>
@@ -264,20 +264,15 @@ For single file you can pass additional arguments while calling file url:
   * ```@post.file.url(quality: :normal)```
   * ```@post.file.url(resize: '150x')```
 
-<<<<<<< HEAD
-Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
-```@post.file.url(preview: '900x900', resize: '150x', inline: "/progressive/yes/")```
-=======
 Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
 ```ruby
   @post.file.url(preview: '900x900', resize: '150x', inline: "/progressive/yes/")
 ```
->>>>>>> Update README.md
 
 You can pass operations to all images in group:
 ```erb
 <ul>
-  <%- @post.group.images(resize: '150x').each do |url|%>
+  <%- @post.group.urls(resize: '150x').each do |url|%>
     <li>
       <%= image_tag(url) %>
     </li>
