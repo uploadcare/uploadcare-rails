@@ -3,6 +3,8 @@
 An awesome Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
+Try our [demo app](https://uploadcare-rails.herokuapp.com).
+
 # Installation
 Add this line to your application's Gemfile:
 
