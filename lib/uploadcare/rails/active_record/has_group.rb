@@ -33,7 +33,8 @@ module Uploadcare
 
         define_method "check_#{ attribute }_for_uuid" do
           url = attributes[attribute.to_s]
-          unless url.empty?
+
+          unless url.blank?
             result = Uploadcare::Parser.parse(url)
 
             unless result.is_a?(Uploadcare::Parser::Group)
