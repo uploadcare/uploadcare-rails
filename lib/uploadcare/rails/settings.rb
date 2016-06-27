@@ -3,7 +3,7 @@ require 'ostruct'
 module Uploadcare
   module Rails
     class Settings < OpenStruct
-      include ActiveModel::Validations
+      include ::ActiveModel::Validations
 
       # note that i did not include pub and private key even for demo
       # point here to store them in one place and one place only

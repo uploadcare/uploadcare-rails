@@ -6,6 +6,9 @@ describe :has_uploadcare_file, :vcr do
   let(:method) { 'file' }
 
   describe 'object with uploadcare_file' do
+    it 'creates blank post' do
+      Post.create!
+    end
     it 'responds to has_uploadcare_file? method' do
       is_expected.to respond_to(:has_file_as_uploadcare_file?)
     end

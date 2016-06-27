@@ -46,11 +46,13 @@ module Uploadcare
         define_method "store_#{ attribute }" do
           file = build_file
 
+          return unless file
+
           begin
             file.store
             ::Rails.cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
           rescue Exception => e
-            logger.error "\nError while saving a file #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "\nError while saving a file #{file.cdn_url}: #{e.class} (#{e.message}):"
             logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
           end
 
