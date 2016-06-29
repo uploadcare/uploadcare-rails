@@ -1,43 +1,57 @@
-require "spec_helper"
+require 'spec_helper'
 
-describe :has_uploadcare_group do
-  before :each do
-    @post = PostWithCollection.new title: "Post title", file: GROUP_CDN_URL 
-    @method = "file"
+describe :has_uploadcare_group, :vcr do
+  let(:post) { PostWithCollection.new(title: 'Title', file: GROUP_CDN_URL) }
+  let(:method) { 'file' }
+
+  after :each do
+    Rails.cache.delete(GROUP_CDN_URL)
   end
 
-  it "should respond to has_uploadcare_file? method" do
-    @post.should respond_to("has_#{@method}_as_uploadcare_file?".to_sym)
+  describe 'object with group' do
+    let(:subject) { post }
+    it 'should respond to has_uploadcare_file? method' do
+      is_expected.to respond_to('has_file_as_uploadcare_file?'.to_sym)
+    end
+
+    it 'should respond to has_uploadcare_group? method' do
+      is_expected.to respond_to('has_file_as_uploadcare_group?'.to_sym)
+    end
+
+    it ':has_uploadcare_file? should return true' do
+      is_expected.not_to be_has_file_as_uploadcare_file
+    end
+
+    it ':has_uploadcare_group? should return false' do
+      is_expected.to be_has_file_as_uploadcare_group
+    end
   end
 
-  it "should respond to has_uploadcare_group? method" do
-    @post.should respond_to("has_#{@method}_as_uploadcare_group?".to_sym)
-  end
+  describe 'object attachment' do
+    let(:subject) { post.file }
 
-  it ":has_uploadcare_file? should return true" do
-    @post.has_file_as_uploadcare_file?.should == false
-  end
+    it 'should have uploadcare file' do
+      is_expected.to be_an(Uploadcare::Rails::Group)
+    end
 
-  it ":has_uploadcare_group? should return false" do
-    @post.has_file_as_uploadcare_group?.should == true
-  end
+    it 'dont loads group by default' do
+      is_expected.not_to be_loaded
+    end
 
-  it "should have uploadcare file" do
-    @post.file.should be_kind_of(Uploadcare::Rails::Group)
-  end
+    it 'contains files inside' do
+      expect(subject.load.files.last).to be_an(Uploadcare::Rails::File)
+    end
 
-  it "file should not be loaded by default" do
-    @post.file.loaded?.should == false
-  end
+    it 'stores group after save', vcr: { cassette_name: 'has_uploadcare_group_save' } do
+      post.save
+      is_expected.to be_stored
+    end
 
-  it 'file should be stored after save' do
-    @post.save
-    @post.file.stored?.should == true
+    skip 'deleteds group after destroy' do
+      post.save
+      post.file.load
+      post.destroy
+      expect(post.file).to be_deleted
+    end
   end
-
-  # it 'file should be deleted after destroy' do
-  #   @post.save if @post.new_record?
-  #   @post.destroy
-  #   @post.file.deleted?.should == true
-  # end
 end
