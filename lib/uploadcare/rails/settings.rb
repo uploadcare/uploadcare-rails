@@ -14,10 +14,23 @@ module Uploadcare
       validates :private_key, presence: true
 
       # TODO: ALL the keys god damn it
-      PUBLIC_ALLOWED_KEYS =
-        %i(public_key locale images_only multiple multiple_min multiple_max
-           preview_step crop clearable tabs autostore live manual_start
-           path_value)
+      PUBLIC_ALLOWED_KEYS = [
+        :public_key,
+        :locale,
+        :images_only ,
+        :multiple,
+        :multiple_min ,
+        :multiple_max,
+        :preview_step,
+        :crop,
+        :clearable,
+        :tabs,
+        :autostore,
+        :live,
+        :manual_start,
+        :path_value
+      ]
+
 
       def initialize(config)
         # extract envaroments settings
@@ -39,7 +52,7 @@ module Uploadcare
 
         # validates settings atributes.
         unless valid?
-          raise ArgumentError, 'Private or public key options was not provided'
+          raise ArgumentError, 'Private or public key options were not provided'
         end
       end
 
