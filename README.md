@@ -56,7 +56,7 @@ Only two config settings are required: public and private keys. All other posibl
 # Including widgets and widget configuration
 First you should add Uploadcare widget to the page. There are two way of doing that:
 
-### Load widget from our CDN (recomendet)
+### Load widget from our CDN (recomended)
 Just call helper in head of application layout (or anywhere else if needed):
 
 ```erb
@@ -67,17 +67,16 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "1.5.5", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "2.9.0", min: true %>
   <!--
     results in:
     <script src="https://ucarecdn.com/widget/1.5.5/uploadcare/uploadcare-1.5.5.min.js"></script>
   -->
 </head>
 ```
-### Download and append widget manualy to your pipeline.
+### Download and append widget manually to your pipeline.
 
-All version of widget can be downloaded for version 1.5.5 [here](https://ucarecdn.com/widget/1.5.5/uploadcare/uploadcare.full.min.js).
-Information about the features and current versions of the widget is available [here](https://uploadcare.com/documentation/widget/)
+You may download (e.g. https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js) and serve widget yourself along with your other assets.
 
 ### Widget configuration
 Next step is including application-wide settings in page.
@@ -253,25 +252,33 @@ However, you can get links to all of the images without API calls.
 #Operations
 The full documentation is available [here](https://uploadcare.com/documentation/cdn/#operations).
 
-Existing in gem operations are:
-  * format: (jpeg|png)
-  * quality: (normal|better|best|lighter|lightest)
-  * progressive: (yes|no)
-  * preview: ('200x150')
-  * resize: ('150x'|'x200'|'150x200')
-  * inline: [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+Operations supported by gem:
+
+* `format: (jpeg|png)`
+* `quality: (normal|better|best|lighter|lightest)`
+* `progressive: (yes|no)`
+* `preview: (200x150)`
+* `resize: (150x|x200|150x200)`
+* `inline:` [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
 
 For single file you can pass additional arguments while calling file url:
+
   * ```@post.file.url(preview: '300x300')```
   * ```@post.file.url(quality: :normal)```
   * ```@post.file.url(resize: '150x')```
 
 Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+
 ```ruby
-  @post.file.url(preview: '900x900', resize: '150x', inline: "/progressive/yes/")
+  @post.file.url(  
+    preview: '900x900', 
+    resize: '150x', 
+    inline: "/progressive/yes/"
+  )
 ```
 
 You can pass operations to all images in group:
+
 ```erb
 <ul>
   <%- @post.group.urls(resize: '150x').each do |url|%>
