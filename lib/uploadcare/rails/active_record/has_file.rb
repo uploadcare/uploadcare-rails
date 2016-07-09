@@ -13,8 +13,8 @@ module Uploadcare
           false
         end
 
-        define_method "build_file" do
-          cdn_url = attributes[attribute.to_s].to_s
+        define_method "build_file" do |attr_name|
+          cdn_url = attributes[attr_name.to_s].to_s
           return nil if cdn_url.empty?
 
           api = ::Rails.application.config.uploadcare.api
@@ -46,7 +46,7 @@ module Uploadcare
           # else
           #   file = Uploadcare::Rails::File.new api, cdn_url
           # end
-          build_file
+          build_file(attribute)
         end
 
         define_method "check_#{attribute}_for_uuid" do
@@ -58,13 +58,13 @@ module Uploadcare
         end
 
         define_method "store_#{attribute}" do
-          file = build_file
+          file = build_file(attribute)
 
           begin
             file.store
             ::Rails.cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
           rescue Exception => e
-            logger.error "\nError while saving a file #{cdn_url}: #{e.class} (#{e.message}):"
+            logger.error "\nError while saving a file: #{e.class} (#{e.message}):"
             logger.error "#{::Rails.backtrace_cleaner.clean(e.backtrace).join("\n ")}"
           end
 
@@ -72,7 +72,7 @@ module Uploadcare
         end
 
         define_method "delete_#{attribute}" do
-          file = build_file
+          file = build_file(attribute)
 
           begin
             file.delete
@@ -90,9 +90,13 @@ module Uploadcare
         # group url or uuid should raise an erorr
         before_save "check_#{attribute}_for_uuid"
 
-        after_save "store_#{attribute}" if UPLOADCARE_SETTINGS.store_after_save
+        if UPLOADCARE_SETTINGS.store_after_save
+          after_save "store_#{attribute}", if: Proc.new{ |obj| obj.send(attribute).present? }
+        end
 
-        after_destroy "delete_#{attribute}" if UPLOADCARE_SETTINGS.delete_after_destroy
+        if UPLOADCARE_SETTINGS.delete_after_destroy
+          after_destroy "delete_#{attribute}", if: Proc.new{ |obj| obj.send(attribute).present? }
+        end
       end
     end
   end
