@@ -56,7 +56,7 @@ Only two config settings are required: public and private keys. All other posibl
 # Including widgets and widget configuration
 First you should add Uploadcare widget to the page. There are two way of doing that:
 
-### Load widget from our CDN (recomended)
+### Load widget from our CDN (recommended)
 Just call helper in head of application layout (or anywhere else if needed):
 
 ```erb
@@ -70,13 +70,13 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= include_uploadcare_widget_from_cdn version: "2.9.0", min: true %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/widget/1.5.5/uploadcare/uploadcare-1.5.5.min.js"></script>
+    <script src="https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js"></script>
   -->
 </head>
 ```
 ### Download and append widget manually to your pipeline.
 
-You may download (e.g. https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js) and serve widget yourself along with your other assets.
+You may download (e.g. https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
 
 ### Widget configuration
 Next step is including application-wide settings in page.
@@ -90,7 +90,7 @@ Just call `:uploadcare_settings` helper in head of layout:
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "1.5.5", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "2.9.0", min: true %>
   <%= uploadcare_settings %>
   <!--
     results in:
@@ -270,9 +270,9 @@ For single file you can pass additional arguments while calling file url:
 Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
 
 ```ruby
-  @post.file.url(  
-    preview: '900x900', 
-    resize: '150x', 
+  @post.file.url(
+    preview: '900x900',
+    resize: '150x',
     inline: "/progressive/yes/"
   )
 ```
@@ -291,6 +291,7 @@ You can pass operations to all images in group:
 
 # Future releases:
 We have big plans for future:
+
 * Form helpers for Formastic and Simple Forms;
 * Localizations for widget directly from rails i18n;
 * More render and output helpers for html pages and api responses;
