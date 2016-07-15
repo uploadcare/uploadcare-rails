@@ -9,6 +9,9 @@ before_install:
 
 env:
   - DB=postgresql
+  - "RAILS_VERSION=~>4"
+  - "RAILS_VERSION=~>5"
+  - "RAILS_VERSION=master"
 
 before_script:
   - rake app:db:create
