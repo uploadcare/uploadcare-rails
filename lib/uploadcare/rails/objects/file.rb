@@ -1,37 +1,25 @@
 module Uploadcare
   module Rails
     class File < Uploadcare::Api::File
+      def url(operations = nil)
+        cdn_url unless operations
+        cdn_url + prepared_operations(operations)
+      end
+
+      def prepared_operations(operations)
+        Uploadcare::Rails::Operations.new(operations).to_s
+      end
+
+      # construct image tag for file
+      def image(operations = nil)
+        image_tag(url(operations))
+      end
 
       # override default to string method
       # instead of string representation of object it will return simple cdn url of a file
       def to_s
         cdn_url
       end
-
-      # construct image tag for file
-      def image with_operations=true, options={}
-        if with_operations
-          url = cdn_url_with_operations
-        else
-          url = cdn_url
-        end
-        
-        image_tag url, options
-      end
-
-      def load_data
-        super
-        ::Rails.cache.write(cdn_url, self.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
-        self
-      end
-      alias_method :load, :load_data
-
-      def load_data!
-        super
-        ::Rails.cache.write(cdn_url, self.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
-        self
-      end
-      alias_method :load!, :load_data!
 
       def to_builder
         marshal_dump
@@ -41,7 +29,7 @@ module Uploadcare
         marshal_dump
       end
 
-      def as_json options={}
+      def as_json(_options = {})
         marshal_dump
       end
 

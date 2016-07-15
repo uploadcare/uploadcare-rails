@@ -1,47 +1,46 @@
-require "spec_helper"
+require 'spec_helper'
 
-describe :has_uploadcare_file do
-  before :each do
-    @post = Post.new title: "Post title", file: FILE_CDN_URL 
-    @method = "file"
+describe :has_uploadcare_file, :vcr do
+  let(:post) { Post.new(title: 'Post title', file: FILE_CDN_URL) }
+  let(:subject) { post }
+  let(:method) { 'file' }
+
+  describe 'object with uploadcare_file' do
+    it 'creates blank post' do
+      Post.create!
+    end
+    it 'responds to has_uploadcare_file? method' do
+      is_expected.to respond_to(:has_file_as_uploadcare_file?)
+    end
+
+    it 'responds to has_uploadcare_group? method' do
+      is_expected.to respond_to(:has_file_as_uploadcare_group?)
+    end
+
+    it 'has Uploadcare::Rails::File' do
+      expect(post.file).to be_an(Uploadcare::Rails::File)
+    end
+
+    it 'stores file after save' do
+      post.save
+      expect(post.file).to be_stored
+    end
+
+    it 'deletes file after destroy',
+      vcr: 'has_upload_care_file_destroy_file' do
+      post.save
+      post.destroy
+      expect(post.file).to be_deleted
+    end
   end
 
-  after :each do
-    Rails.cache.delete FILE_CDN_URL
-  end
+  context 'instanse methods' do
+    it '#has_uploadcare_file? returns true' do
+      expect(post.has_file_as_uploadcare_file?).to be_truthy
+    end
 
-  it "should respond to has_uploadcare_file? method" do
-    @post.should respond_to("has_#{@method}_as_uploadcare_file?".to_sym)
-  end
-
-  it "should respond to has_uploadcare_group? method" do
-    @post.should respond_to("has_#{@method}_as_uploadcare_group?".to_sym)
-  end
-
-  it ":has_uploadcare_file? should return true" do
-    @post.has_file_as_uploadcare_file?.should == true
-  end
-
-  it ":has_uploadcare_group? should return false" do
-    @post.has_file_as_uploadcare_group?.should == false
-  end
-
-  it "should have uploadcare file" do
-    @post.file.should be_kind_of(Uploadcare::Rails::File)
-  end
-
-  it "file should not be loaded by default" do
-    @post.file.loaded?.should == false
-  end
-
-  it 'file should be stored after save' do
-    @post.save
-    @post.file.stored?.should == true
-  end
-
-  it 'file should be deleted after destroy' do
-    @post.save if @post.new_record?
-    @post.destroy
-    @post.file.deleted?.should == true
+    it '#has_uploadcare_group? returns false' do
+      expect(post.has_file_as_uploadcare_group?).to be_falsey
+    end
   end
 end

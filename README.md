@@ -3,6 +3,8 @@
 An awesome Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
+Try our [demo app](https://uploadcare-rails.herokuapp.com).
+
 # Installation
 Add this line to your application's Gemfile:
 
@@ -54,7 +56,7 @@ Only two config settings are required: public and private keys. All other posibl
 # Including widgets and widget configuration
 First you should add Uploadcare widget to the page. There are two way of doing that:
 
-### Load widget from our CDN
+### Load widget from our CDN (recommended)
 Just call helper in head of application layout (or anywhere else if needed):
 
 ```erb
@@ -65,26 +67,16 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "1.5.5", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "2.9.0", min: true %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/widget/1.5.5/uploadcare/uploadcare-1.5.5.min.js"></script>
+    <script src="https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js"></script>
   -->
 </head>
 ```
+### Download and append widget manually to your pipeline.
 
-### Include widget with assets pipeline
-In case you don't want to use cdn-stored version for any reason - you could easily use local widget script from you assets pipeline:
-
-```js
-// in assets/javascripts/application.js
-
-//= require ./uploadcare
-```
-Note that only last and stable version of widget is published with gem.
-If you need an older (or newer) version for some reason you can
-download it and put somewhere in
-`assets/javascripts/vendor` and include it via assets pipeline.
+You may download (e.g. https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
 
 ### Widget configuration
 Next step is including application-wide settings in page.
@@ -98,7 +90,7 @@ Just call `:uploadcare_settings` helper in head of layout:
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "1.5.5", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "2.9.0", min: true %>
   <%= uploadcare_settings %>
   <!--
     results in:
@@ -111,6 +103,7 @@ Just call `:uploadcare_settings` helper in head of layout:
    -->
 </head>
 ```
+[Here](https://uploadcare.com/documentation/widget/) you can read more about configuration.
 
 # Using
 
@@ -244,13 +237,63 @@ Then you can iterate through files:
   <% end %>
 </ul>
 ```
+However, you can get links to all of the images without API calls.
 
+```erb
+<ul>
+  <%- @post.group.urls.each do |url|%>
+    <li>
+      <%= image_tag(url) %>
+    </li>
+  <% end %>
+</ul>
+```
+
+#Operations
+The full documentation is available [here](https://uploadcare.com/documentation/cdn/#operations).
+
+Operations supported by gem:
+
+* `format: (jpeg|png)`
+* `quality: (normal|better|best|lighter|lightest)`
+* `progressive: (yes|no)`
+* `preview: (200x150)`
+* `resize: (150x|x200|150x200)`
+* `inline:` [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+
+For single file you can pass additional arguments while calling file url:
+
+  * ```@post.file.url(preview: '300x300')```
+  * ```@post.file.url(quality: :normal)```
+  * ```@post.file.url(resize: '150x')```
+
+Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+
+```ruby
+  @post.file.url(
+    preview: '900x900',
+    resize: '150x',
+    inline: "/progressive/yes/"
+  )
+```
+
+You can pass operations to all images in group:
+
+```erb
+<ul>
+  <%- @post.group.urls(resize: '150x').each do |url|%>
+    <li>
+      <%= image_tag(url) %>
+    </li>
+  <% end %>
+</ul>
+```
 
 # Future releases:
 We have big plans for future:
+
 * Form helpers for Formastic and Simple Forms;
 * Localizations for widget directly from rails i18n;
-* Smart caching for loaded groups and files;
 * More render and output helpers for html pages and api responses;
 
 So stay tuned!
