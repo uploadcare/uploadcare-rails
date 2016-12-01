@@ -67,16 +67,16 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "2.9.0", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "2.10.2", min: true %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js"></script>
+    <script src="https://ucarecdn.com/widget/2.10.2/uploadcare/uploadcare.full.min.js"></script>
   -->
 </head>
 ```
 ### Download and append widget manually to your pipeline.
 
-You may download (e.g. https://ucarecdn.com/widget/2.9.0/uploadcare/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
+You may download (e.g. https://ucarecdn.com/widget/2.10.2/uploadcare/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
 
 ### Widget configuration
 Next step is including application-wide settings in page.
@@ -90,7 +90,7 @@ Just call `:uploadcare_settings` helper in head of layout:
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "2.9.0", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "2.10.2", min: true %>
   <%= uploadcare_settings %>
   <!--
     results in:
