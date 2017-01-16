@@ -6,9 +6,9 @@ describe Uploadcare::Rails do
 
     expect(tag).to eq(
       [
-        "<script src=\"https://ucarecdn.com/widget/",
+        "<script src=\"https://ucarecdn.com/libs/widget/",
         UPLOADCARE_SETTINGS.widget_version,
-        '/uploadcare/uploadcare.min.js"></script>'
+        '/uploadcare.min.js"></script>'
       ].join
     )
   end
@@ -20,8 +20,8 @@ describe Uploadcare::Rails do
       tag = helper.include_uploadcare_widget_from_cdn(version: version)
 
       expect(tag).to eq(
-        "<script src=\"https://ucarecdn.com/widget/#{ version }/"\
-        'uploadcare/uploadcare.min.js"></script>'
+        "<script src=\"https://ucarecdn.com/libs/widget/#{ version }/"\
+        'uploadcare.min.js"></script>'
       )
     end
 
@@ -30,8 +30,8 @@ describe Uploadcare::Rails do
         helper.include_uploadcare_widget_from_cdn(version: version, min: false)
 
       expect(tag).to eq(
-        "<script src=\"https://ucarecdn.com/widget/#{ version }/"\
-        'uploadcare/uploadcare.js"></script>'
+        "<script src=\"https://ucarecdn.com/libs/widget/#{ version }/"\
+        'uploadcare.js"></script>'
       )
     end
   end

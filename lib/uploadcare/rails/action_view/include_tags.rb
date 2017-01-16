@@ -11,9 +11,9 @@ module Uploadcare::Rails::ActionView
 
       path =
         [
+          'libs',
           'widget',
           settings[:version],
-          'uploadcare',
           ['uploadcare', minified, 'js'].compact.join('.')
         ].join('/')
 
