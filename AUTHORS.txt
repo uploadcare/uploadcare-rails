@@ -1,0 +1,13 @@
+# git log --format='%aN <%aE>' | sort -u
+
+Boxmo <mozart.tbj@gmail.com>
+Dmitry Mukhin <dm@uploadcare.com>
+Elijah <ilya@uploadcare.com>
+Maksim Mamrikov <maksimmamrikov@gmail.com>
+Michael Louie Loria <michaellouieloria@gmail.com>
+Mikhail Dieterle <mikdiet@gmail.com>
+Renius <antiqe@gmail.com>
+Roman Dubinin <romanonthego@gmail.com>
+Shane O'Grady <shane@ogrady.ie>
+Zarema Khalilova <zarema@uploadcare.com>
+Zenati <zenati@users.noreply.github.com>
