@@ -42,10 +42,10 @@ describe Uploadcare::Rails::Group, :vcr do
     end
 
     it 'builds images url' do
-      expect(subject.urls(size: '200x200').first).
-        to eq(
-          "#{UPLOADCARE_SETTINGS.static_url_base}/#{ subject.uuid }/nth/0/-/resize/200x200/"
-        )
+      allow_any_instance_of(Uploadcare::Api).to receive(:options) { {static_url_base: 'http://example.com'} }
+      expected = "http://example.com/#{ subject.uuid }/nth/0/-/resize/200x200/"
+
+      expect(subject.urls(size: '200x200').first).to eq(expected)
     end
   end
 end
