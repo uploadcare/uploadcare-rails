@@ -44,7 +44,7 @@ describe Uploadcare::Rails::Group, :vcr do
     it 'builds images url' do
       expect(subject.urls(size: '200x200').first).
         to eq(
-          "https://ucarecdn.com/#{ subject.uuid }/nth/0/-/resize/200x200/"
+          "#{UPLOADCARE_SETTINGS.static_url_base}/#{ subject.uuid }/nth/0/-/resize/200x200/"
         )
     end
   end
