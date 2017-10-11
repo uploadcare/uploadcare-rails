@@ -44,6 +44,13 @@ module Uploadcare::Rails::Formtastic
       @options[:uploadcare][:multiple] = false
       super
     end
+
+    def input_html_options
+      super.tap do |opts|
+        opts[:data] ||= {}
+        opts[:data].merge!(multiple: false)
+      end
+    end
   end
 
   class UploadcareMultipleUploaderInput < Uploadcare::Rails::Formtastic::UploadcareInput
@@ -52,6 +59,13 @@ module Uploadcare::Rails::Formtastic
       @options[:uploadcare] ||= {}
       @options[:uploadcare][:multiple] = true
       super
+    end
+
+    def input_html_options
+      super.tap do |opts|
+        opts[:data] ||= {}
+        opts[:data].merge!(multiple: true)
+      end
     end
   end
 end
