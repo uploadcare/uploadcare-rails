@@ -34,7 +34,7 @@ module Uploadcare
 
       def initialize(config)
         # extract envaroments settings
-        settings = config[::Rails.env]
+        settings = config[::Rails.env.to_sym]
         unless settings.present?
           raise ArgumentError, 'config is empty or not given at all'
         end
