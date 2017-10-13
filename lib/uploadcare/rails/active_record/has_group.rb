@@ -71,11 +71,11 @@ module Uploadcare
         # before saving we checking what it is a actually file cdn url
         # or uuid. uuid will do.
         # group url or uuid should raise an erorr
-        before_save "check_#{ attribute }_for_uuid"
+        before_save "check_#{ attribute }_for_uuid".to_sym
 
-        after_save "store_#{ attribute }" if UPLOADCARE_SETTINGS.store_after_save
+        after_save "store_#{ attribute }".to_sym if UPLOADCARE_SETTINGS.store_after_save
 
-        after_destroy "delete_#{ attribute }" if UPLOADCARE_SETTINGS.delete_after_destroy
+        after_destroy "delete_#{ attribute }".to_sym if UPLOADCARE_SETTINGS.delete_after_destroy
       end
     end
   end

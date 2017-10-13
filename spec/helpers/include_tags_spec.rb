@@ -47,7 +47,7 @@ describe Uploadcare::Rails do
       UPLOADCARE_TABS UPLOADCARE_AUTOSTORE
       UPLOADCARE_MANUAL_START UPLOADCARE_PATH_VALUE).each do |content|
       it 'contains expected selector' do
-        is_expected.to have_selector('script', content: content)
+        is_expected.to have_xpath("//script[text()[contains(.,'UPLOADCARE')]]", visible: :all)
       end
     end
   end

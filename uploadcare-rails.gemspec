@@ -25,16 +25,16 @@ Gem::Specification.new do |gem|
   gem.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
   gem.test_files = Dir["spec/**/*"]
   gem.version       = Uploadcare::Rails::VERSION
-  gem.add_dependency "rails", ">= 4", "< 5.1.0"
+  gem.add_dependency "rails", ">= 4", "< 5.2"
   gem.add_dependency "uploadcare-ruby", "~> 1.0"
 
   gem.add_development_dependency 'bundler', '~> 1.6'
   # rake >= 12.0 doesn't work with rspec-core < 3.4.4
   gem.add_development_dependency 'rake', '~> 11.1'
   gem.add_development_dependency "sqlite3"
-  gem.add_development_dependency 'rspec', "~> 2"
+  gem.add_development_dependency 'rspec', "~> 3"
   gem.add_development_dependency 'rspec-rails'
-  gem.add_development_dependency 'webrat'
+  gem.add_development_dependency 'capybara'
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'pry-rails'
   gem.add_development_dependency 'better_errors'
