@@ -47,6 +47,12 @@ module Uploadcare
         end
       end
 
+      def scale_crop(options)
+        if option = options[/^\d+x\d+(\/center)?$/]
+          "scale_crop/#{ option }"
+        end
+      end
+
       alias_method :size, :resize
 
       def inline(options)

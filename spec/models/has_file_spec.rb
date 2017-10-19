@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe :has_uploadcare_file, :vcr do
-  let(:post) { Post.new(title: 'Post title', file: FILE_CDN_URL) }
+  let(:post) { Post.new(title: 'Post title', file: FILE_1_CDN_URL) }
   let(:subject) { post }
-  let(:method) { 'file' }
 
   describe 'object with uploadcare_file' do
     it 'creates blank post' do
@@ -34,7 +33,7 @@ describe :has_uploadcare_file, :vcr do
     end
   end
 
-  context 'instanse methods' do
+  context 'instance methods' do
     it '#has_uploadcare_file? returns true' do
       expect(post.has_file_as_uploadcare_file?).to be_truthy
     end

@@ -2,7 +2,7 @@ module Uploadcare
   module Rails
     class File < Uploadcare::Api::File
       def url(operations = nil)
-        cdn_url unless operations
+        return cdn_url unless operations
         cdn_url + prepared_operations(operations)
       end
 

@@ -13,7 +13,7 @@ module Uploadcare
           false
         end
 
-        define_method 'build_file' do
+        define_method "build_file_for_#{attribute}" do
           cdn_url = attributes[attribute.to_s].to_s
           return nil if cdn_url.empty?
 
@@ -32,7 +32,7 @@ module Uploadcare
         # it has some helpers for rails enviroment
         # but it also has all the methods of Uploadcare::File so no worries.
         define_method "#{ attribute }" do
-          build_file
+          self.send("build_file_for_#{attribute}")
         end
 
         define_method "check_#{ attribute }_for_uuid" do
@@ -44,7 +44,7 @@ module Uploadcare
         end
 
         define_method "store_#{ attribute }" do
-          file = build_file
+          file = self.send("build_file_for_#{attribute}")
 
           return unless file
 
@@ -60,7 +60,7 @@ module Uploadcare
         end
 
         define_method "delete_#{ attribute }" do
-          file = build_file
+          file = self.send("build_file_for_#{attribute}")
 
           begin
             file.delete

@@ -4,14 +4,14 @@ describe :has_both_file_and_group_spec do
   let(:subject) do
     PostsWithCollectionAndFile.new(
       title: "Post title",
-      group: GROUP_CDN_URL,
-      file: FILE_CDN_URL
+      group: GROUP_1_CDN_URL,
+      file: FILE_1_CDN_URL
     )
   end
 
   after :each do
-    Rails.cache.delete FILE_CDN_URL
-    Rails.cache.delete GROUP_CDN_URL
+    Rails.cache.delete FILE_1_CDN_URL
+    Rails.cache.delete GROUP_1_CDN_URL
   end
 
   it 'creates empty post' do

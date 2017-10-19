@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Uploadcare::Rails::File, :vcr do
-  let(:post) { Post.new(title: 'Post title', file: FILE_CDN_URL) }
+  let(:post) { Post.new(title: 'Post title', file: FILE_1_CDN_URL) }
 
   context 'when object is not persisted' do
     it 'its file is not loaded' do
@@ -13,7 +13,7 @@ describe Uploadcare::Rails::File, :vcr do
 
   skip 'rails cache should updates after load call' do
     post.file.load!
-    cached = Rails.cache.read FILE_CDN_URL
+    cached = Rails.cache.read FILE_1_CDN_URL
     cached.should be_kind_of(Hash)
     cached['datetime_uploaded'].should be_kind_of(String)
   end
