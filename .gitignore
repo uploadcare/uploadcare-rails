@@ -13,6 +13,7 @@ Gemfile.lock
 .ruby-gemset
 vcs.log
 /spec/cassettes
+/spec/tmp
 *.gem
 /bin
 /vendor
