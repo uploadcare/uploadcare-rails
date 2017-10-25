@@ -14,10 +14,10 @@ config =
     eos
 
     {
-      defaults:    { public_key: :demopublickey, private_key: :demoprivatekey },
-      development: { public_key: :demopublickey, private_key: :demoprivatekey },
-      test:        { public_key: :demopublickey, private_key: :demoprivatekey },
-      production:  { public_key: :demopublickey, private_key: :demoprivatekey }
+      defaults:    { public_key: 'demopublickey', private_key: 'demoprivatekey' },
+      development: { public_key: 'demopublickey', private_key: 'demoprivatekey' },
+      test:        { public_key: 'demopublickey', private_key: 'demoprivatekey' },
+      production:  { public_key: 'demopublickey', private_key: 'demoprivatekey' }
     }
   end
 

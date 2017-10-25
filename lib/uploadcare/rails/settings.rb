@@ -31,10 +31,9 @@ module Uploadcare
         :path_value
       ]
 
-
       def initialize(config)
         # extract envaroments settings
-        settings = config[::Rails.env]
+        settings = config.with_indifferent_access[::Rails.env]
         unless settings.present?
           raise ArgumentError, 'config is empty or not given at all'
         end
@@ -44,10 +43,10 @@ module Uploadcare
 
         # strip defaults suplied by uploadcare-ruby gem from private/pub key
         uc_defaults =
-          Uploadcare::DEFAULT_SETTINGS.except!(:public_key, :private_key)
+          Uploadcare::DEFAULT_SETTINGS.except(:public_key, :private_key)
 
-        defaults = Uploadcare::Rails::DEFAULT_SETTINGS.merge!(uc_defaults)
-        settings = defaults.merge!(settings)
+        defaults = Uploadcare::Rails::DEFAULT_SETTINGS.merge(uc_defaults)
+        settings = defaults.merge(settings)
         super settings
 
         # validates settings atributes.
