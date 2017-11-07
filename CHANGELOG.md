@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [1.1.1] - 2017-11-05
+## [1.1.1] - 2017-11-07
 - Fix uploadcare config generator
 - Fix issues preventing the gem to be used with rails 5.1
 
