@@ -45,6 +45,7 @@ module Uploadcare
 
         define_method "store_#{ attribute }" do
           group = self.send("build_group_for_#{attribute}")
+
           return unless group.present?
 
           begin
@@ -58,6 +59,8 @@ module Uploadcare
 
         define_method "delete_#{ attribute }" do
           group = self.send("build_group_for_#{attribute}")
+
+          return unless group.present?
 
           begin
             group.delete

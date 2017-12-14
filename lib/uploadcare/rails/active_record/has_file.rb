@@ -62,6 +62,8 @@ module Uploadcare
         define_method "delete_#{ attribute }" do
           file = self.send("build_file_for_#{attribute}")
 
+          return unless file
+
           begin
             file.delete
             ::Rails.cache.write(file.cdn_url, file.marshal_dump) if UPLOADCARE_SETTINGS.cache_files
