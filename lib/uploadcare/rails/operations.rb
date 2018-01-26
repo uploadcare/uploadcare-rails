@@ -38,6 +38,8 @@ module Uploadcare
       def preview(options)
         if option = options[/^\d+x\d+$/]
           "preview/#{ option }"
+        else
+          "preview/"
         end
       end
 
