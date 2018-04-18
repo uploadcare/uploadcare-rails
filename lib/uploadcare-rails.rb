@@ -9,7 +9,7 @@ require_relative 'uploadcare/rails/objects/group'
 module Uploadcare
   module Rails
     DEFAULT_SETTINGS = {
-      widget_version: '2.x'
+      widget_version: '3.x'
     }
   end
 end
