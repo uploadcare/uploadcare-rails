@@ -1,3 +1,5 @@
+# currently supported rubies: https://www.ruby-lang.org/en/downloads/branches/
+
 language: ruby
 
 rvm:
