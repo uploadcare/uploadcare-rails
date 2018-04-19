@@ -1,6 +1,12 @@
-[![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png?branch=master)](http://travis-ci.org/uploadcare/uploadcare-rails)
+[![Build Status][travis-img]][travis]
+[![Uploadcare stack on StackShare][stack-img]][stack]
 
-An awesome Rails plugin for [Uploadcare](https://uploadcare.com) service.
+[travis-img]: https://travis-ci.org/uploadcare/uploadcare-rails.svg?branch=master
+[travis]: https://travis-ci.org/uploadcare/uploadcare-rails
+[stack-img]: https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat
+[stack]: https://stackshare.io/uploadcare/stacks/
+
+A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
 Try our [demo app](https://uploadcare-rails.herokuapp.com).
