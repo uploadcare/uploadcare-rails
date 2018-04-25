@@ -67,10 +67,10 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "2.x", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "3.x", min: true %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/libs/widget/2.x/uploadcare.full.min.js"></script>
+    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
   -->
 </head>
 ```
@@ -79,7 +79,7 @@ Uploadcare widget depends on jQuery. Rails 5.1 dropped jQuery as a default depen
 
 ### Download and append widget manually to your pipeline.
 
-You may download (e.g. https://ucarecdn.com/libs/widget/2.x/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
+You may download (e.g. https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
 
 ### Widget configuration
 Next step is including application-wide settings in page.
@@ -93,7 +93,7 @@ Just call `:uploadcare_settings` helper in head of layout:
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "2.x", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "3.x", min: true %>
   <%= uploadcare_settings %>
   <!--
     results in:
