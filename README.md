@@ -1,6 +1,12 @@
-[![Build Status](https://secure.travis-ci.org/uploadcare/uploadcare-rails.png?branch=master)](http://travis-ci.org/uploadcare/uploadcare-rails)
+[![Build Status][travis-img]][travis]
+[![Uploadcare stack on StackShare][stack-img]][stack]
 
-An awesome Rails plugin for [Uploadcare](https://uploadcare.com) service.
+[travis-img]: https://travis-ci.org/uploadcare/uploadcare-rails.svg?branch=master
+[travis]: https://travis-ci.org/uploadcare/uploadcare-rails
+[stack-img]: https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat
+[stack]: https://stackshare.io/uploadcare/stacks/
+
+A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
 Try our [demo app](https://uploadcare-rails.herokuapp.com).
@@ -21,7 +27,7 @@ $ bundle install
 Or install it yourself:
 
 ```shell
-$ gem install uploadcare-rails -v 1.1.1
+$ gem install uploadcare-rails -v 1.2.0
 ```
 
 # Configuration
@@ -67,10 +73,10 @@ Just call helper in head of application layout (or anywhere else if needed):
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "2.x", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "3.x", min: true %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/libs/widget/2.x/uploadcare.full.min.js"></script>
+    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
   -->
 </head>
 ```
@@ -79,7 +85,7 @@ Uploadcare widget depends on jQuery. Rails 5.1 dropped jQuery as a default depen
 
 ### Download and append widget manually to your pipeline.
 
-You may download (e.g. https://ucarecdn.com/libs/widget/2.x/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
+You may download (e.g. https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
 
 ### Widget configuration
 Next step is including application-wide settings in page.
@@ -93,7 +99,7 @@ Just call `:uploadcare_settings` helper in head of layout:
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-  <%= include_uploadcare_widget_from_cdn version: "2.x", min: true %>
+  <%= include_uploadcare_widget_from_cdn version: "3.x", min: true %>
   <%= uploadcare_settings %>
   <!--
     results in:

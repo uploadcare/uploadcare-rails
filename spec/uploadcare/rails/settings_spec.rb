@@ -5,7 +5,7 @@ describe Uploadcare::Rails::Settings do
 
   let(:full_config) do
     {
-      widget_version: '2.x',
+      widget_version: '3.x',
       upload_url_base: 'http://example.com/',
       api_url_base: 'http://example.com/',
       static_url_base: 'http://example.com/',
