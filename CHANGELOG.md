@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - FIXME
+- Gem now reports us your `uploadcare-rails` and `rails` versions using the User-Agent header (overridable via config)
+- `uploadcare-ruby` gem version bumped to 1.2.x
+
 ## [1.2.0-alpha] - 2018-04-18
 - Allow gem in rails 5.2
 - Update default widget version to 3.x
