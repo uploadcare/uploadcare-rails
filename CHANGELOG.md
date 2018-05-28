@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - FIXME
+## 1.2.0-alpha3 - FIXME
+### Fixed
 
+- Require `uploadcare/rails/version` in `lib/uploadcare-rails.rb`
 
-## 1.2.0-alpha2 - 2018-05-28
+## 1.2.0-alpha2 - 2018-05-28 BROKEN
 ### Changed
 - Gem now reports us your `uploadcare-rails` and `rails` versions using the User-Agent header (overridable via config)
 - `uploadcare-ruby` gem version bumped to 1.2.x

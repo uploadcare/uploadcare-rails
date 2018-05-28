@@ -1,5 +1,6 @@
 require 'uploadcare'
 
+require_relative 'uploadcare/rails/version'
 require_relative 'uploadcare/rails/engine'
 require_relative 'uploadcare/rails/settings'
 require_relative 'uploadcare/rails/operations'
