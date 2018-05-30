@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Require `uploadcare/rails/version` in `lib/uploadcare-rails.rb`
 
-## 1.2.0-alpha2 - 2018-05-28 BROKEN
+## 1.2.0-alpha2 - 2018-05-28 - YANKED
 ### Changed
 - Gem now reports us your `uploadcare-rails` and `rails` versions using the User-Agent header (overridable via config)
 - `uploadcare-ruby` gem version bumped to 1.2.x
@@ -45,4 +45,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 [Unreleased]: https://github.com/uploadcare/uploadcare-rails/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/uploadcare/uploadcare-ruby/compare/v1.2.0...v1.1.1
+[1.2.0]: https://github.com/uploadcare/uploadcare-rails/compare/v1.2.0...v1.1.1
