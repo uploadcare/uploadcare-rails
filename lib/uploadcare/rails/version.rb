@@ -1,5 +1,5 @@
 module Uploadcare
   module Rails
-    VERSION = '1.1.0'
+    VERSION = '1.2.0'.freeze
   end
 end

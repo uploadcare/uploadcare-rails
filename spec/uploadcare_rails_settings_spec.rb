@@ -22,7 +22,7 @@ describe Uploadcare::Rails do
     UPLOADCARE_SETTINGS.public_key.should be_kind_of(String)
 
     UPLOADCARE_SETTINGS.private_key.should_not be_empty
-    UPLOADCARE_SETTINGS.public_key.should_not be_empty 
+    UPLOADCARE_SETTINGS.public_key.should_not be_empty
   end
 
   it "pub and private keys should be loaded from config file" do
@@ -46,5 +46,11 @@ describe Uploadcare::Rails do
   it "should build widget settings hash" do
     UPLOADCARE_SETTINGS.widget_settings.should be_a_kind_of(Hash)
     UPLOADCARE_SETTINGS.widget_settings.should_not be_empty
+  end
+
+  it 'should include user agent environment config' do
+    expect(UPLOADCARE_SETTINGS.user_agent_environment.keys).to include(
+      :framework_name, :framework_version, :extension_name, :extension_version
+    )
   end
 end
