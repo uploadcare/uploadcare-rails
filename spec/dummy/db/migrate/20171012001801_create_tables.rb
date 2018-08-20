@@ -12,7 +12,7 @@ class CreateTables < superclass
 
     create_table :post_with_collections do |t|
       t.string :title
-      t.string :file
+      t.string :group
 
       t.timestamps
     end
@@ -21,6 +21,20 @@ class CreateTables < superclass
       t.string :title
       t.string :file
       t.string :group
+      t.timestamps
+    end
+
+    create_table :post_with_two_collections do |t|
+      t.string :title
+      t.string :group_1
+      t.string :group_2
+      t.timestamps
+    end
+
+    create_table :post_with_two_files do |t|
+      t.string :title
+      t.string :file_1
+      t.string :file_2
       t.timestamps
     end
   end

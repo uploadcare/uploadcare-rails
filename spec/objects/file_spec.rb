@@ -1,11 +1,11 @@
 require "spec_helper"
 
 describe Uploadcare::Rails::File, :vcr do
-  let(:post) { Post.new(title: "Post title", file: FILE_CDN_URL) }
+  let(:post) { Post.new(title: "Post title", file: FILE_1_CDN_URL) }
   let(:file) { post.file }
 
   after :each do
-    Rails.cache.delete FILE_CDN_URL
+    Rails.cache.delete FILE_1_CDN_URL
   end
 
   it "should be Uploadcare::Rails::File" do

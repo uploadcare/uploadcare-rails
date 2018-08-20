@@ -53,6 +53,6 @@ class PostWithCollectionsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def post_with_collection_params
-      params.require(:post_with_collection).permit(:title, :file)
+      params.require(:post_with_collection).permit(:title, :group)
     end
 end

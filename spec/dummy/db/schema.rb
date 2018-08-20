@@ -14,7 +14,23 @@ ActiveRecord::Schema.define(version: 20171012001801) do
 
   create_table "post_with_collections", force: :cascade do |t|
     t.string "title"
-    t.string "file"
+    t.string "group"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "post_with_two_collections", force: :cascade do |t|
+    t.string "title"
+    t.string "group_1"
+    t.string "group_2"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "post_with_two_files", force: :cascade do |t|
+    t.string "title"
+    t.string "file_1"
+    t.string "file_2"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -38,12 +38,20 @@ module Uploadcare
       def preview(options)
         if option = options[/^\d+x\d+$/]
           "preview/#{ option }"
+        else
+          "preview/"
         end
       end
 
       def resize(options)
         if option = options[/^(\d+x\d+)$|^(\d+x)$|^(x\d+)$/]
           "resize/#{ option }"
+        end
+      end
+
+      def scale_crop(options)
+        if option = options[/^\d+x\d+(\/center)?$/]
+          "scale_crop/#{ option }"
         end
       end
 

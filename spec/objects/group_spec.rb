@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe Uploadcare::Rails::Group, :vcr do
-  let(:post) { PostWithCollection.new(title: 'Title', file: GROUP_CDN_URL) }
-  let(:group) { post.file }
+  let(:post) { PostWithCollection.new(title: 'Title', group: GROUP_1_CDN_URL) }
+  let(:group) { post.group }
   let(:subject) { group }
 
   describe 'instance' do
-    it 'is Uploadcare::Rails::Gropu' do
+    it 'is Uploadcare::Rails::Group' do
       is_expected.to be_an(Uploadcare::Rails::Group)
     end
 

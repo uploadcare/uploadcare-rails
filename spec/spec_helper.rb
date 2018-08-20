@@ -13,19 +13,22 @@ require 'vcr'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
-@file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
-@uploaded_file = UPLOADCARE_SETTINGS.api.upload(@file)
-@file_cdn_url = @uploaded_file.cdn_url
+@file_1           = File.open(File.join(File.dirname(__FILE__), 'view.png'))
+@uploaded_file_1  = UPLOADCARE_SETTINGS.api.upload(@file_1)
 
-@file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
-@file2 = File.open(File.join(File.dirname(__FILE__), 'view2.jpg'))
-@files_ary = [@file, @file2]
-@files = UPLOADCARE_SETTINGS.api.upload @files_ary
-@uploaded_group = UPLOADCARE_SETTINGS.api.create_group @files
-@group_cdn_url = @uploaded_group.cdn_url
+@file_2           = File.open(File.join(File.dirname(__FILE__), 'view2.jpg'))
+@uploaded_file_2  = UPLOADCARE_SETTINGS.api.upload(@file_2)
 
-GROUP_CDN_URL = @group_cdn_url
-FILE_CDN_URL = @file_cdn_url
+@uploaded_ary_1   = UPLOADCARE_SETTINGS.api.upload [@file_1, @file_2]
+@uploaded_group_1 = UPLOADCARE_SETTINGS.api.create_group @uploaded_ary_1
+
+@uploaded_ary_2   = UPLOADCARE_SETTINGS.api.upload [@file_2, @file_1]
+@uploaded_group_2 = UPLOADCARE_SETTINGS.api.create_group @uploaded_ary_2
+
+FILE_1_CDN_URL    = @uploaded_file_1.cdn_url
+FILE_2_CDN_URL    = @uploaded_file_2.cdn_url
+GROUP_1_CDN_URL   = @uploaded_group_1.cdn_url
+GROUP_2_CDN_URL   = @uploaded_group_2.cdn_url
 
 RSpec.configure do |config|
   # ## Mock Framework

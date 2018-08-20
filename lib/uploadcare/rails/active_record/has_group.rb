@@ -12,7 +12,7 @@ module Uploadcare
           true
         end
 
-        define_method 'build_group' do
+        define_method "build_group_for_#{attribute}" do
           cdn_url = attributes[attribute.to_s].to_s
           return nil if cdn_url.empty?
 
@@ -28,7 +28,7 @@ module Uploadcare
 
         # attribute method - return file object
         define_method "#{ attribute }" do
-          build_group
+          self.send("build_group_for_#{attribute}")
         end
 
         define_method "check_#{ attribute }_for_uuid" do
@@ -38,13 +38,14 @@ module Uploadcare
             result = Uploadcare::Parser.parse(url)
 
             unless result.is_a?(Uploadcare::Parser::Group)
-              raise 'Invalid group uuid'
+              raise UploadError.new('Invalid group uuid')
             end
           end
         end
 
         define_method "store_#{ attribute }" do
-          group = build_group
+          group = self.send("build_group_for_#{attribute}")
+
           return unless group.present?
 
           begin
@@ -57,7 +58,9 @@ module Uploadcare
         end
 
         define_method "delete_#{ attribute }" do
-          group = build_group
+          group = self.send("build_group_for_#{attribute}")
+
+          return unless group.present?
 
           begin
             group.delete

@@ -4,6 +4,7 @@ require_relative 'uploadcare/rails/version'
 require_relative 'uploadcare/rails/engine'
 require_relative 'uploadcare/rails/settings'
 require_relative 'uploadcare/rails/operations'
+require_relative 'uploadcare/rails/errors'
 require_relative 'uploadcare/rails/objects/file'
 require_relative 'uploadcare/rails/objects/group'
 

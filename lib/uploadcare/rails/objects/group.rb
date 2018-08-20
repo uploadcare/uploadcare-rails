@@ -5,13 +5,15 @@ module Uploadcare
       # warkaround to build images urls without API request
       # builds array of image urls including operations
       def urls(operations = nil)
+        operations = Operations.new(operations).to_s
+
         (0..files_count.to_i - 1).to_a.map do |i|
           [
             @api.options[:static_url_base],
             uuid,
             'nth',
             i,
-            Operations.new(operations).to_s
+            operations
           ].join('/')
         end
       end

@@ -56,7 +56,7 @@ production:
   <<: *defaults
 ```
 
-Only two config settings are required: public and private keys. All other posible options are listed [here](https://uploadcare.com/documentation/widget/). Config file created by generator also contains a list of all options with default values. Note that global settings are used for internal API calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
+Only two config settings are required: public and private keys. All other posible options are listed [here](https://uploadcare.com/documentation/widget/). Config file created by generator also contains a list of all options with default values. Note that global settings are used for internal API calls and as default config for widget. Any instance of widget can have separate set of config that will override app-wide settings if needed.
 
 
 # Including widgets and widget configuration
@@ -268,6 +268,7 @@ Operations supported by gem:
 * `progressive: (yes|no)`
 * `preview: (200x150)`
 * `resize: (150x|x200|150x200)`
+* `scale_crop: (150x200|150x200/center)`
 * `inline:` [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
 
 For single file you can pass additional arguments while calling file url:
@@ -275,6 +276,7 @@ For single file you can pass additional arguments while calling file url:
   * ```@post.file.url(preview: '300x300')```
   * ```@post.file.url(quality: :normal)```
   * ```@post.file.url(resize: '150x')```
+  * ```@post.file.url(scale_crop: '150x200')```
 
 Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
 
