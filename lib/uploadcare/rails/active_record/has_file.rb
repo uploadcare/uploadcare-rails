@@ -39,7 +39,7 @@ module Uploadcare
           url = attributes[attribute.to_s]
           if url.present?
             result = Uploadcare::Parser.parse(url)
-            raise 'Invalid Uploadcare file uuid' unless result.is_a?(Uploadcare::Parser::File)
+            raise UploadError.new('Invalid Uploadcare file uuid') unless result.is_a?(Uploadcare::Parser::File)
           end
         end
 

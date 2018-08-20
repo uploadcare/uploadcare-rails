@@ -38,7 +38,7 @@ module Uploadcare
             result = Uploadcare::Parser.parse(url)
 
             unless result.is_a?(Uploadcare::Parser::Group)
-              raise 'Invalid group uuid'
+              raise UploadError.new('Invalid group uuid')
             end
           end
         end
