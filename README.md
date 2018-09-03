@@ -56,7 +56,10 @@ production:
   <<: *defaults
 ```
 
-Only two config settings are required: public and private keys. All other posible options are listed [here](https://uploadcare.com/documentation/widget/). Config file created by generator also contains a list of all options with default values. Note that global settings are used for internal API calls and as default config for widget. Any instanse of widget can have separate set of config that will override app-wide settings if needed.
+Only two config settings are required: public and private keys. All other posible options are listed [here][widget config].
+Config file created by generator also contains a list of all options with default values.
+Note that global settings are used for internal API calls and as default config for widget.
+Any instanse of widget can have separate set of config that will override app-wide settings if needed.
 
 
 # Including widgets and widget configuration
@@ -81,7 +84,7 @@ Just call helper in head of application layout (or anywhere else if needed):
 </head>
 ```
 
-Uploadcare widget depends on jQuery. Rails 5.1 dropped jQuery as a default dependency so if you use rails >= 5.1 make sure that jQuery is loaded or use uploadcare widget [with jQuery bundeled](https://uploadcare.com/documentation/widget/#install).
+Uploadcare widget depends on jQuery. Rails 5.1 dropped jQuery as a default dependency so if you use rails >= 5.1 make sure that jQuery is loaded or use uploadcare widget [with jQuery bundeled][widget install].
 
 ### Download and append widget manually to your pipeline.
 
@@ -112,7 +115,7 @@ Just call `:uploadcare_settings` helper in head of layout:
    -->
 </head>
 ```
-[Here](https://uploadcare.com/documentation/widget/) you can read more about configuration.
+[Here][widget config] you can read more about configuration.
 
 # Using
 
@@ -192,7 +195,7 @@ f.uploadcare_multiple_uploader_field :file
 What options are avaliable with `uploadcare` namespace for uploader?
 Well, honestly there is no validation in version 1.0 and all options
 from that namespace are simply translated into `data-` attributes.
-More on valid options you can read in [widget docs](https://uploadcare.com/documentation/widget/#advanced-configuration).
+More on valid options you can read in [widget docs][widget config].
 
 
 ## Output
@@ -258,8 +261,8 @@ However, you can get links to all of the images without API calls.
 </ul>
 ```
 
-#Operations
-The full documentation is available [here](https://uploadcare.com/documentation/cdn/#operations).
+# Operations
+The full documentation is available [here][cdn image ops].
 
 Operations supported by gem:
 
@@ -268,7 +271,7 @@ Operations supported by gem:
 * `progressive: (yes|no)`
 * `preview: (200x150)`
 * `resize: (150x|x200|150x200)`
-* `inline:` [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+* `inline:` [documentation][cdn image ops]
 
 For single file you can pass additional arguments while calling file url:
 
@@ -276,7 +279,7 @@ For single file you can pass additional arguments while calling file url:
   * ```@post.file.url(quality: :normal)```
   * ```@post.file.url(resize: '150x')```
 
-Or you can combine existing operation helpers with inline operations from [documentation](https://uploadcare.com/documentation/cdn/#image-operations)
+Or you can combine existing operation helpers with inline operations from [documentation][cdn image ops]:
 
 ```ruby
   @post.file.url(
@@ -306,6 +309,10 @@ We have big plans for future:
 
 So stay tuned!
 
-#Contributing
+# Contributing
 
-This is open source, fork, hack, request a pull, receive a discount)
+This is open source, fork, hack, request a pull, receive a discount).
+
+[widget config]: https://uploadcare.com/docs/uploads/widget/config/
+[widget install]: https://uploadcare.com/docs/uploads/widget/install/
+[cdn image ops]: https://uploadcare.com/docs/processing/image/

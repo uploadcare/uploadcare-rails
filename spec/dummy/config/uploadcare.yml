@@ -12,7 +12,7 @@ defaults: &defaults
   # deletes file or group after model object is deleted
   delete_after_destroy: true
   
-  # Avaliable options are listed at https://uploadcare.com/documentation/widget/#advanced-configuration
+  # Avaliable options are listed at https://uploadcare.com/docs/uploads/widget/config/
   # please note, that for options marked as Global: N/A — there is no practical meaning
   # of putting this option here, as it will not have any effect. 
   # But it also will not break anything.
@@ -25,7 +25,7 @@ defaults: &defaults
 
   # for setting tabs use tabs option:
   tabs: "url file facebook" # etc
-  # read more here: https://uploadcare.com/documentation/widget/#tabs
+  # read more here: https://uploadcare.com/docs/uploads/widget/upload_sources/
   # 
   #   Full list of tabs: 
   # |----------------------------------------|
@@ -51,10 +51,6 @@ defaults: &defaults
 
   # for manual start (which means you will need to initialize uploaders yourself) use:
   manual_start: false # true or false
-
-  # for path value use:
-  path_value: true # true or false
-  # (important for input values - see https://uploadcare.com/documentation/widget/#input-value)
 
   live: true
 
