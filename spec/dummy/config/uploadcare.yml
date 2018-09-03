@@ -13,7 +13,7 @@ defaults: &defaults
   delete_after_destroy: true
   
   # Avaliable options are listed at https://uploadcare.com/documentation/widget/#advanced-configuration
-  # please note, that for options marker as Global: N/A - there is no practical meaning
+  # please note, that for options marked as Global: N/A — there is no practical meaning
   # of putting this option here, as it will not have any effect. 
   # But it also will not break anything.
 
