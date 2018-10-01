@@ -3,16 +3,8 @@ require 'uploadcare/rails/objects/group'
 module Uploadcare
   module Rails
     module ActiveRecord
-      def has_uploadcare_group(attribute, options = {})
-        define_method "has_#{ attribute }_as_uploadcare_file?" do
-          false
-        end
-
-        define_method "has_#{ attribute }_as_uploadcare_group?" do
-          true
-        end
-
-        define_method 'build_group' do
+      module InstanceMethods
+        def build_group(attribute)
           cdn_url = attributes[attribute.to_s].to_s
           return nil if cdn_url.empty?
 
@@ -25,10 +17,22 @@ module Uploadcare
             Uploadcare::Rails::Group.new(api, cdn_url)
           end
         end
+      end
+
+      def has_uploadcare_group(attribute, options = {})
+        include Uploadcare::Rails::ActiveRecord::InstanceMethods
+
+        define_method "has_#{ attribute }_as_uploadcare_file?" do
+          false
+        end
+
+        define_method "has_#{ attribute }_as_uploadcare_group?" do
+          true
+        end
 
         # attribute method - return file object
         define_method "#{ attribute }" do
-          build_group
+          build_group attribute
         end
 
         define_method "check_#{ attribute }_for_uuid" do
@@ -44,7 +48,7 @@ module Uploadcare
         end
 
         define_method "store_#{ attribute }" do
-          group = build_group
+          group = build_group attribute
           return unless group.present?
 
           begin
@@ -57,7 +61,8 @@ module Uploadcare
         end
 
         define_method "delete_#{ attribute }" do
-          group = build_group
+          group = build_group attribute
+          return unless group
 
           begin
             group.delete

@@ -27,7 +27,7 @@ $ bundle install
 Or install it yourself:
 
 ```shell
-$ gem install uploadcare-rails -v 1.2.0
+$ gem install uploadcare-rails -v 1.2.1
 ```
 
 # Configuration

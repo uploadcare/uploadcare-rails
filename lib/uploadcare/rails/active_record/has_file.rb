@@ -3,17 +3,8 @@ require "uploadcare/rails/objects/file"
 module Uploadcare
   module Rails
     module ActiveRecord
-      def has_uploadcare_file(attribute, options={})
-
-        define_method "has_#{attribute}_as_uploadcare_file?" do
-          true
-        end
-
-        define_method "has_#{attribute}_as_uploadcare_group?" do
-          false
-        end
-
-        define_method 'build_file' do
+      module InstanceMethods
+        def build_file(attribute)
           cdn_url = attributes[attribute.to_s].to_s
           return nil if cdn_url.empty?
 
@@ -26,13 +17,25 @@ module Uploadcare
             Uploadcare::Rails::File.new(api, cdn_url)
           end
         end
+      end
+
+      def has_uploadcare_file(attribute, options={})
+        include Uploadcare::Rails::ActiveRecord::InstanceMethods
+
+        define_method "has_#{attribute}_as_uploadcare_file?" do
+          true
+        end
+
+        define_method "has_#{attribute}_as_uploadcare_group?" do
+          false
+        end
 
         # attribute method - return file object
         # it is not the ::File but ::Rails::File
         # it has some helpers for rails enviroment
         # but it also has all the methods of Uploadcare::File so no worries.
         define_method "#{ attribute }" do
-          build_file
+          build_file attribute
         end
 
         define_method "check_#{ attribute }_for_uuid" do
@@ -44,8 +47,7 @@ module Uploadcare
         end
 
         define_method "store_#{ attribute }" do
-          file = build_file
-
+          file = build_file attribute
           return unless file
 
           begin
@@ -60,7 +62,8 @@ module Uploadcare
         end
 
         define_method "delete_#{ attribute }" do
-          file = build_file
+          file = build_file attribute
+          return unless file
 
           begin
             file.delete
