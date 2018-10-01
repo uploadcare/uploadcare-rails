@@ -17,15 +17,23 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 @uploaded_file = UPLOADCARE_SETTINGS.api.upload(@file)
 @file_cdn_url = @uploaded_file.cdn_url
 
-@file = File.open(File.join(File.dirname(__FILE__), 'view.png'))
 @file2 = File.open(File.join(File.dirname(__FILE__), 'view2.jpg'))
+@uploaded_file2 = UPLOADCARE_SETTINGS.api.upload(@file2)
+@file2_cdn_url = @uploaded_file2.cdn_url
+
 @files_ary = [@file, @file2]
+@files_ary2 = [@file, @file2]
 @files = UPLOADCARE_SETTINGS.api.upload @files_ary
+@files2 = UPLOADCARE_SETTINGS.api.upload @files_ary2
 @uploaded_group = UPLOADCARE_SETTINGS.api.create_group @files
+@uploaded_group2 = UPLOADCARE_SETTINGS.api.create_group @files2
 @group_cdn_url = @uploaded_group.cdn_url
+@group2_cdn_url = @uploaded_group2.cdn_url
 
 GROUP_CDN_URL = @group_cdn_url
+GROUP_2_CDN_URL = @group2_cdn_url
 FILE_CDN_URL = @file_cdn_url
+FILE_2_CDN_URL = @file2_cdn_url
 
 RSpec.configure do |config|
   # ## Mock Framework
