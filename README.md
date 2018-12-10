@@ -59,7 +59,7 @@ production:
 Only two config settings are required: public and private keys. All other posible options are listed [here][widget config].
 Config file created by generator also contains a list of all options with default values.
 Note that global settings are used for internal API calls and as default config for widget.
-Any instanse of widget can have separate set of config that will override app-wide settings if needed.
+Any instance of widget can have separate set of config that will override app-wide settings if needed.
 
 
 # Including widgets and widget configuration
@@ -161,7 +161,7 @@ We have smart and fancy form builder helpers for you.
 <% end %>
 ```
 
-This wil result in Uploadcare uploader with ethier single file uploader (if model has uploadcare file attribute) or multiple uploader (if model has uploadcare group attribute). Note that groups and single files behave differently, so you can not mix one with another (in version 1.0 anyway).
+This will result in Uploadcare uploader with either single file uploader (if model has uploadcare file attribute) or multiple uploader (if model has uploadcare group attribute). Note that groups and single files behave differently, so you can not mix one with another (in version 1.0 anyway).
 
 You can also use universal builder helper:
 
