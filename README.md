@@ -1,5 +1,6 @@
 [![Build Status][travis-img]][travis]
 [![Uploadcare stack on StackShare][stack-img]][stack]
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fuploadcare%2Fuploadcare-rails.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fuploadcare%2Fuploadcare-rails?ref=badge_shield)
 
 [travis-img]: https://travis-ci.org/uploadcare/uploadcare-rails.svg?branch=master
 [travis]: https://travis-ci.org/uploadcare/uploadcare-rails
@@ -316,3 +317,7 @@ This is open source, fork, hack, request a pull, receive a discount).
 [widget config]: https://uploadcare.com/docs/uploads/widget/config/
 [widget install]: https://uploadcare.com/docs/uploads/widget/install/
 [cdn image ops]: https://uploadcare.com/docs/processing/image/
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fuploadcare%2Fuploadcare-rails.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fuploadcare%2Fuploadcare-rails?ref=badge_large)
