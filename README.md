@@ -1,7 +1,7 @@
 [![Build Status][travis-img]][travis]
 [![Uploadcare stack on StackShare][stack-img]][stack]
 
-[travis-img]: https://travis-ci.com/uploadcare/uploadcare-rails.svg?branch=master
+[travis-img]: https://api.travis-ci.com/uploadcare/uploadcare-rails.svg?branch=master
 [travis]: https://travis-ci.com/uploadcare/uploadcare-rails
 [stack-img]: https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat
 [stack]: https://stackshare.io/uploadcare/stacks/
