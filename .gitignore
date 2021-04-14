@@ -17,3 +17,4 @@ vcs.log
 *.gem
 /bin
 /vendor
+.idea/
