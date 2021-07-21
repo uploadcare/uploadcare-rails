@@ -2,16 +2,6 @@ Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
   config.public_key = 'demopublickey'
 
-  # If true, the file uploader allows selecting and uploading multiple files.
-  # config.multiple = false
-
-  # Sets the maximum number of files that can be selected for a single upload. Defaults to 0 which stands for no limit.
-  # config.multiple_max = 0
-
-  # Sets the minimal number of files that can be selected for a single upload.
-  # Note, there is no point in setting this option to 0 since there should be at least one file in a file group.
-  # config.multiple_min = 1
-
   # If true, only image files are allowed to be uploaded.
   # config.images_only = false
 
@@ -109,10 +99,6 @@ Uploadcare::Rails.configure do |config|
   # For instance, you might want to turn this on when automatic file storing is enabled in your project,
   # but you do not want to store files uploaded with a particular file uploader.
   # config.do_not_store = false
-
-  # JavaScript-only option. Defines an array of validation functions.
-  # See validators documentation - https://uploadcare.com/docs/file-uploader-api/file-validation/
-  # config.validators = []
 
   # Allows you to adjust the quality of an audio recorded via the file uploader Camera Tab.
   # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
