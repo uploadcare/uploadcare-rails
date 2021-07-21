@@ -1,4 +1,3 @@
-require 'uploadcare/rails/exceptions/uploadcare_widget_bundle_error'
 require 'uploadcare/rails/configuration'
 
 module Uploadcare::Rails::ActionView

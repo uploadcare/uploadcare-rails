@@ -1,3 +1,6 @@
+# Uncomment this string in case of using locales for locale_translations parameter
+# I18n.load_path += Dir[Rails.root.join('config', 'locales', '*.{rb,yml}').to_s]
+
 Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
   config.public_key = 'demopublickey'

@@ -20,8 +20,20 @@ module Uploadcare
           param_value = instance_variable_get("@#{param_name}")
           next if param_value.nil?
 
-          "UPLOADCARE_#{param_name.upcase} = '#{param_value}';"
+          param_value = handle_param_value(param_value)
+          "UPLOADCARE_#{param_name.upcase} = #{param_value};"
         end.compact.join("\n")
+      end
+
+      private
+
+      def handle_param_value(param_value)
+        case param_value
+        when Hash
+          param_value.deep_stringify_keys.to_s.tr('=>', ': ')
+        else
+          "'#{param_value}'"
+        end
       end
     end
   end
