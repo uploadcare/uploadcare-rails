@@ -7,7 +7,7 @@ Uploadcare::Rails.configure do |config|
 
   # If true, the preview step is present after selecting files.
   # Otherwise, the file uploader dialog closes when the selection is complete.
-  #config.preview_step = false
+  # config.preview_step = false
 
   # Defines the file uploader manual crop behavior (see https://uploadcare.com/docs/uploads/file-uploader/#crop-option).
   # When uploading images, your users can select a crop area.
@@ -61,14 +61,14 @@ Uploadcare::Rails.configure do |config|
   # Files go directly to a storage, bypassing our upload servers,
   # and they're quickly available for further use. All files below the threshold get uploaded in one piece.
   # Note: Multipart upload works with local sources only (files and camera).
-  # config.multipart_minimum_size = 10485760
+  # config.multipart_min_size = 10485760
 
   # Available locales currently are:
   # ar az ca cs da de el en es et fr he it ja ko lv nb nl pl pt ro ru sk sr sv tr uk vi zhTW zh
   config.locale = 'en'
 
   # Sets custom localization options. See https://uploadcare.com/docs/uploads/file-uploader/#localization
-  # config.locale_translation = {}
+  # config.locale_translations = {}
 
   # Defines pluralization options. See https://uploadcare.com/docs/uploads/file-uploader/#pluralization
   # config.locale_pluralize = {}
@@ -82,6 +82,16 @@ Uploadcare::Rails.configure do |config|
   # Stands for the Unix time to which the signature is valid, e.g., 1454902434.
   # Works together with the secure signature option that defines a period of your signature validity.
   # config.secure_expire = 1454902434
+
+  # The option can be used with Authenticated URLs. Defines your proxy backend URL.
+  # See https://uploadcare.com/docs/security/secure-delivery/#proxy-backend.
+  # config.preview_proxy = ''
+
+  # The option can be used with Authenticated URLs.
+  # Defines the function that specifies which URL a file uploader should use for image previews.
+  # Function signature is (originalUrl, fileInfo) => previewUrl.
+  # If this option is specified, option previewProxy will be ignored.
+  # config.preview_url_callback = {}
 
   # If true, inputs on your page are initialized automatically, see this article for details.
   config.live = true
