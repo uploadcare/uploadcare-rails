@@ -6,6 +6,6 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'http-parser', '~> 1.2', '>= 1.2.3'
-gem 'rake', '~> 12.0'
-gem 'rspec', '~> 3.0'
+gem 'rake', '~> 13.3'
+gem 'rspec', '~> 3.10'
 gem 'dry-configurable', '~> 0.9.0'
