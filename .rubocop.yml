@@ -1,0 +1,3 @@
+Gemspec/RequiredRubyVersion:
+  Exclude:
+    - 'uploadcare-rails.gemspec'

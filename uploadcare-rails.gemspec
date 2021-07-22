@@ -5,7 +5,6 @@ $LOAD_PATH.push File.expand_path('lib', __dir__)
 # Maintain your gem's version:
 require 'uploadcare/rails/version'
 
-
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.1.0'
@@ -17,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.description   = <<-DESCRIPTION
                         Rails wrapper for Uploadcare service.
                         Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby)
-                      DESCRIPTION
+  DESCRIPTION
   gem.metadata = {
     'github' => 'https://github.com/uploadcare/uploadcare-rails',
     'issue_tracker' => 'https://github.com/uploadcare/uploadcare-rails/issues'
@@ -33,6 +32,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'better_errors'
   # gem.add_development_dependency 'bundler', '~> 2.1.4'
+  gem.add_development_dependency 'bundler-audit'
   gem.add_development_dependency 'capybara'
   gem.add_development_dependency 'guard-rspec'
   gem.add_development_dependency 'pry'
@@ -40,9 +40,8 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec', '> 3.4.4'
   gem.add_development_dependency 'rspec-rails'
+  gem.add_development_dependency 'rubocop'
   gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'vcr'
   gem.add_development_dependency 'webmock'
-  gem.add_development_dependency 'rubocop'
-  gem.add_development_dependency 'bundler-audit'
 end

@@ -6,3 +6,4 @@ gem "rails", '~> 6.0.0', github: 'rails/rails', branch: '6-0-stable'
 
 gem 'rake'
 gem 'rspec'
+gem 'http-parser', '~> 1.2', '>= 1.2.3'

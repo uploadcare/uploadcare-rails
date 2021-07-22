@@ -5,6 +5,7 @@ require 'uploadcare/rails/configuration'
 module Uploadcare
   module Rails
     module ActionView
+      # A module containing a view helper for html-page
       module UploadcareWidgetTags
         # A view helper to add a js script tag from CDN with just one string of code.
         # See https://uploadcare.com/docs/uploads/file-uploader/#cdn for more info.
