@@ -85,6 +85,8 @@ jobs:
       - name: Setup Bundler 1.x for Rails 4.x
         if: ${{ matrix.gemfile == 'gemfiles/Gemfile-rails-4-1' || matrix.gemfile == 'gemfiles/Gemfile-rails-4-2' }}
         run: echo "BUNDLER_VERSION=1.17.3" >> $GITHUB_ENV
+      - name: Install http-parser
+        run: gem install http-parser -v '1.2.3' --source 'https://rubygems.org/'
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
