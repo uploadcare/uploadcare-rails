@@ -31,7 +31,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'uploadcare-ruby'
 
   gem.add_development_dependency 'better_errors'
-  # gem.add_development_dependency 'bundler', '~> 2.1.4'
+  gem.add_dependency 'api_struct', '~> 1.0.1'
   gem.add_development_dependency 'bundler-audit'
   gem.add_development_dependency 'capybara'
   gem.add_development_dependency 'guard-rspec'
