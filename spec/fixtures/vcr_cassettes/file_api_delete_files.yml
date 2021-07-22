@@ -1,0 +1,58 @@
+---
+http_interactions:
+- request:
+    method: delete
+    uri: https://api.uploadcare.com/files/storage/
+    body:
+      encoding: UTF-8
+      string: '["37d70281-cc30-4c59-b8d6-e11c472dec40"]'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.5+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/2.7.0)
+      Date:
+      - Thu, 22 Jul 2021 08:38:38 GMT
+      Authorization:
+      - Uploadcare 5d5bb5639e3f2df33674:e05af6d220eaa34112d6b7b0bd03f8a22d9e109f
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 08:38:39 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.5+json
+      Content-Length:
+      - '611'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - DELETE, OPTIONS, PUT
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"status":"ok","result":[{"datetime_removed":"2021-07-22T08:38:39.167191Z","datetime_stored":null,"datetime_uploaded":"2021-07-22T07:28:44.481441Z","image_info":{"width":48,"height":12,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":null,"original_filename":"-17.0\u00b0\u0421
+        (2).png","size":514,"url":"https://api.uploadcare.com/files/37d70281-cc30-4c59-b8d6-e11c472dec40/","uuid":"37d70281-cc30-4c59-b8d6-e11c472dec40","source":null}],"problems":{}}'
+  recorded_at: Thu, 22 Jul 2021 08:38:39 GMT
+recorded_with: VCR 6.0.0

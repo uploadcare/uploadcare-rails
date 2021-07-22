@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
-require 'uploadcare'
 require 'uploadcare/rails/api/base'
 
 module Uploadcare
   module Rails
     module Api
-      # A class that contains File related methods for Uploadcare API
+      # A class that contains File related methods for Uploadcare REST API
       class FileApi < Base
         class << self
           # Returns a pagination json of files stored in project
@@ -44,6 +43,20 @@ module Uploadcare
           # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/storeFile
           def store_file(uuid)
             Uploadcare::File.store(uuid)
+          end
+
+          # Make a set of files "stored". This will prevent them from being deleted automatically
+          # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/filesStoring
+          # uuids: Array
+          def store_files(uuids)
+            Uploadcare::FileList.batch_store(uuids)
+          end
+
+          # Delete several files by list of uids
+          # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/filesDelete
+          # uuids: Array
+          def delete_files(uuids)
+            Uploadcare::FileList.batch_delete(uuids)
           end
         end
       end
