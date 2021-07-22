@@ -1,0 +1,60 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.uploadcare.com/files/
+    body:
+      encoding: UTF-8
+      string: '{"source":"d43e8281-a42a-4f30-9fee-4a166998d15a","store":false}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.5+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/3.0.0)
+      Date:
+      - Thu, 22 Jul 2021 07:21:10 GMT
+      Authorization:
+      - Uploadcare 5d5bb5639e3f2df33674:9e0f878fa2180c0d1d5edb0ffabab206aaebb434
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 07:21:11 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.5+json
+      Content-Length:
+      - '533'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Location:
+      - https://api.uploadcare.com/files/7bfa5998-cb01-4b83-893a-27b55b8e9bd9/
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - GET, HEAD, OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"type":"file","result":{"datetime_removed":null,"datetime_stored":null,"datetime_uploaded":"2021-07-22T07:21:11.521628Z","image_info":null,"is_image":null,"is_ready":true,"mime_type":"application/octet-stream","original_file_url":"https://ucarecdn.com/7bfa5998-cb01-4b83-893a-27b55b8e9bd9/1702.png","original_filename":"-17.0\u00b0\u0421
+        (2).png","size":0,"url":"https://api.uploadcare.com/files/7bfa5998-cb01-4b83-893a-27b55b8e9bd9/","uuid":"7bfa5998-cb01-4b83-893a-27b55b8e9bd9","source":"/d43e8281-a42a-4f30-9fee-4a166998d15a/"}}'
+  recorded_at: Thu, 22 Jul 2021 07:21:11 GMT
+recorded_with: VCR 6.0.0

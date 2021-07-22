@@ -2,6 +2,7 @@
 
 require 'uploadcare/rails/engine'
 require 'uploadcare/rails/configuration'
+require 'uploadcare/rails/api/file_api'
 
 module Uploadcare
   # A root module for the gem
@@ -17,7 +18,7 @@ module Uploadcare
     end
 
     def initialize_config
-      @configuration = Configuration.instance
+      @configuration = Uploadcare::Rails::Configuration.instance
     end
 
     initialize_config
