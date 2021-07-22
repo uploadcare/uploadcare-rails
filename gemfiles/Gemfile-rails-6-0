@@ -4,6 +4,6 @@ gemspec path: ".."
 
 gem "rails", '~> 6.0.0', github: 'rails/rails', branch: '6-0-stable'
 
-gem 'rake'
-gem 'rspec'
+gem 'rake', '~> 13.0.6'
+gem 'rspec', '~> 3.10'
 gem 'http-parser', '~> 1.2', '>= 1.2.3'
