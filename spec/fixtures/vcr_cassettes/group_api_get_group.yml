@@ -1,0 +1,52 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://upload.uploadcare.com/group/info/?group_id=38483b4e-57fe-40e7-8e52-74fbdd73da14~2&pub_key=5d5bb5639e3f2df33674
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/2.7.0)
+      Connection:
+      - close
+      Host:
+      - upload.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 09:05:12 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1270'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Origin
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - GET, HEAD, OPTIONS
+      Access-Control-Allow-Headers:
+      - X-UC-User-Agent, DNT, X-PINGOTHER
+      Access-Control-Max-Age:
+      - '1'
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+    body:
+      encoding: ASCII-8BIT
+      string: '{"id":"38483b4e-57fe-40e7-8e52-74fbdd73da14~2","datetime_created":"2021-07-19T09:26:40.663669Z","datetime_stored":null,"files_count":2,"cdn_url":"https://ucarecdn.com/38483b4e-57fe-40e7-8e52-74fbdd73da14~2/","url":"https://api.uploadcare.com/groups/38483b4e-57fe-40e7-8e52-74fbdd73da14~2/","files":[{"size":21279,"total":21279,"done":21279,"uuid":"2711bdef-b201-4b0d-ac8d-4811425d42cd","file_id":"2711bdef-b201-4b0d-ac8d-4811425d42cd","original_filename":"thumbnail_0.jpg","is_image":true,"is_stored":false,"image_info":{"width":600,"height":400,"format":"JPEG","color_mode":"RGB","geo_location":null,"orientation":null,"dpi":null,"datetime_original":null,"sequence":false},"video_info":null,"is_ready":true,"filename":"thumbnail_0.jpg","mime_type":"image/jpeg","default_effects":""},{"size":20966,"total":20966,"done":20966,"uuid":"cd0e20c1-7810-42d3-bd87-cffa31f29e0e","file_id":"cd0e20c1-7810-42d3-bd87-cffa31f29e0e","original_filename":"thumbnail_1.jpg","is_image":true,"is_stored":false,"image_info":{"width":600,"height":400,"format":"JPEG","color_mode":"RGB","geo_location":null,"orientation":null,"dpi":null,"datetime_original":null,"sequence":false},"video_info":null,"is_ready":true,"filename":"thumbnail_1.jpg","mime_type":"image/jpeg","default_effects":""}]}'
+  recorded_at: Thu, 22 Jul 2021 09:05:12 GMT
+recorded_with: VCR 6.0.0
