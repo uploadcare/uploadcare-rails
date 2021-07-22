@@ -7,3 +7,5 @@ gemspec
 
 gem 'rake', '~> 12.0'
 gem 'rspec', '~> 3.0'
+gem 'dry-core', '0.4.9'
+gem 'http-parser', '~> 1.2', '>= 1.2.3'
