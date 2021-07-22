@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require 'rails/engine'
 
 module Uploadcare
   module Rails
+    # Rails engine that allows to extend default rails libraries
     class Engine < ::Rails::Engine
       initializer 'uploadcare-rails.load' do
         # Load extensions

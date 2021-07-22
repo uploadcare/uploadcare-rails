@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require 'singleton'
 
 module Uploadcare
   module Rails
+    # A class for storing config parameters
     class Configuration
       include Singleton
 
@@ -11,9 +14,9 @@ module Uploadcare
         locale locale_translations locale_pluralize secure_signature secure_expire preview_proxy
         preview_url_callback cdn_base do_not_store audio_bits_per_second video_preferred_mime_types
         video_bits_per_second camera_mirror_default
-      ]
+      ].freeze
 
-      attr_accessor *CONFIG_GLOBAL_PARAMS
+      attr_accessor(*CONFIG_GLOBAL_PARAMS)
 
       def widget_parameters
         CONFIG_GLOBAL_PARAMS.map do |param_name|
