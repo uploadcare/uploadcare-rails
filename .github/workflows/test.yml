@@ -78,6 +78,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      UPLOADCARE_PUBLIC_KEY: demopublickey
+      UPLOADCARE_SECRET_KEY: demoprivatekey
     steps:
       - uses: actions/checkout@v2
       - name: Setup Bundler 1.x for Rails 4.x
@@ -89,12 +91,6 @@ jobs:
           bundler-cache: true # runs bundle install and caches installed gems automatically
           bundler: ${{ env.BUNDLER_VERSION || 'latest' }}
       - run: bundle exec rake
-
-      - name: Run tests
-        run: bundle exec rake
-        env:
-          UPLOADCARE_PUBLIC_KEY: demopublickey
-          UPLOADCARE_SECRET_KEY: demoprivatekey
 
   code-analysis:
     runs-on: ubuntu-latest
