@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.uploadcare.com/webhooks/
+    body:
+      encoding: UTF-8
+      string: '{"target_url":"https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png","event":"file.uploaded","is_active":true}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.5+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.0)
+      Date:
+      - Thu, 22 Jul 2021 10:18:34 GMT
+      Authorization:
+      - Uploadcare demopublickey:709d7443bac77a68415330c5786972c57f9ddb16
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 10:18:35 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.5+json
+      Content-Length:
+      - '228'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Warning:
+      - '199 Miscellaneous warning: You are using the demo project'
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - GET, HEAD, OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"id":811135,"created":"2021-07-22T10:18:35.149983Z","updated":"2021-07-22T10:18:35.150005Z","event":"file.uploaded","target_url":"https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png","project":159,"is_active":true}'
+  recorded_at: Thu, 22 Jul 2021 10:18:35 GMT
+recorded_with: VCR 6.0.0

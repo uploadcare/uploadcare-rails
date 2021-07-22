@@ -5,6 +5,7 @@ require 'uploadcare/rails/configuration'
 require 'uploadcare/rails/api/file_api'
 require 'uploadcare/rails/api/group_api'
 require 'uploadcare/rails/api/project_api'
+require 'uploadcare/rails/api/webhook_api'
 
 module Uploadcare
   # A root module for the gem
