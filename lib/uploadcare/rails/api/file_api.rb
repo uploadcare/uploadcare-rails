@@ -15,8 +15,8 @@ module Uploadcare
           # removed: [true|false]
           # stored: [true|false]
           # limit: (1..1000)
-          # order: ["datetime_uploaded"|"-datetime_uploaded"|"size"|"-size"]
-          # from: number of files to offset
+          # ordering: ["datetime_uploaded"|"-datetime_uploaded"|"size"|"-size"]
+          # from: A starting point for filtering files. The value depends on your ordering parameter value.
           def get_files(**options)
             Uploadcare::FileList.file_list(**options)
           end
