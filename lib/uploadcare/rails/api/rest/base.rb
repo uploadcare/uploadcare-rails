@@ -5,7 +5,9 @@ require 'uploadcare'
 module Uploadcare
   module Rails
     module Api
-      class Base
+      module Rest
+        class Base
+        end
       end
     end
   end
