@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.uploadcare.com/convert/video/status/913632082/
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.6+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/2.7.2)
+      Date:
+      - Fri, 23 Jul 2021 11:31:38 GMT
+      Authorization:
+      - Uploadcare 5d5bb5639e3f2df33674:8ea50fe3b833028988450d93b21b84ac13818d2b
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 23 Jul 2021 11:31:39 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.6+json
+      Content-Length:
+      - '156'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Warning:
+      - '199 Miscellaneous warning: Please use API version 0.5, not 0.6'
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - GET, HEAD, OPTIONS
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"status":"finished","error":null,"result":{"uuid":"3f2e57e7-2d3f-42b2-9b42-2da4cfa6551e","thumbnails_group_uuid":"4ed9e8ea-c22c-4a9f-bdd1-c4ce40ebaa8c~2"}}'
+  recorded_at: Fri, 23 Jul 2021 11:31:39 GMT
+recorded_with: VCR 6.0.0

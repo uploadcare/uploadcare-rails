@@ -10,3 +10,7 @@ Metrics/BlockLength:
 Naming/FileName:
   Exclude:
     - 'lib/uploadcare-rails.rb'
+
+Style/HashTransformKeys:
+  Exclude:
+    - 'lib/uploadcare/rails/action_view/uploadcare_uploader_tags.rb'

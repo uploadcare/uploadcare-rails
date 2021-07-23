@@ -1,0 +1,62 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.uploadcare.com/convert/document/
+    body:
+      encoding: UTF-8
+      string: '{"paths":["86c54d9a-3453-4b12-8dcc-49883ae8f084/document/-/format/jpg/"],"store":"0"}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.6+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/2.7.2)
+      Date:
+      - Fri, 23 Jul 2021 11:38:30 GMT
+      Authorization:
+      - Uploadcare 5d5bb5639e3f2df33674:0108d88068fd4505dc2ec3b3844e09a2daf6aec4
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 23 Jul 2021 11:38:31 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '176'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Vary:
+      - Accept
+      - Accept-Encoding
+      Warning:
+      - '199 Miscellaneous warning: Please use API version 0.5, not 0.6'
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Allow:
+      - OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"result": [], "problems": {"86c54d9a-3453-4b12-8dcc-49883ae8f084/document/-/format/jpg/":
+        "the target_format is not a supported ''to'' format for this source file.
+        txt -> jpg"}}'
+  recorded_at: Fri, 23 Jul 2021 11:38:31 GMT
+recorded_with: VCR 6.0.0
