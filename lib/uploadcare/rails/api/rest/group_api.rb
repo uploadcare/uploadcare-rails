@@ -32,17 +32,6 @@ module Uploadcare
             def store_group(uuid)
               Uploadcare::Group.store(uuid)
             end
-
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/deleteFile
-            def delete_file(uuid)
-              Uploadcare::File.delete(uuid)
-            end
-
-            # Store a single file, preventing it from being deleted in 2 weeks
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/storeFile
-            def store_file(uuid)
-              Uploadcare::File.store(uuid)
-            end
           end
         end
       end
