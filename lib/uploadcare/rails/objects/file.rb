@@ -13,7 +13,7 @@ module Uploadcare
       attr_entity(*superclass.entity_attributes.concat(ATTR_ENTITIES))
 
       def store
-        file_info = Uploadcare::FileApi.store_file(uuid)
+        file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url)
         ::Rails.cache.write(cdn_url, file_info) if uploadcare_configuration.cache_files
         file_info
       end
@@ -27,9 +27,9 @@ module Uploadcare
       end
 
       def load
-        file_info = super()
+        file_info = super().merge(cdn_url: cdn_url)
         ::Rails.cache.write(cdn_url, file_info) if uploadcare_configuration.cache_files
-        merge(file_info, cdn_url: cdn_url)
+        merge(file_info)
       end
 
       def loaded?
