@@ -60,7 +60,7 @@ module Uploadcare
             @uploadcare_configuration ||= Uploadcare::Rails.configuration
           end
 
-          after_save "store_#{attribute}!".to_sym if uploadcare_configuration.store_files_after_save
+          after_save "store_#{attribute}!".to_sym unless uploadcare_configuration.do_not_store
           after_destroy "delete_#{attribute}!".to_sym if uploadcare_configuration.delete_files_after_destroy
         end
         # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Lint/NestedMethodDefinition
