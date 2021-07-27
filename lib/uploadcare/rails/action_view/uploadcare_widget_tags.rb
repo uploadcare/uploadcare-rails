@@ -36,7 +36,7 @@ module Uploadcare
           config_tag = javascript_tag(widget_settings) if widget_settings.present?
           include_tag = javascript_include_tag(uri.to_s.squeeze('.'))
 
-          include_tag.concat(config_tag)
+          config_tag.concat(include_tag)
         end
 
         private

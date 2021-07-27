@@ -13,6 +13,12 @@ module Uploadcare
           require 'uploadcare/rails/action_view/uploadcare_widget_tags'
           require 'uploadcare/rails/action_view/uploadcare_uploader_tags'
         end
+
+        # Load extensions for active_record
+        # Extend active_record with mount_uploadcare_file method
+        ActiveSupport.on_load :active_record do
+          require 'uploadcare/rails/active_record/mount_uploadcare_file'
+        end
       end
     end
   end

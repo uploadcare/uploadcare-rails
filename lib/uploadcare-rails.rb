@@ -2,6 +2,7 @@
 
 require 'uploadcare/rails/engine'
 require 'uploadcare/rails/configuration'
+require 'uploadcare/rails/objects/file'
 require 'uploadcare/rails/api/rest/file_api'
 require 'uploadcare/rails/api/rest/group_api'
 require 'uploadcare/rails/api/rest/project_api'
