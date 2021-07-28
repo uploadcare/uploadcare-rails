@@ -11,12 +11,12 @@ module Uploadcare
       CONFIG_GLOBAL_PARAMS = %w[
         public_key locale live manual_start images_only preview_step crop image_shrink
         clearable tabs input_accept_types preferred_types system_dialog multipart_min_size
-        locale locale_translations locale_pluralize secure_signature secure_expire preview_proxy
+        locale_translations locale_pluralize secure_signature secure_expire preview_proxy
         preview_url_callback cdn_base do_not_store audio_bits_per_second video_preferred_mime_types
         video_bits_per_second camera_mirror_default
       ].freeze
 
-      attr_accessor(*CONFIG_GLOBAL_PARAMS)
+      attr_accessor(:cache_files, :store_files_after_save, :delete_files_after_destroy, *CONFIG_GLOBAL_PARAMS)
 
       def widget_parameters
         CONFIG_GLOBAL_PARAMS.map do |param_name|
@@ -34,6 +34,8 @@ module Uploadcare
         case param_value
         when Hash
           param_value.deep_stringify_keys.to_s.tr('=>', ': ')
+        when TrueClass, FalseClass
+          param_value
         else
           "'#{param_value}'"
         end

@@ -1,9 +1,17 @@
+# frozen_string_literal: true
+
 # Uncomment this string in case of using locales for locale_translations parameter
 # I18n.load_path += Dir[Rails.root.join('config', 'locales', '*.{rb,yml}').to_s]
 
 Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
   config.public_key = 'demopublickey'
+
+  # Deletes files from Uploadcare servers after object destroy.
+  config.delete_files_after_destroy = true
+
+  # Sets caching for Uploadcare files
+  config.cache_files = true
 
   # If true, only image files are allowed to be uploaded.
   # config.images_only = false
@@ -44,7 +52,7 @@ Uploadcare::Rails.configure do |config|
   # Defines the list of preferred MIME types.
   # The list should be ordered and contain space-separated MIME types.
   # Common parts can be marked with asterisks: image/* application/vnd.openxmlformats-officedocument.*.
-  # If no MIME types match the criteria or preferred types aren’t set, default formats are used.
+  # If no MIME types match the criteria or preferred types are not set, default formats are used.
   # Keep in mind that some cloud services can export data in different formats.
   # For example, Google document can be exported as Word document, PDF or plain text.
   # config.preferred_types = 'image/* application/vnd.openxmlformats-officedocument.*'
