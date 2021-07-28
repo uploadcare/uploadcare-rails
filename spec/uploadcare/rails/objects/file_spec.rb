@@ -7,7 +7,7 @@ require 'rails/all'
 describe Uploadcare::Rails::File do
   let(:file) do
     described_class.new(
-      url: 'https://ucarecdn.com/5ae54c37-754c-4982-8de4-3f242a88ce17/111.png',
+      cdn_url: 'https://ucarecdn.com/5ae54c37-754c-4982-8de4-3f242a88ce17/',
       uuid: '5ae54c37-754c-4982-8de4-3f242a88ce17'
     )
   end
@@ -55,6 +55,22 @@ describe Uploadcare::Rails::File do
         file.load
         expect(file.loaded?).to be_truthy
       end
+    end
+  end
+
+  context 'when url transformations' do
+    subject { file.transform_url(**transformation_args) }
+
+    let(:transformator_class) { Uploadcare::Rails::Transformations::ImageTransformations }
+    let(:transformation_args) { { resize: '300x500' } }
+    let(:transformations) { '/resize/300x500/' }
+    let(:new_url) { "#{file.cdn_url}-#{transformations}" }
+
+    before { allow(transformator_class).to receive_message_chain(:new, :call).and_return(transformations) }
+
+    it 'checks that the transformator received :new method' do
+      expect(transformator_class).to receive(:new).with(**transformation_args)
+      expect(subject).to eq new_url
     end
   end
 end
