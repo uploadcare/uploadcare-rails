@@ -2,6 +2,10 @@ Gemspec/RequiredRubyVersion:
   Exclude:
     - 'uploadcare-rails.gemspec'
 
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/uploadcare/rails/transformations/image_transformations.rb'
+
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
@@ -15,3 +19,4 @@ Naming/FileName:
 Style/HashTransformKeys:
   Exclude:
     - 'lib/uploadcare/rails/action_view/uploadcare_uploader_tags.rb'
+    - 'lib/uploadcare/rails/transformations/image_transformations.rb'
