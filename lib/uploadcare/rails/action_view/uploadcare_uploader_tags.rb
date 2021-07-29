@@ -24,9 +24,19 @@ module Uploadcare
         DEFAULT_FIELD_OPTIONS = { role: 'uploadcare-uploader' }.freeze
 
         def uploadcare_uploader_field(object_name, method_name, options = {})
+          options[:multiple] = multiple?(object_name, method_name)
           data_options = options.map { |key, value| ["data-#{key.to_s.underscore.dasherize}", value] }.to_h
           field_options = DEFAULT_FIELD_OPTIONS.merge(data_options)
           hidden_field(object_name, method_name, field_options)
+        end
+
+        private
+
+        def multiple?(object_name, method_name)
+          model = object_name.to_s.camelize.safe_constantize
+          model&.send "has_uploadcare_file_group_for_#{method_name}?"
+        rescue NoMethodError
+          false
         end
       end
     end
