@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://upload.uploadcare.com/base/
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        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
+    headers:
+      User-Agent:
+      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.2)
+      Content-Type:
+      - multipart/form-data; boundary=---------------------29e9731f9a733aa1eb1f155930871d52bd93ed065a
+      Connection:
+      - close
+      Host:
+      - upload.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 23 Jul 2021 09:25:40 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '54'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Origin
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - POST, OPTIONS
+      Access-Control-Allow-Headers:
+      - DNT, X-PINGOTHER, X-UC-User-Agent
+      Access-Control-Max-Age:
+      - '1'
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+    body:
+      encoding: ASCII-8BIT
+      string: '{"kitten.jpeg":"afbe9a51-17ee-49e0-863c-fd112592dc89"}'
+  recorded_at: Fri, 23 Jul 2021 09:25:40 GMT
+recorded_with: VCR 6.0.0
