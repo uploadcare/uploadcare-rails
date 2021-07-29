@@ -9,9 +9,6 @@ require 'uploadcare/rails/active_record/mount_uploadcare_file_group'
 describe Uploadcare::Rails::ActiveRecord::MountUploadcareFile do
   before do
     allow(Uploadcare::Rails).to receive(:configuration).and_return(OpenStruct.new)
-  end
-
-  before do
     stub_const 'Post', Class.new
     Post.class_eval do
       include Uploadcare::Rails::ActiveRecord::MountUploadcareFile
@@ -35,9 +32,6 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFile do
   end
 
   context 'when checking mounting group and file for the same attribute' do
-    before do
-    end
-
     it 'raises a MountError error' do
       stub_const 'Post', Class.new
       expect do

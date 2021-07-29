@@ -18,11 +18,11 @@ module Uploadcare
             end
           end
 
-          xcontext 'when sending requests', :aggregate_failures do
+          context 'when sending requests', :aggregate_failures do
             context 'and when converting a video' do
               let(:uuid) { '169d4bf8-206d-4fa1-8aca-a3aaa73c5cf5' }
 
-              context 'and when request is succeeded' do
+              xcontext 'and when request is succeeded' do
                 it 'converts a video' do
                   VCR.use_cassette('conversion_api_convert_video') do
                     params = {
@@ -49,7 +49,7 @@ module Uploadcare
                 end
               end
 
-              context 'and when request is failed' do
+              xcontext 'and when request is failed' do
                 it 'raises a conversion error' do
                   VCR.use_cassette('conversion_api_convert_video_with_error') do
                     params = {
@@ -66,8 +66,8 @@ module Uploadcare
             context 'and when converting a document' do
               let(:uuid) { '86c54d9a-3453-4b12-8dcc-49883ae8f084' }
 
-              context 'and when request is succeeded' do
-                it 'converts a video' do
+              xcontext 'and when request is succeeded' do
+                it 'converts a document' do
                   VCR.use_cassette('conversion_api_convert_document') do
                     params = {
                       uuid: '86c54d9a-3453-4b12-8dcc-49883ae8f084',
@@ -89,7 +89,7 @@ module Uploadcare
                 end
               end
 
-              context 'and when request is failed' do
+              xcontext 'and when request is failed' do
                 it 'raises a conversion error' do
                   VCR.use_cassette('conversion_api_convert_document_with_error') do
                     params = {

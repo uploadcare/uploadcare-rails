@@ -23,7 +23,7 @@ describe Uploadcare::Rails::Group do
   end
 
   context 'when checking group storing' do
-    it 'stores a file', :aggregate_failures do
+    it 'stores a group', :aggregate_failures do
       VCR.use_cassette 'group_api_store_group' do
         response = group.store
         expect(response[:id]).to eq group.id
@@ -32,8 +32,8 @@ describe Uploadcare::Rails::Group do
     end
   end
 
-  context 'when checking file to_s method' do
-    it 'returns the cdn_url of a file' do
+  context 'when checking group to_s method' do
+    it 'returns the cdn_url of a group' do
       expect(group.to_s).to eq group.cdn_url
     end
   end
@@ -47,7 +47,7 @@ describe Uploadcare::Rails::Group do
       )
     end
 
-    it 'checks that a file is not loaded by default' do
+    it 'checks that a group is not loaded by default' do
       expect(group.loaded?).to be_falsey
     end
 
@@ -79,7 +79,7 @@ describe Uploadcare::Rails::Group do
 
     before { allow(transformator_class).to receive_message_chain(:new, :call).and_return(transformations) }
 
-    it 'sends a :new method to the transformator_class' do
+    it 'sends a :new method to the transformator_class', :aggregate_failures do
       expect(transformator_class).to receive(:new).with(**transformation_args)
       expect(subject).to contain_exactly(*expected_urls)
     end
