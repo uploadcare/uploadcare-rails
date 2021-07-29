@@ -16,6 +16,7 @@ module Uploadcare
             .compact
             .join('-')
             .gsub(/\s/, '')
+            .presence
         end
 
         private

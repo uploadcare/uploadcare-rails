@@ -11,6 +11,7 @@ Metrics/BlockLength:
     - 'spec/**/*.rb'
     - 'uploadcare-rails.gemspec'
     - 'lib/uploadcare/rails/active_record/mount_uploadcare_file.rb'
+    - 'lib/uploadcare/rails/active_record/mount_uploadcare_file_group.rb'
 
 Naming/FileName:
   Exclude:
