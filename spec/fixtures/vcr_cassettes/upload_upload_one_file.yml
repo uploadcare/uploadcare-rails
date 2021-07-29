@@ -1,0 +1,105 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://upload.uploadcare.com/from_url/
+    body:
+      encoding: UTF-8
+      string: "-----------------------fa875849769142918ed86784184269700db9616835\r\nContent-Disposition:
+        form-data; name=\"pub_key\"\r\n\r\ndemopublickey\r\n-----------------------fa875849769142918ed86784184269700db9616835\r\nContent-Disposition:
+        form-data; name=\"source_url\"\r\n\r\nhttps://ucarecdn.com/c3328b8f-1b27-48ca-aebe-591924011efc/thumbnail_0.jpg\r\n-----------------------fa875849769142918ed86784184269700db9616835--\r\n"
+    headers:
+      User-Agent:
+      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.2)
+      Content-Type:
+      - multipart/form-data; boundary=---------------------fa875849769142918ed86784184269700db9616835
+      Connection:
+      - close
+      Host:
+      - upload.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 23 Jul 2021 09:07:39 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '63'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Origin
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - OPTIONS, GET, POST
+      Access-Control-Allow-Headers:
+      - X-UC-User-Agent, X-PINGOTHER, DNT
+      Access-Control-Max-Age:
+      - '1'
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+    body:
+      encoding: ASCII-8BIT
+      string: '{"type":"token","token":"1ebc721a-8c9f-430f-8e9d-e7fad554e9bd"}'
+  recorded_at: Fri, 23 Jul 2021 09:07:39 GMT
+- request:
+    method: get
+    uri: https://upload.uploadcare.com/from_url/status/?token=1ebc721a-8c9f-430f-8e9d-e7fad554e9bd
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.2)
+      Connection:
+      - close
+      Host:
+      - upload.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 23 Jul 2021 09:07:40 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '479'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Origin
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS
+      Access-Control-Allow-Headers:
+      - X-UC-User-Agent, X-PINGOTHER, DNT
+      Access-Control-Max-Age:
+      - '1'
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+    body:
+      encoding: ASCII-8BIT
+      string: '{"size":5902,"total":5902,"done":5902,"uuid":"acd4302e-23b9-424a-9a26-9899f2d4e29d","file_id":"acd4302e-23b9-424a-9a26-9899f2d4e29d","original_filename":"thumbnail_0.jpg","is_image":true,"is_stored":false,"image_info":{"width":600,"height":400,"format":"JPEG","color_mode":"RGB","geo_location":null,"orientation":null,"dpi":null,"datetime_original":null,"sequence":false},"video_info":null,"is_ready":true,"filename":"thumbnail_0.jpg","mime_type":"image/jpeg","status":"success"}'
+  recorded_at: Fri, 23 Jul 2021 09:07:40 GMT
+recorded_with: VCR 6.0.0
