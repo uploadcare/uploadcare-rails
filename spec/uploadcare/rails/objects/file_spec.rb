@@ -22,10 +22,11 @@ describe Uploadcare::Rails::File do
   end
 
   context 'when checking file storing' do
-    it 'stores a file' do
+    it 'stores a file', :aggregate_failures do
       VCR.use_cassette 'file_api_store_file' do
         response = file.store
         expect(response[:uuid]).to eq file.uuid
+        expect(file.loaded?).to be_truthy
       end
     end
   end
@@ -40,7 +41,7 @@ describe Uploadcare::Rails::File do
   end
 
   context 'when checking file to_s method' do
-    it 'deletes a file' do
+    it 'returns the cdn_url of a file' do
       expect(file.to_s).to eq file.cdn_url
     end
   end
@@ -68,7 +69,7 @@ describe Uploadcare::Rails::File do
 
     before { allow(transformator_class).to receive_message_chain(:new, :call).and_return(transformations) }
 
-    it 'checks that the transformator received :new method' do
+    it 'sends a :new method to the transformator_class' do
       expect(transformator_class).to receive(:new).with(**transformation_args)
       expect(subject).to eq new_url
     end
