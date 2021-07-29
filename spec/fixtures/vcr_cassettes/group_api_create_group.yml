@@ -1,0 +1,57 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://upload.uploadcare.com/group/
+    body:
+      encoding: UTF-8
+      string: "-----------------------b0ea15bb93e4b625964bedf1273ec9c25aa5ee0ec0\r\nContent-Disposition:
+        form-data; name=\"pub_key\"\r\n\r\n5d5bb5639e3f2df33674\r\n-----------------------b0ea15bb93e4b625964bedf1273ec9c25aa5ee0ec0\r\nContent-Disposition:
+        form-data; name=\"files[0]\"\r\n\r\nf55fcc80-58c1-42eb-9e8f-54d500296d38/resize/x600\r\n-----------------------b0ea15bb93e4b625964bedf1273ec9c25aa5ee0ec0\r\nContent-Disposition:
+        form-data; name=\"files[1]\"\r\n\r\n4a6ef027-d4cd-49be-a383-8cdbe503aa03/resize/x600\r\n-----------------------b0ea15bb93e4b625964bedf1273ec9c25aa5ee0ec0--\r\n"
+    headers:
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/2.7.2)
+      Content-Type:
+      - multipart/form-data; boundary=---------------------b0ea15bb93e4b625964bedf1273ec9c25aa5ee0ec0
+      Connection:
+      - close
+      Host:
+      - upload.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 23 Jul 2021 10:13:57 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1278'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Origin
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS
+      Access-Control-Allow-Headers:
+      - DNT, X-PINGOTHER, X-UC-User-Agent
+      Access-Control-Max-Age:
+      - '1'
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+    body:
+      encoding: ASCII-8BIT
+      string: '{"id":"f7c23e06-9148-4bb6-b899-a3573e202ecb~2","datetime_created":"2021-07-23T10:13:57.351533Z","datetime_stored":null,"files_count":2,"cdn_url":"https://ucarecdn.com/f7c23e06-9148-4bb6-b899-a3573e202ecb~2/","url":"https://api.uploadcare.com/groups/f7c23e06-9148-4bb6-b899-a3573e202ecb~2/","files":[{"size":1290,"total":1290,"done":1290,"uuid":"f55fcc80-58c1-42eb-9e8f-54d500296d38","file_id":"f55fcc80-58c1-42eb-9e8f-54d500296d38","original_filename":"kitten.jpeg","is_image":true,"is_stored":false,"image_info":{"width":50,"height":50,"format":"JPEG","color_mode":"RGB","geo_location":null,"orientation":null,"dpi":[96,96],"datetime_original":null,"sequence":false},"video_info":null,"is_ready":true,"filename":"kitten.jpeg","mime_type":"application/octet-stream","default_effects":""},{"size":1290,"total":1290,"done":1290,"uuid":"4a6ef027-d4cd-49be-a383-8cdbe503aa03","file_id":"4a6ef027-d4cd-49be-a383-8cdbe503aa03","original_filename":"kitten.jpeg","is_image":true,"is_stored":false,"image_info":{"width":50,"height":50,"format":"JPEG","color_mode":"RGB","geo_location":null,"orientation":null,"dpi":[96,96],"datetime_original":null,"sequence":false},"video_info":null,"is_ready":true,"filename":"kitten.jpeg","mime_type":"application/octet-stream","default_effects":""}]}'
+  recorded_at: Fri, 23 Jul 2021 10:13:57 GMT
+recorded_with: VCR 6.0.0
