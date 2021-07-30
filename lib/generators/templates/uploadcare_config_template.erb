@@ -5,7 +5,7 @@
 
 Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
-  config.public_key = 'demopublickey'
+  config.public_key = ENV.fetch('UPLOADCARE_PUBLIC_KEY', 'demopublickey')
 
   # Deletes files from Uploadcare servers after object destroy.
   config.delete_files_after_destroy = true
@@ -104,7 +104,8 @@ Uploadcare::Rails.configure do |config|
   # If this option is specified, option previewProxy will be ignored.
   # config.preview_url_callback = {}
 
-  # If true, inputs on your page are initialized automatically, see this article for details.
+  # If true, inputs on your page are initialized automatically, see the article for details -
+  # https://uploadcare.com/docs/file-uploader-api/widget-initialization/
   config.live = true
 
   # If true, input initialization is invoked manually.
