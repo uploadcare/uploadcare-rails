@@ -417,7 +417,7 @@ Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage fil
 
 ### Upload API
 
-Upload Api provides methods to upload files in many ways.
+[Upload Api](https://uploadcare.com/api-refs/upload-api/) provides methods to upload files in many ways.
 
 #### Upload a single file
 
