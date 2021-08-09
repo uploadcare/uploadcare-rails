@@ -6,7 +6,6 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 * [Installation](#installation)
   * [Using Gemfile](#using-gemfile)
   * [Using command line](#using-command-line)
-
 * [Usage](#usage)
   * [Configuration](#configuration)
   * [Uploadcare File Uploader](#uploadcare-file-uploader)
