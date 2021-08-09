@@ -143,11 +143,11 @@ Add this string to your <head> html-tag
 ```
 This helper uses a CDN-url for the widget bundle and supports three options:
 
-- **version** - version of the Uploadcare widget. Default is '3.x'.
-- **bundle** - bundle name. Available names are 'full', 'default', 'api', 'ie8' and 'lang.en'.
-               Default bundle is 'full' - a full bundle with built-in jQuery.
+- **version** — version of the Uploadcare widget. Default is '3.x'.
+- **bundle** — bundle name. Available names are 'full', 'default', 'api', 'ie8' and 'lang.en'.
+               Default bundle is 'full' — a full bundle with built-in jQuery.
                More info about bundles [here](https://uploadcare.com/docs/uploads/file-uploader/#bundles).
-- **min** - bool value detecting if the bundle must be minified.
+- **min** — bool value detecting if the bundle must be minified.
 
 The <head> tag then also includes the <script> with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
 
