@@ -365,7 +365,7 @@ $ post.attachments.delete
 $ post.attachments.to_s
 #   => "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/"
 #
-# Load object - works the same way as for the File:
+# Load object — works the same way as for the File:
 $ post.attachments.load
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
