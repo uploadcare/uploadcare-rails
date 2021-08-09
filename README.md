@@ -402,7 +402,7 @@ $ post.picture.transform_url(quality: 'better')
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/quality/better/"
 ```
 
-and if an operation supports several options - just set them as a Hash:
+and if an operation supports several options — just set them as a Hash:
 
 ```console
 $ post.picture.transform_url(crop: { dimensions: '300x500', coords: '50, 50', alignment: 'center' })
