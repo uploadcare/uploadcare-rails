@@ -413,7 +413,7 @@ Full list of operations and valid values can be found [here](https://uploadcare.
 
 ### Uploadcare API interfaces
 
-The Uploadcare service provides a wide API to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
+Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
 
 ### Upload API
 
