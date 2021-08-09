@@ -142,11 +142,11 @@ Add this string to your <head> html-tag
 ```
 This helper uses a CDN-url for the widget bundle and supports three options:
 
-- **version** - version of the Uploadcare widget. Default is '3.x'.
-- **bundle** - bundle name. Available names are 'full', 'default', 'api', 'ie8' and 'lang.en'.
-               Default bundle is 'full' - a full bundle with built-in jQuery.
+- **version** — version of the Uploadcare widget. Default is '3.x'.
+- **bundle** — bundle name. Available names are 'full', 'default', 'api', 'ie8' and 'lang.en'.
+               Default bundle is 'full' — a full bundle with built-in jQuery.
                More info about bundles [here](https://uploadcare.com/docs/uploads/file-uploader/#bundles).
-- **min** - bool value detecting if the bundle must be minified.
+- **min** — bool value detecting if the bundle must be minified.
 
 The <head> tag then also includes the <script> with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
 
@@ -173,8 +173,8 @@ When the widget is on a html-page, you want to add an input to your view that wi
 ...
 ```
 
-- **object** - object name;
-- **attribute** - object attribute name.
+- **object** — object name;
+- **attribute** — object attribute name.
 
 ### Using the File Uploader with Rails models
 
@@ -364,7 +364,7 @@ $ post.attachments.delete
 $ post.attachments.to_s
 #   => "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/"
 #
-# Load object - works the same way as for the File:
+# Load object — works the same way as for the File:
 $ post.attachments.load
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
@@ -401,22 +401,22 @@ $ post.picture.transform_url(quality: 'better')
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/quality/better/"
 ```
 
-and if an operation supports several options - just set them as a Hash:
+and if an operation supports several options — just set them as a Hash:
 
 ```console
 $ post.picture.transform_url(crop: { dimensions: '300x500', coords: '50, 50', alignment: 'center' })
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/crop/300x500/50,50/center/"
 ```
 
-Full list of operations and valid values can be found [here](https://uploadcare.com/docs/transformations/image/#image-transformations).
+Full list of operations and valid values can be found [here](https://uploadcare.com/docs/transformations/image/).
 
 ### Uploadcare API interfaces
 
-The Uploadcare service provides a wide API to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
+Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
 
 ### Upload API
 
-Upload Api provides methods to upload files in many ways.
+[Upload Api](https://uploadcare.com/api-refs/upload-api/) provides methods to upload files in many ways.
 
 #### Upload a single file
 
@@ -790,7 +790,7 @@ $ Uploadcare::ConversionApi.get_document_conversion_status(21316034)
 
 Such as the document conversion method, this method requires an UUID of a previously uploaded to Uploadcare file.
 Also you have several options to control the way a video will be converted. All of them are optional.
-Description of valid options and other info about video conversion can be found [here](https://uploadcare.com/docs/transformations/video-encoding/#video-encoding).
+Description of valid options and other info about video conversion can be found [here](https://uploadcare.com/docs/transformations/video-encoding/).
 
 ```console
 $ Uploadcare::ConversionApi.convert_video(
