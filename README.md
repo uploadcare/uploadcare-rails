@@ -791,7 +791,7 @@ $ Uploadcare::ConversionApi.get_document_conversion_status(21316034)
 
 Such as the document conversion method, this method requires an UUID of a previously uploaded to Uploadcare file.
 Also you have several options to control the way a video will be converted. All of them are optional.
-Description of valid options and other info about video conversion can be found [here](https://uploadcare.com/docs/transformations/video-encoding/#video-encoding).
+Description of valid options and other info about video conversion can be found [here](https://uploadcare.com/docs/transformations/video-encoding/).
 
 ```console
 $ Uploadcare::ConversionApi.convert_video(
