@@ -174,8 +174,8 @@ When the widget is on a html-page, you want to add an input to your view that wi
 ...
 ```
 
-- **object** - object name;
-- **attribute** - object attribute name.
+- **object** — object name;
+- **attribute** — object attribute name.
 
 ### Using the File Uploader with Rails models
 
