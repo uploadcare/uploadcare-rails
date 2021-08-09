@@ -409,7 +409,7 @@ $ post.picture.transform_url(crop: { dimensions: '300x500', coords: '50, 50', al
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/crop/300x500/50,50/center/"
 ```
 
-Full list of operations and valid values can be found [here](https://uploadcare.com/docs/transformations/image/#image-transformations).
+Full list of operations and valid values can be found [here](https://uploadcare.com/docs/transformations/image/).
 
 ### Uploadcare API interfaces
 
