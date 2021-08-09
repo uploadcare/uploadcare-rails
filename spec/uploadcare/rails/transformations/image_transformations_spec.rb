@@ -116,13 +116,5 @@ describe Uploadcare::Rails::Transformations::ImageTransformations do
         expect(subject).not_to match(/\s/)
       end
     end
-
-    context 'and when sending undefined params' do
-      let(:arguments) { { some_param: '300x 500' } }
-
-      it 'returns url with no undefined params' do
-        expect(subject).not_to match('some_param')
-      end
-    end
   end
 end
