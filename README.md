@@ -3,6 +3,8 @@
 A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
+### :heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
+
 * [Installation](#installation)
   * [Using Gemfile](#using-gemfile)
   * [Using command line](#using-command-line)
