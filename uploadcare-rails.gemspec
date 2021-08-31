@@ -8,7 +8,7 @@ require 'uploadcare/rails/version'
 Gem::Specification.new do |gem|
   gem.name          = 'uploadcare-rails'
   gem.authors       = ["@dmitrijivanchenko (Dmitrij Ivanhcneko)"]
-  gem.email         = ['hello@uploadcare.com']
+  gem.email         = ['dmitrijivanchenko@gmail.com']
   gem.summary       = 'Rails gem for Uploadcare'
   gem.description   = <<-EOF
                         Rails wrapper for Uploadcare service.
@@ -27,9 +27,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rails', '>= 4'
   gem.add_dependency 'uploadcare-ruby'
 
-  gem.add_development_dependency 'bundler', '~> 1.6'
-  gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'rspec', '> 3.4.4'
   gem.add_development_dependency 'rspec-rails'
   gem.add_development_dependency 'capybara'
