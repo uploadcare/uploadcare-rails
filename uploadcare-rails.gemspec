@@ -13,9 +13,9 @@ Gem::Specification.new do |gem|
   gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanhcneko)']
   gem.email         = ['hello@uploadcare.com']
   gem.summary       = 'Rails gem for Uploadcare'
-  gem.description   = <<-DESCRIPTION
-                        Rails wrapper for Uploadcare service.
-                        Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby)
+  gem.description   = <<~DESCRIPTION
+    Rails wrapper for Uploadcare service.
+    Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby)
   DESCRIPTION
   gem.metadata = {
     'github' => 'https://github.com/uploadcare/uploadcare-rails',
