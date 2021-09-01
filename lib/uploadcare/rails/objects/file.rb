@@ -13,6 +13,16 @@ module Uploadcare
 
       attr_entity(*superclass.entity_attributes + ATTR_ENTITIES)
 
+      class << self
+        def cache_key(cdn_url)
+          [uploadcare_configuration.cache_namespace, cdn_url].flatten.reject(&:blank?)
+        end
+
+        def uploadcare_configuration
+          Uploadcare::Rails.configuration
+        end
+      end
+
       def transform_url(transformations, transformator_class = Uploadcare::Rails::Transformations::ImageTransformations)
         return if cdn_url.blank?
 
@@ -22,7 +32,7 @@ module Uploadcare
 
       def store
         file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url)
-        ::Rails.cache.write(cdn_url, file_info) if uploadcare_configuration.cache_files
+        ::Rails.cache.write(cache_key, file_info) if caching_enabled?
         file_info
       end
 
@@ -36,7 +46,7 @@ module Uploadcare
 
       def load
         file_info = super().merge(cdn_url: cdn_url)
-        ::Rails.cache.write(cdn_url, file_info) if uploadcare_configuration.cache_files
+        ::Rails.cache.write(cache_key, file_info) if caching_enabled?
         merge(file_info)
       end
 
@@ -46,8 +56,12 @@ module Uploadcare
 
       private
 
-      def uploadcare_configuration
-        Uploadcare::Rails.configuration
+      def caching_enabled?
+        self.class.uploadcare_configuration.cache_files
+      end
+
+      def cache_key
+        self.class.cache_key(cdn_url)
       end
     end
   end

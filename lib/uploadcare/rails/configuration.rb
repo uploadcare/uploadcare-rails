@@ -13,7 +13,7 @@ module Uploadcare
         clearable tabs input_accept_types preferred_types system_dialog multipart_min_size
         locale_translations locale_pluralize secure_signature secure_expire preview_proxy
         preview_url_callback cdn_base do_not_store audio_bits_per_second video_preferred_mime_types
-        video_bits_per_second camera_mirror_default
+        video_bits_per_second camera_mirror_default cache_namespace store_files_async delete_files_async
       ].freeze
 
       attr_accessor(:cache_files, :store_files_after_save, :delete_files_after_destroy, *CONFIG_GLOBAL_PARAMS)

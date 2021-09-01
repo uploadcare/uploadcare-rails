@@ -11,7 +11,14 @@ Uploadcare::Rails.configure do |config|
   config.delete_files_after_destroy = true
 
   # Sets caching for Uploadcare files
+  config.cache_namespace = 'uploadcare'
   config.cache_files = true
+
+  # These options enables ActiveJob background jobs to perform operations in background.
+  # Options work if only the options do_not_store is disabled (false) and
+  # delete_files_after_destroy options is enabled (true).
+  store_files_async = true
+  delete_files_async = true
 
   # If true, only image files are allowed to be uploaded.
   # config.images_only = false
