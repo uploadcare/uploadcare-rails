@@ -15,8 +15,8 @@ Uploadcare::Rails.configure do |config|
   config.cache_files = true
 
   # These options enables ActiveJob background jobs to perform operations in background.
-  # Options work if only the options do_not_store is disabled (false) and
-  # delete_files_after_destroy options is enabled (true).
+  # Options work if only the option 'do_not_store' is disabled (false) and
+  # the option 'delete_files_after_destroy' is enabled (true).
   store_files_async = true
   delete_files_async = true
 
