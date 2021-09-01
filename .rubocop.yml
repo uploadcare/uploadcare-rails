@@ -1,6 +1,7 @@
 AllCops:
   Exclude:
     - 'spec/tmp/**/*.rb'
+    - 'vendor/**/*'
 
 Gemspec/RequiredRubyVersion:
   Exclude:
