@@ -6,8 +6,8 @@ module Uploadcare
   module Rails
     # A job storing files from Uploadcare
     class UploadcareStoreFileJob < ActiveJob::Base
-      def perform(class_name, file_uuid)
-        class_name.constantize.uploadcare_perform_file_storing(file_uuid)
+      def perform(file_uuid)
+        Uploadcare::FileApi.store_file(file_uuid) if file_uuid
       end
     end
   end

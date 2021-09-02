@@ -31,18 +31,14 @@ module Uploadcare
 
           define_method "uploadcare_store_#{attribute}!" do |store_job = UploadcareStoreFileJob|
             file_uuid = send(attribute)&.uuid
-            if Uploadcare::Rails.configuration.store_files_async
-              return store_job.perform_later(self.class.name, file_uuid)
-            end
+            return store_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.store_files_async
 
             Uploadcare::FileApi.store_file(file_uuid) if file_uuid
           end
 
           define_method "uploadcare_delete_#{attribute}!" do |delete_job = UploadcareDeleteFileJob|
             file_uuid = send(attribute)&.uuid
-            if Uploadcare::Rails.configuration.delete_files_async
-              return delete_job.perform_later(self.class.name, file_uuid)
-            end
+            return delete_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.delete_files_async
 
             Uploadcare::FileApi.delete_file(file_uuid) if file_uuid
           end
