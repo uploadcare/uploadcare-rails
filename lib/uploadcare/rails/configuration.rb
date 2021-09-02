@@ -14,7 +14,7 @@ module Uploadcare
         preview_proxy cdn_base do_not_store audio_bits_per_second video_preferred_mime_types
         video_bits_per_second camera_mirror_default live manual_start
         locale locale_translations locale_pluralize
-      ]
+      ].freeze
 
       attr_accessor(*CONFIG_GLOBAL_PARAMS)
 
