@@ -17,9 +17,9 @@ module Uploadcare
 
         uuid = IdExtractor.call(cdn_url)
         cache_key = File.cache_key(cdn_url)
-        ::Rails.cache.fetch(cache_key) do
-          Uploadcare::Rails::File.new(cdn_url: cdn_url, uuid: uuid.presence)
-        end
+        default_attributes = { cdn_url: cdn_url, uuid: uuid.presence }
+        file_attributes = ::Rails.cache.read(cache_key).presence || default_attributes
+        Uploadcare::Rails::File.new(file_attributes)
       end
 
       class_methods do

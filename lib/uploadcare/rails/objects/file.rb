@@ -3,12 +3,15 @@
 require 'uploadcare'
 require 'uploadcare/rails/api/rest/file_api'
 require 'uploadcare/rails/transformations/image_transformations'
+require 'active_model'
 
 module Uploadcare
   module Rails
     # A wrapper class that for Uploadcare::File object.
     # Allows caching loaded files and has methods for Rails model attributes
     class File < Uploadcare::Entity::File
+      include ActiveModel::AttributeAssignment
+
       ATTR_ENTITIES = [:cdn_url].freeze
 
       attr_entity(*superclass.entity_attributes + ATTR_ENTITIES)
@@ -31,9 +34,9 @@ module Uploadcare
       end
 
       def store
-        file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url)
+        file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url).to_h
         ::Rails.cache.write(cache_key, file_info) if caching_enabled?
-        file_info
+        update_attrs(file_info)
       end
 
       def delete
@@ -45,9 +48,14 @@ module Uploadcare
       end
 
       def load
-        file_info = super().merge(cdn_url: cdn_url)
-        ::Rails.cache.write(cache_key, file_info) if caching_enabled?
-        merge(file_info)
+        file_info = if caching_enabled?
+                      ::Rails.cache.fetch(cache_key) do
+                        request_file_info_from_api
+                      end
+                    else
+                      request_file_info_from_api
+                    end
+        update_attrs(file_info)
       end
 
       def loaded?
@@ -55,6 +63,15 @@ module Uploadcare
       end
 
       private
+
+      def request_file_info_from_api
+        Uploadcare::FileApi.get_file(uuid).merge(self).to_h
+      end
+
+      def update_attrs(new_attr)
+        assign_attributes(new_attr)
+        self
+      end
 
       def caching_enabled?
         self.class.uploadcare_configuration.cache_files
