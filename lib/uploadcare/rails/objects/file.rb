@@ -3,14 +3,14 @@
 require 'uploadcare'
 require 'uploadcare/rails/api/rest/file_api'
 require 'uploadcare/rails/transformations/image_transformations'
-require 'active_model'
+require 'active_record'
 
 module Uploadcare
   module Rails
     # A wrapper class that for Uploadcare::File object.
     # Allows caching loaded files and has methods for Rails model attributes
     class File < Uploadcare::Entity::File
-      include ActiveModel::AttributeAssignment
+      include ActiveRecord::AttributeAssignment
 
       ATTR_ENTITIES = [:cdn_url].freeze
 
