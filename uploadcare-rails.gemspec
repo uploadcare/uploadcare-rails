@@ -8,7 +8,7 @@ require 'uploadcare/rails/version'
 Gem::Specification.new do |gem|
   gem.name          = 'uploadcare-rails'
   gem.authors       = ["@dmitrijivanchenko (Dmitrij Ivanhcneko)"]
-  gem.email         = ['dmitrijivanchenko@gmail.com']
+  gem.email         = ['hello@uploadcare.com']
   gem.summary       = 'Rails gem for Uploadcare'
   gem.description   = <<-EOF
                         Rails wrapper for Uploadcare service.
