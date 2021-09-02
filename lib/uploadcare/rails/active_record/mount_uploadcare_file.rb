@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_support/concern'
+require 'uploadcare/rails/services/id_extractor'
 require 'uploadcare/rails/jobs/uploadcare_delete_file_job'
 require 'uploadcare/rails/jobs/uploadcare_store_file_job'
 
@@ -10,13 +11,11 @@ module Uploadcare
     module ActiveRecord
       extend ActiveSupport::Concern
 
-      UUID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/.freeze
-
       def build_uploadcare_file(attribute)
         cdn_url = attributes[attribute.to_s].to_s
         return if cdn_url.empty?
 
-        uuid = cdn_url.match(UUID_REGEX).to_s
+        uuid = IdExtractor.call(cdn_url)
         cache_key = File.cache_key(cdn_url)
         ::Rails.cache.fetch(cache_key) do
           Uploadcare::Rails::File.new(cdn_url: cdn_url, uuid: uuid.presence)
@@ -24,24 +23,7 @@ module Uploadcare
       end
 
       class_methods do
-        def log_uploadcare_error(exception, message)
-          logger.error message
-          logger.error ::Rails.backtrace_cleaner.clean(exception.backtrace).join("\n ").to_s
-        end
-
-        def uploadcare_perform_file_deleting(file_uuid)
-          Uploadcare::FileApi.delete_file(file_uuid) if file_uuid
-        rescue Uploadcare::Exception::RequestError => e
-          log_uploadcare_error(e, "\nError while deleting a file #{file_uuid}: #{e.class} (#{e.message}):")
-        end
-
-        def uploadcare_perform_file_storing(file_uuid)
-          Uploadcare::FileApi.store_file(file_uuid) if file_uuid
-        rescue Uploadcare::Exception::RequestError => e
-          log_uploadcare_error(e, "\nError while saving a file #{file_uuid}: #{e.class} (#{e.message}):")
-        end
-
-        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         def mount_uploadcare_file(attribute)
           define_method attribute do
             build_uploadcare_file attribute
@@ -53,7 +35,7 @@ module Uploadcare
               return store_job.perform_later(self.class.name, file_uuid)
             end
 
-            self.class.uploadcare_perform_file_storing(file_uuid)
+            Uploadcare::FileApi.store_file(file_uuid) if file_uuid
           end
 
           define_method "uploadcare_delete_#{attribute}!" do |delete_job = UploadcareDeleteFileJob|
@@ -62,7 +44,7 @@ module Uploadcare
               return delete_job.perform_later(self.class.name, file_uuid)
             end
 
-            self.class.uploadcare_perform_file_deleting(file_uuid)
+            Uploadcare::FileApi.delete_file(file_uuid) if file_uuid
           end
 
           after_save "uploadcare_store_#{attribute}!".to_sym unless Uploadcare::Rails.configuration.do_not_store
@@ -70,7 +52,7 @@ module Uploadcare
 
           after_destroy "uploadcare_delete_#{attribute}!".to_sym
         end
-        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       end
     end
   end
