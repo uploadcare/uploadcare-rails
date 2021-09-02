@@ -18,9 +18,16 @@ module Uploadcare::Rails::ActionView
     DEFAULT_FIELD_OPTIONS = { role: 'uploadcare-uploader' }
 
     def uploadcare_uploader_field(object_name, method_name, options = {})
+      hidden_field(object_name, method_name, uploadcare_uploader_options(options))
+    end
+
+    def uploadcare_uploader_field_tag(object_name, options = {})
+      hidden_field_tag(object_name, options[:value], uploadcare_uploader_options(options))
+    end
+
+    def uploadcare_uploader_options(options = {})
       data_options = options.transform_keys { |key| "data-#{key.to_s.underscore.dasherize}" }
-      field_options = DEFAULT_FIELD_OPTIONS.merge(data_options)
-      hidden_field(object_name, method_name, field_options)
+      DEFAULT_FIELD_OPTIONS.merge(data_options)
     end
   end
 end
