@@ -10,6 +10,13 @@ describe Uploadcare::Rails::ActionView::UploadcareUploaderTags, type: :helper do
     expect(tag)
       .to match('<input role="uploadcare-uploader" type="hidden" name="post[title]" id="post_title" />')
   end
+
+  it 'includes a hidden field tag' do
+    tag = uploadcare_uploader_field_tag(:title)
+
+    expect(tag)
+      .to match('<input type="hidden" name="title" id="title" role="uploadcare-uploader" />')
+  end
 end
 
 RSpec.configure do |c|

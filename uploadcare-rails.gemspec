@@ -13,9 +13,9 @@ Gem::Specification.new do |gem|
   gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanhcneko)']
   gem.email         = ['hello@uploadcare.com']
   gem.summary       = 'Rails gem for Uploadcare'
-  gem.description   = <<-DESCRIPTION
-                        Rails wrapper for Uploadcare service.
-                        Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby)
+  gem.description   = <<~DESCRIPTION
+    Rails wrapper for Uploadcare service.
+    Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby)
   DESCRIPTION
   gem.metadata = {
     'github' => 'https://github.com/uploadcare/uploadcare-rails',
@@ -30,17 +30,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rails', '>= 4'
   gem.add_dependency 'uploadcare-ruby'
 
-  gem.add_development_dependency 'better_errors'
-  gem.add_development_dependency 'bundler-audit'
-  gem.add_development_dependency 'capybara'
-  gem.add_development_dependency 'guard-rspec'
-  gem.add_development_dependency 'pry'
-  gem.add_development_dependency 'pry-rails'
-  gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec', '> 3.4.4'
   gem.add_development_dependency 'rspec-rails'
   gem.add_development_dependency 'rubocop'
-  gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'vcr'
   gem.add_development_dependency 'webmock'
 end

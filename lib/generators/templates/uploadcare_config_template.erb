@@ -35,7 +35,7 @@ Uploadcare::Rails.configure do |config|
 
   # Saves traffic and storage space by resizing images on a client before uploading.
   # See the detailed option description for details. Using the client-side resize does not force the images only option.
-  # config.image_shrink = ''
+  # config.image_shrink = '800x600'
 
   # Allows user to remove uploaded files from the file uploader.
   # Please note that those files are not deleted from your account.
@@ -44,7 +44,7 @@ Uploadcare::Rails.configure do |config|
   # Allows you to define which upload sources you want to use with the file uploader.
   # The value is represented by a space-separated ordered list of upload source names.
   # See https://uploadcare.com/docs/uploads/file-uploader/#upload-sources for details.
-  # config.tabs = 'url file facebook'
+  # config.tabs = %w[url file facebook]
 
   # Sets the accept attribute for the file uploader dialog.
   # If the images only option is disabled, the value is empty.
@@ -54,7 +54,7 @@ Uploadcare::Rails.configure do |config|
   # Note, this is not a replacement for
   # our file validation (see https://uploadcare.com/docs/file-uploader-api/file-validation/)
   # because your users will still be able to choose any file via drag&drop or from URL.
-  # config.input_accept_types = 'image/*'
+  # config.input_accept_types = %w[image/*]
 
   # Defines the list of preferred MIME types.
   # The list should be ordered and contain space-separated MIME types.
@@ -62,7 +62,7 @@ Uploadcare::Rails.configure do |config|
   # If no MIME types match the criteria or preferred types are not set, default formats are used.
   # Keep in mind that some cloud services can export data in different formats.
   # For example, Google document can be exported as Word document, PDF or plain text.
-  # config.preferred_types = 'image/* application/vnd.openxmlformats-officedocument.*'
+  # config.preferred_types = %w[image/* application/vnd.openxmlformats-officedocument.*]
 
   # Forces a system-native file picking dialog to show up instead of our file uploader.
   # That makes the file uploader behavior as close as possible to the generic <input type="file">.
@@ -91,25 +91,9 @@ Uploadcare::Rails.configure do |config|
   # Defines pluralization options. See https://uploadcare.com/docs/uploads/file-uploader/#pluralization
   # config.locale_pluralize = {}
 
-  # The signature is an HMAC/SHA256 hex-encoded hash that includes secret_key and expire strings.
-  # To use Secure Uploading for your project, you need to make a signature on your back end using your
-  # project's Secret Key and provide it to File Uploader.
-  # Learn how to make your signature in docs - https://uploadcare.com/docs/security/secure-uploads/
-  # config.secure_signature = ''
-
-  # Stands for the Unix time to which the signature is valid, e.g., 1454902434.
-  # Works together with the secure signature option that defines a period of your signature validity.
-  # config.secure_expire = 1454902434
-
   # The option can be used with Authenticated URLs. Defines your proxy backend URL.
   # See https://uploadcare.com/docs/security/secure-delivery/#proxy-backend.
-  # config.preview_proxy = ''
-
-  # The option can be used with Authenticated URLs.
-  # Defines the function that specifies which URL a file uploader should use for image previews.
-  # Function signature is (originalUrl, fileInfo) => previewUrl.
-  # If this option is specified, option previewProxy will be ignored.
-  # config.preview_url_callback = {}
+  # config.preview_proxy = 'https://domain.com/preview?'
 
   # If true, inputs on your page are initialized automatically, see this article for details.
   config.live = true
@@ -136,7 +120,7 @@ Uploadcare::Rails.configure do |config|
   # The first supported by the browser will be used as an option of
   # video stream captured via the file uploader Camera Tab.
   # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
-  # config.video_preferred_mime_types = ''
+  # config.video_preferred_mime_types = []
 
   # Allows you to adjust the quality of a video stream captured via the file uploader Camera Tab.
   # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
