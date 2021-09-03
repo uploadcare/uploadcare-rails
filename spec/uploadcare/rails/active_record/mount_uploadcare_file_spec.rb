@@ -12,6 +12,7 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFile do
     stub_const 'Post', Class.new
     Post.class_eval do
       include Uploadcare::Rails::ActiveRecord::MountUploadcareFile
+      include ActiveRecord::Callbacks
 
       def initialize
         @picture = ''
@@ -24,7 +25,7 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFile do
   context 'when checking mount file methods availability' do
     it 'checks that a model instance responds to mount file methods', :aggregate_failures do
       post = Post.new
-      %i[store_picture! delete_picture!].each do |method|
+      %i[uploadcare_store_picture! uploadcare_delete_picture!].each do |method|
         expect(post).to respond_to(method)
       end
       expect(Post).to respond_to(:has_uploadcare_file_for_picture?)
@@ -38,6 +39,7 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFile do
         Post.class_eval do
           include Uploadcare::Rails::ActiveRecord::MountUploadcareFile
           include Uploadcare::Rails::ActiveRecord::MountUploadcareFileGroup
+          include ActiveRecord::Callbacks
 
           def initialize
             @picture = ''
