@@ -5,7 +5,7 @@ require 'uploadcare/rails/jobs/delete_file_job'
 
 RSpec.describe Uploadcare::Rails::DeleteFileJob, type: :job do
   describe '#perform_later' do
-    it 'perform a delete file job' do
+    it 'performs a delete file job' do
       ActiveJob::Base.queue_adapter = :test
       expect do
         described_class.perform_later(SecureRandom.uuid)

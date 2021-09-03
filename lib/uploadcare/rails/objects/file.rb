@@ -6,7 +6,7 @@ require 'uploadcare/rails/objects/concerns/loadable'
 
 module Uploadcare
   module Rails
-    # A wrapper class that for Uploadcare::File object.
+    # A wrapper class for Uploadcare::File object.
     # Allows caching loaded files and has methods for Rails model attributes
     class File < Uploadcare::Entity::File
       include Objects::Loadable
