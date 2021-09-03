@@ -1,0 +1,113 @@
+Uploadcare::Rails.configure do |config|
+  # Sets your Uploadcare public key.
+  config.public_key = 'demopublickey'
+
+  # If true, only image files are allowed to be uploaded.
+  # config.images_only = false
+
+  # If true, the preview step is present after selecting files.
+  # Otherwise, the file uploader dialog closes when the selection is complete.
+  # config.preview_step = false
+
+  # Defines the file uploader manual crop behavior (see https://uploadcare.com/docs/uploads/file-uploader/#crop-option).
+  # When uploading images, your users can select a crop area.
+  # This option does not force your file uploader to accept images only.
+  # The option also works in the multi-file mode since version 2.3.0.
+  # config.crop = 'disabled'
+
+  # Saves traffic and storage space by resizing images on a client before uploading.
+  # See the detailed option description for details. Using the client-side resize does not force the images only option.
+  # config.image_shrink = '800x600'
+
+  # Allows user to remove uploaded files from the file uploader.
+  # Please note that those files are not deleted from your account.
+  # config.clearable = true
+
+  # Allows you to define which upload sources you want to use with the file uploader.
+  # The value is represented by a space-separated ordered list of upload source names.
+  # See https://uploadcare.com/docs/uploads/file-uploader/#upload-sources for details.
+  # config.tabs = %w[url file facebook]
+
+  # Sets the accept attribute for the file uploader dialog.
+  # If the images only option is disabled, the value is empty.
+  # Otherwise, the default value is image/*.
+  # null means accept should be kept empty regardless of the images only value.
+  # For other possible values, see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#attr-accept
+  # Note, this is not a replacement for
+  # our file validation (see https://uploadcare.com/docs/file-uploader-api/file-validation/)
+  # because your users will still be able to choose any file via drag&drop or from URL.
+  # config.input_accept_types = %w[image/*]
+
+  # Defines the list of preferred MIME types.
+  # The list should be ordered and contain space-separated MIME types.
+  # Common parts can be marked with asterisks: image/* application/vnd.openxmlformats-officedocument.*.
+  # If no MIME types match the criteria or preferred types aren’t set, default formats are used.
+  # Keep in mind that some cloud services can export data in different formats.
+  # For example, Google document can be exported as Word document, PDF or plain text.
+  # config.preferred_types = %w[image/* application/vnd.openxmlformats-officedocument.*]
+
+  # Forces a system-native file picking dialog to show up instead of our file uploader.
+  # That makes the file uploader behavior as close as possible to the generic <input type="file">.
+  # Native behavior is achieved at the expense of support for uploading content
+  # from social media and cloud storage, manual crop, and preview step.
+  # Multi-file selection would still work.
+  # The option does not work in old browser versions: the dialog falls back to the file uploader.
+  # config.system_dialog = false
+
+  # This option sets the file size threshold for multipart uploading.
+  # The value ranges from 10485760 (10 MB), which is default, up to 104857600 (100 MB).
+  # If a file size hits the threshold, it gets uploaded in four parallel chunks by 5 MB.
+  # Multipart upload makes large file uploading faster.
+  # Files go directly to a storage, bypassing our upload servers,
+  # and they're quickly available for further use. All files below the threshold get uploaded in one piece.
+  # Note: Multipart upload works with local sources only (files and camera).
+  # config.multipart_min_size = 10485760
+
+  # Available locales currently are:
+  # ar az ca cs da de el en es et fr he it ja ko lv nb nl pl pt ro ru sk sr sv tr uk vi zhTW zh
+  config.locale = 'en'
+
+  # Sets custom localization options. See https://uploadcare.com/docs/uploads/file-uploader/#localization
+  # config.locale_translations = {}
+
+  # Defines pluralization options. See https://uploadcare.com/docs/uploads/file-uploader/#pluralization
+  # config.locale_pluralize = {}
+
+  # The option can be used with Authenticated URLs. Defines your proxy backend URL.
+  # See https://uploadcare.com/docs/security/secure-delivery/#proxy-backend.
+  # config.preview_proxy = 'https://domain.com/preview?'
+
+  # If true, inputs on your page are initialized automatically, see this article for details.
+  config.live = true
+
+  # If true, input initialization is invoked manually.
+  # See https://uploadcare.com/docs/file-uploader-api/widget-initialization/).
+  config.manual_start = false
+
+  # Defines your schema and CDN domain.
+  # Can be changed to one of the predefined values (https://uploadcare.com/docs/delivery/cdn/) or your custom CNAME.
+  # config.cdn_base = 'https://ucarecdn.com/'
+
+  # Forces files uploaded with a file uploader not to be stored.
+  # See https://uploadcare.com/docs/uploads/storage/#storing-uploaded-files.
+  # For instance, you might want to turn this on when automatic file storing is enabled in your project,
+  # but you do not want to store files uploaded with a particular file uploader.
+  # config.do_not_store = false
+
+  # Allows you to adjust the quality of an audio recorded via the file uploader Camera Tab.
+  # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
+  # config.audio_bits_per_second = 1
+
+  # Allows you to specify the MIME types.
+  # The first supported by the browser will be used as an option of
+  # video stream captured via the file uploader Camera Tab.
+  # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
+  # config.video_preferred_mime_types = []
+
+  # Allows you to adjust the quality of a video stream captured via the file uploader Camera Tab.
+  # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
+  # config.video_bits_per_second = 1
+
+  # Allows you to set the default state of image/video mirorring in the camera tab.
+  # config.camera_mirror_default = true
+end
