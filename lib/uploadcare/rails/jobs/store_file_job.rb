@@ -5,7 +5,7 @@ require 'active_job'
 module Uploadcare
   module Rails
     # A job storing files from Uploadcare
-    class UploadcareStoreFileJob < ActiveJob::Base
+    class StoreFileJob < ActiveJob::Base
       def perform(file_uuid)
         Uploadcare::FileApi.store_file(file_uuid) if file_uuid
       end

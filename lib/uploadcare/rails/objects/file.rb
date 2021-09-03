@@ -35,7 +35,7 @@ module Uploadcare
 
       def store
         file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url).to_h
-        ::Rails.cache.write(cache_key, file_info) if caching_enabled?
+        ::Rails.cache.write(cache_key, file_info, expires_in: cache_expires_in) if caching_enabled?
         update_attrs(file_info)
       end
 
@@ -49,7 +49,7 @@ module Uploadcare
 
       def load
         file_info = if caching_enabled?
-                      ::Rails.cache.fetch(cache_key) do
+                      ::Rails.cache.fetch(cache_key, expires_in: cache_expires_in) do
                         request_file_info_from_api
                       end
                     else
@@ -73,8 +73,16 @@ module Uploadcare
         self
       end
 
+      def cache_expires_in
+        uploadcare_configuration.cache_expires_in
+      end
+
       def caching_enabled?
-        self.class.uploadcare_configuration.cache_files
+        uploadcare_configuration.cache_files
+      end
+
+      def uploadcare_configuration
+        self.class.uploadcare_configuration
       end
 
       def cache_key

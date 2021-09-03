@@ -9,6 +9,7 @@ describe Uploadcare::Rails::ActionView::UploadcareWidgetTags, type: :helper do
   before do
     allow(Uploadcare::Rails).to receive_message_chain(:configuration, :uploader_parameters)
       .and_return(global_variables)
+    allow(Uploadcare::Rails).to receive_message_chain(:configuration, :cdn_hostname).and_return('ucarecdn.com')
   end
 
   context 'when including a widget' do

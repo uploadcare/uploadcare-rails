@@ -2,8 +2,8 @@
 
 require 'active_support/concern'
 require 'uploadcare/rails/services/id_extractor'
-require 'uploadcare/rails/jobs/uploadcare_delete_file_job'
-require 'uploadcare/rails/jobs/uploadcare_store_file_job'
+require 'uploadcare/rails/jobs/delete_file_job'
+require 'uploadcare/rails/jobs/store_file_job'
 
 module Uploadcare
   module Rails
@@ -29,14 +29,14 @@ module Uploadcare
             build_uploadcare_file attribute
           end
 
-          define_method "uploadcare_store_#{attribute}!" do |store_job = UploadcareStoreFileJob|
+          define_method "uploadcare_store_#{attribute}!" do |store_job = StoreFileJob|
             file_uuid = send(attribute)&.uuid
             return store_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.store_files_async
 
             Uploadcare::FileApi.store_file(file_uuid) if file_uuid
           end
 
-          define_method "uploadcare_delete_#{attribute}!" do |delete_job = UploadcareDeleteFileJob|
+          define_method "uploadcare_delete_#{attribute}!" do |delete_job = DeleteFileJob|
             file_uuid = send(attribute)&.uuid
             return delete_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.delete_files_async
 

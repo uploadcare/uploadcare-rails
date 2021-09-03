@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/jobs/uploadcare_store_file_job'
+require 'uploadcare/rails/jobs/store_file_job'
 
-RSpec.describe Uploadcare::Rails::UploadcareStoreFileJob, type: :job do
+RSpec.describe Uploadcare::Rails::StoreFileJob, type: :job do
   describe '#perform_later' do
     it 'perform a store file job' do
       ActiveJob::Base.queue_adapter = :test
