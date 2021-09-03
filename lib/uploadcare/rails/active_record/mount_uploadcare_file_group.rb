@@ -17,7 +17,7 @@ module Uploadcare
 
         def build_uploadcare_file_group(attribute)
           cdn_url = attributes[attribute.to_s].to_s
-          return nil if cdn_url.empty?
+          return if cdn_url.empty?
 
           group_id = IdExtractor.call(cdn_url, GROUP_ID_REGEX).presence
           cache_key = File.build_cache_key(cdn_url)
@@ -40,9 +40,10 @@ module Uploadcare
 
             define_method "uploadcare_store_#{attribute}!" do |store_job = StoreGroupJob|
               group_id = public_send(attribute)&.id
+              return unless group_id
               return store_job.perform_later(group_id) if Uploadcare::Rails.configuration.store_files_async
 
-              Uploadcare::GroupApi.store_group(group_id) if group_id
+              Uploadcare::GroupApi.store_group(group_id)
             end
 
             after_save "uploadcare_store_#{attribute}!".to_sym unless Uploadcare::Rails.configuration.do_not_store

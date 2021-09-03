@@ -10,7 +10,9 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFileGroup do
     stub_const 'Post', Class.new
     Post.class_eval do
       include Uploadcare::Rails::ActiveRecord::MountUploadcareFileGroup
-      include ActiveRecord::Callbacks
+      extend ActiveModel::Callbacks
+
+      define_model_callbacks :save, only: :after
 
       def initialize
         @gallery = ''

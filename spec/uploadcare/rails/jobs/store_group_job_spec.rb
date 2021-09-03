@@ -5,7 +5,7 @@ require 'uploadcare/rails/jobs/store_group_job'
 
 RSpec.describe Uploadcare::Rails::StoreGroupJob, type: :job do
   describe '#perform_later' do
-    it 'perform a store file job' do
+    it 'performs a store file group job' do
       ActiveJob::Base.queue_adapter = :test
       expect do
         described_class.perform_later('id')

@@ -20,8 +20,8 @@ module Uploadcare
           end
         end
 
-        def update_attrs(new_attr)
-          assign_attributes(new_attr)
+        def update_attrs(new_attrs)
+          assign_attributes(new_attrs)
           self
         end
 
