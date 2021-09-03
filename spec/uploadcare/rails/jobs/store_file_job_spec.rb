@@ -5,7 +5,7 @@ require 'uploadcare/rails/jobs/store_file_job'
 
 RSpec.describe Uploadcare::Rails::StoreFileJob, type: :job do
   describe '#perform_later' do
-    it 'perform a store file job' do
+    it 'performs a store file job' do
       ActiveJob::Base.queue_adapter = :test
       expect do
         described_class.perform_later(SecureRandom.uuid)
