@@ -233,10 +233,6 @@ The value will be available in the controller by `params[:post][:picture]`.
 
 The helper is detecting the value of the `multiple` property based on type of mount in the model.
 
-```
-  NOTE: you can not mount File and File Group to the same object attribute. MountError will be raised in that case.
-```
-
 ### File and Group wrappers
 
 When you mount either Uploadcare File or Group to an attribute, this attribute is getting wrapped with

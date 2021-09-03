@@ -2,7 +2,6 @@
 
 require 'active_record'
 require 'active_support/concern'
-require 'uploadcare/errors/mount_error'
 require 'uploadcare/rails/services/id_extractor'
 require 'uploadcare/rails/jobs/delete_file_job'
 require 'uploadcare/rails/jobs/store_file_job'
@@ -19,7 +18,7 @@ module Uploadcare
           return if cdn_url.empty?
 
           uuid = IdExtractor.call(cdn_url)
-          cache_key = File.cache_key(cdn_url)
+          cache_key = File.build_cache_key(cdn_url)
           default_attributes = { cdn_url: cdn_url, uuid: uuid.presence }
           file_attributes = ::Rails.cache.read(cache_key).presence || default_attributes
           Uploadcare::Rails::File.new(file_attributes)
@@ -28,28 +27,24 @@ module Uploadcare
         class_methods do
           # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def mount_uploadcare_file(attribute)
-            validate_file_mount!(attribute)
-
-            define_singleton_method "has_uploadcare_file_for_#{attribute}?" do
-              true
-            end
-
             define_method attribute do
               build_uploadcare_file attribute
             end
 
             define_method "uploadcare_store_#{attribute}!" do |store_job = StoreFileJob|
-              file_uuid = send(attribute)&.uuid
+              file_uuid = public_send(attribute)&.uuid
+              return unless file_uuid
               return store_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.store_files_async
 
-              Uploadcare::FileApi.store_file(file_uuid) if file_uuid
+              Uploadcare::FileApi.store_file(file_uuid)
             end
 
             define_method "uploadcare_delete_#{attribute}!" do |delete_job = DeleteFileJob|
-              file_uuid = send(attribute)&.uuid
+              file_uuid = public_send(attribute)&.uuid
+              return unless file_uuid
               return delete_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.delete_files_async
 
-              Uploadcare::FileApi.delete_file(file_uuid) if file_uuid
+              Uploadcare::FileApi.delete_file(file_uuid)
             end
 
             after_save "uploadcare_store_#{attribute}!".to_sym unless Uploadcare::Rails.configuration.do_not_store
@@ -58,14 +53,6 @@ module Uploadcare
             after_destroy "uploadcare_delete_#{attribute}!".to_sym
           end
           # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-
-          def validate_file_mount!(attribute)
-            method_name = "has_uploadcare_file_group_for_#{attribute}?"
-            return unless respond_to?(method_name) && send(method_name)
-
-            raise Uploadcare::Errors::MountError,
-                  'Can not mount a file group because this attribute has a file mounted already'
-          end
         end
       end
     end

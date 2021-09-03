@@ -6,8 +6,8 @@ module Uploadcare
     class IdExtractor
       class << self
         # regex is an UUID-regex by default
-        def call(cdn_url, regex = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/)
-          cdn_url.match(regex).to_s
+        def call(input_str, regex = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/)
+          input_str.match(regex).to_s
         end
       end
     end

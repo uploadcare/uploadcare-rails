@@ -28,7 +28,7 @@ module Uploadcare
             object_name,
             method_name,
             uploadcare_uploader_options(
-              options.merge(multiple: multiple?(object_name, method_name))
+              options.merge(multiple: uploadcare_uploader_multiple?(object_name, method_name).presence)
             )
           )
         end
@@ -44,11 +44,10 @@ module Uploadcare
 
         private
 
-        def multiple?(object_name, method_name)
+        def uploadcare_uploader_multiple?(object_name, method_name)
           model = object_name.to_s.camelize.safe_constantize
-          model&.send "has_uploadcare_file_group_for_#{method_name}?"
-        rescue NoMethodError
-          false
+          method_name = "has_uploadcare_file_group_for_#{method_name}?"
+          model.respond_to?(method_name) && model.public_send(method_name)
         end
       end
     end
