@@ -2,8 +2,8 @@ name: Test
 on: [push, pull_request]
 jobs:
   test:
+    needs: code-analysis
     strategy:
-      fail-fast: false
       matrix:
         gemfile:
           - Gemfile
@@ -71,7 +71,6 @@ jobs:
 
   code-analysis:
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
       matrix:
         ruby-version: ['2.7',]

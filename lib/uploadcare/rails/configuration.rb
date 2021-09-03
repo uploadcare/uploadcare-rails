@@ -9,17 +9,23 @@ module Uploadcare
       include Singleton
 
       CONFIG_GLOBAL_PARAMS = %w[
-        public_key locale live manual_start images_only preview_step crop image_shrink
-        clearable tabs input_accept_types preferred_types system_dialog multipart_min_size
-        locale_translations locale_pluralize secure_signature secure_expire preview_proxy
-        preview_url_callback cdn_base do_not_store audio_bits_per_second video_preferred_mime_types
-        video_bits_per_second camera_mirror_default
+        public_key secret_key cache_files cache_expires_in cache_namespace cdn_hostname
+        store_files_after_save store_files_async
+        delete_files_after_destroy delete_files_async
       ].freeze
 
-      attr_accessor(:cache_files, :store_files_after_save, :delete_files_after_destroy, *CONFIG_GLOBAL_PARAMS)
+      WIDGET_PARAMS = %w[
+        public_key images_only preview_step crop image_shrink
+        clearable tabs input_accept_types preferred_types system_dialog multipart_min_size
+        preview_proxy cdn_base do_not_store audio_bits_per_second video_preferred_mime_types
+        video_bits_per_second camera_mirror_default live manual_start
+        locale locale_translations locale_pluralize
+      ].freeze
 
-      def widget_parameters
-        CONFIG_GLOBAL_PARAMS.map do |param_name|
+      attr_accessor(*(CONFIG_GLOBAL_PARAMS + WIDGET_PARAMS).uniq)
+
+      def uploader_parameters
+        WIDGET_PARAMS.map do |param_name|
           param_value = instance_variable_get("@#{param_name}")
           next if param_value.nil?
 
@@ -28,12 +34,18 @@ module Uploadcare
         end.compact.join("\n")
       end
 
+      def widget
+        OpenStruct.new(WIDGET_PARAMS.map { |param| [param, public_send(param)] }.to_h)
+      end
+
       private
 
       def handle_param_value(param_value)
         case param_value
         when Hash
-          param_value.deep_stringify_keys.to_s.tr('=>', ': ')
+          param_value.deep_stringify_keys.to_json
+        when Array
+          "'#{param_value.join(' ')}'"
         when TrueClass, FalseClass
           param_value
         else

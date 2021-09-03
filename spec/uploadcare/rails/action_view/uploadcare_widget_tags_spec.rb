@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/action_view/uploadcare_widget_tags'
+require 'uploadcare/rails/action_view/uploadcare_include_tags'
 
 describe Uploadcare::Rails::ActionView::UploadcareWidgetTags, type: :helper do
   let(:global_variables) { 'UPLOADCARE_PUBLIC_KEY = demopublickey;' }
 
   before do
-    allow(Uploadcare::Rails).to receive_message_chain(:configuration, :widget_parameters)
+    allow(Uploadcare::Rails).to receive_message_chain(:configuration, :uploader_parameters)
       .and_return(global_variables)
+    allow(Uploadcare::Rails).to receive_message_chain(:configuration, :cdn_hostname).and_return('ucarecdn.com')
   end
 
   context 'when including a widget' do
@@ -17,7 +18,7 @@ describe Uploadcare::Rails::ActionView::UploadcareWidgetTags, type: :helper do
         %w[3 3.x 2 1].each do |version|
           [true, false].each do |min|
             it "includes a widget from cdn with params: vesrion = #{version}, bundle = #{bundle} and min = #{min}" do
-              tag = uploadcare_widget_tag(version: version, bundle: bundle, min: min)
+              tag = uploadcare_include_tag(version: version, bundle: bundle, min: min)
 
               expect(tag).to match(
                 [
@@ -33,7 +34,7 @@ describe Uploadcare::Rails::ActionView::UploadcareWidgetTags, type: :helper do
 
       context 'and checking global variables' do
         it 'includes global variables' do
-          expect(uploadcare_widget_tag).to match(global_variables)
+          expect(uploadcare_include_tag).to match(global_variables)
         end
       end
     end

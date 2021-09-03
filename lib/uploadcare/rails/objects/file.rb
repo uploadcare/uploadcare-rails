@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
-require 'uploadcare'
 require 'uploadcare/rails/api/rest/file_api'
 require 'uploadcare/rails/transformations/image_transformations'
-require 'uploadcare/rails/objects/concerns/assign_attributes'
+require 'uploadcare/rails/objects/concerns/loadable'
 
 module Uploadcare
   module Rails
-    # A wrapper class that for Uploadcare::File object.
+    # A wrapper class for Uploadcare::File object.
     # Allows caching loaded files and has methods for Rails model attributes
     class File < Uploadcare::Entity::File
-      include Uploadcare::Rails::Objects::SetAttributes
+      include Objects::Loadable
 
       ATTR_ENTITIES = [:cdn_url].freeze
 
@@ -24,10 +23,9 @@ module Uploadcare
       end
 
       def store
-        file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url)
-        assign_attributes(file_info)
-        ::Rails.cache.write(cdn_url, self) if uploadcare_configuration.cache_files
-        self
+        file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url).to_h
+        ::Rails.cache.write(cache_key, file_info, expires_in: cache_expires_in) if caching_enabled?
+        update_attrs(file_info)
       end
 
       def delete
@@ -39,10 +37,14 @@ module Uploadcare
       end
 
       def load
-        file_info = Uploadcare::FileApi.get_file(uuid).merge(self)
-        assign_attributes(file_info)
-        ::Rails.cache.write(cdn_url, self) if uploadcare_configuration.cache_files
-        self
+        file_info = if caching_enabled?
+                      ::Rails.cache.fetch(cache_key, expires_in: cache_expires_in) do
+                        request_file_info_from_api
+                      end
+                    else
+                      request_file_info_from_api
+                    end
+        update_attrs(file_info)
       end
 
       def loaded?
@@ -51,8 +53,8 @@ module Uploadcare
 
       private
 
-      def uploadcare_configuration
-        Uploadcare::Rails.configuration
+      def request_file_info_from_api
+        Uploadcare::FileApi.get_file(uuid).merge(self).to_h
       end
     end
   end

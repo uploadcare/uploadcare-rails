@@ -24,19 +24,30 @@ module Uploadcare
         DEFAULT_FIELD_OPTIONS = { role: 'uploadcare-uploader' }.freeze
 
         def uploadcare_uploader_field(object_name, method_name, options = {})
-          options[:multiple] = multiple?(object_name, method_name)
-          data_options = options.map { |key, value| ["data-#{key.to_s.underscore.dasherize}", value] }.to_h
-          field_options = DEFAULT_FIELD_OPTIONS.merge(data_options)
-          hidden_field(object_name, method_name, field_options)
+          hidden_field(
+            object_name,
+            method_name,
+            uploadcare_uploader_options(
+              options.merge(multiple: uploadcare_uploader_multiple?(object_name, method_name).presence)
+            )
+          )
+        end
+
+        def uploadcare_uploader_field_tag(object_name, options = {})
+          hidden_field_tag(object_name, options[:value], uploadcare_uploader_options(options))
+        end
+
+        def uploadcare_uploader_options(options = {})
+          data_options = options.transform_keys { |key| "data-#{key.to_s.underscore.dasherize}" }
+          DEFAULT_FIELD_OPTIONS.merge(data_options)
         end
 
         private
 
-        def multiple?(object_name, method_name)
+        def uploadcare_uploader_multiple?(object_name, method_name)
           model = object_name.to_s.camelize.safe_constantize
-          model&.send "has_uploadcare_file_group_for_#{method_name}?"
-        rescue NoMethodError
-          false
+          method_name = "has_uploadcare_file_group_for_#{method_name}?"
+          model.respond_to?(method_name) && model.public_send(method_name)
         end
       end
     end
