@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'action_view'
 require 'uploadcare/rails/configuration'
 
 module Uploadcare
@@ -21,9 +22,10 @@ module Uploadcare
         # Arguments:
         #   version: (String, default: '3.x') - version of the widget
         #   bundle: (String, default: 'full') - https://uploadcare.com/docs/uploads/file-uploader/#bundles
+        #     valid options: 'full', 'default', 'ie8', 'api', 'lang.en'
         #   min: (true/false, default: true) - sets which version to get, minified or not
 
-        CDN_HOSTNAME = 'ucarecdn.com'
+        CDN_HOSTNAME = ENV.fetch('UPLOADCARE_CDN_HOSTNAME', 'ucarecdn.com')
 
         def uploadcare_include_tag(version: '3.x', bundle: 'full', min: true)
           min = min == true ? '.min' : ''

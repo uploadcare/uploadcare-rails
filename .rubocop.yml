@@ -5,6 +5,7 @@ Gemspec/RequiredRubyVersion:
 Metrics/BlockLength:
   Exclude:
     - 'spec/uploadcare/rails/**/*.rb'
+    - 'spec/helpers/**/*.rb'
     - 'uploadcare-rails.gemspec'
 
 Naming/FileName:

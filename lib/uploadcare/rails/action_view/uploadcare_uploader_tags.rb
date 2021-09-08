@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'action_view'
 require 'uploadcare/rails/configuration'
 
 module Uploadcare
