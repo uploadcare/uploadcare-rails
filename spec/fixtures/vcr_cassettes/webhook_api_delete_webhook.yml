@@ -1,0 +1,57 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.uploadcare.com/webhooks/unsubscribe/
+    body:
+      encoding: UTF-8
+      string: '{"target_url":"https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png"}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.5+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.0)
+      Date:
+      - Thu, 22 Jul 2021 10:34:48 GMT
+      Authorization:
+      - Uploadcare demopublickey:14eaf922015dd5ccbb791188ee7bc8df64bb3e60
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 10:34:49 GMT
+      Content-Length:
+      - '0'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Warning:
+      - '199 Miscellaneous warning: You are using the demo project'
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: ''
+  recorded_at: Thu, 22 Jul 2021 10:34:50 GMT
+recorded_with: VCR 6.0.0

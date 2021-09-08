@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.uploadcare.com/project/
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.5+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.0)
+      Date:
+      - Thu, 22 Jul 2021 10:00:11 GMT
+      Authorization:
+      - Uploadcare demopublickey:3216f2c9fd76db88d056d392c5043cc1686f53a6
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 10:00:12 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.5+json
+      Content-Length:
+      - '307'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Warning:
+      - '199 Miscellaneous warning: You are using the demo project'
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - GET, HEAD, OPTIONS
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"collaborators":[{"name":"dmitriy.cherevatenko@uploadcare.com","email":"dmitriy.cherevatenko@uploadcare.com"},{"name":"achernenko@uploadcare.com","email":"achernenko@uploadcare.com"},{"name":"os@uploadcare.com","email":"os@uploadcare.com"}],"name":"demo","pub_key":"demopublickey","autostore_enabled":true}'
+  recorded_at: Thu, 22 Jul 2021 10:00:12 GMT
+recorded_with: VCR 6.0.0

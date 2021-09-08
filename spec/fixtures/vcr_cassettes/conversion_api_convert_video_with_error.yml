@@ -1,0 +1,62 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.uploadcare.com/convert/video/
+    body:
+      encoding: UTF-8
+      string: '{"paths":["169d4bf8-206d-4fa1-8aca-a3aaa73c5cf5/video/-/size/x/change_ratio/"],"store":"0"}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.6+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/2.7.2)
+      Date:
+      - Fri, 23 Jul 2021 11:26:02 GMT
+      Authorization:
+      - Uploadcare 5d5bb5639e3f2df33674:0ae0de735340d881dfc02d569cb3c4094f50f5b9
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 23 Jul 2021 11:26:02 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '227'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Vary:
+      - Accept
+      - Accept-Encoding
+      Warning:
+      - '199 Miscellaneous warning: Please use API version 0.5, not 0.6'
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Allow:
+      - OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"result": [], "problems": {"169d4bf8-206d-4fa1-8aca-a3aaa73c5cf5/video/-/size/x/change_ratio/":
+        "CDN Path error: Mandatory argument \"OneOrTwoDimensionsDivisibleByFour(size)\"
+        not found while parsing \"size/x/change_ratio\""}}'
+  recorded_at: Fri, 23 Jul 2021 11:26:02 GMT
+recorded_with: VCR 6.0.0

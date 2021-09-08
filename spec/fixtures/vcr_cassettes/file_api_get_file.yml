@@ -1,0 +1,58 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.uploadcare.com/files/5ae54c37-754c-4982-8de4-3f242a88ce17/
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.5+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/3.0.0)
+      Date:
+      - Thu, 22 Jul 2021 07:01:51 GMT
+      Authorization:
+      - Uploadcare 5d5bb5639e3f2df33674:d9638db72d751c7f8fe116dca66aa60470c3c505
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 07:01:52 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.5+json
+      Content-Length:
+      - '609'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - DELETE, GET, HEAD, OPTIONS
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"datetime_removed":null,"datetime_stored":null,"datetime_uploaded":"2021-07-22T06:51:13.085531Z","image_info":{"width":48,"height":12,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":"https://ucarecdn.com/5ae54c37-754c-4982-8de4-3f242a88ce17/1702.png","original_filename":"-17.0\u00b0\u0421
+        (2).png","size":514,"url":"https://api.uploadcare.com/files/5ae54c37-754c-4982-8de4-3f242a88ce17/","uuid":"5ae54c37-754c-4982-8de4-3f242a88ce17","source":null}'
+  recorded_at: Thu, 22 Jul 2021 07:01:52 GMT
+recorded_with: VCR 6.0.0

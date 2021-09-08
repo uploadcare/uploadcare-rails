@@ -2,6 +2,10 @@
 
 require 'bundler/setup'
 require 'uploadcare/rails'
+require 'api_struct'
+require 'uploadcare'
+
+Dir[File.expand_path(File.join(File.dirname(__FILE__), 'support', '**', '*.rb'))].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

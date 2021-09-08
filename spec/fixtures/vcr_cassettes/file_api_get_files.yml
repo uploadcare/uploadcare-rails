@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.uploadcare.com/files/
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.5+json
+      User-Agent:
+      - UploadcareRuby/3.0.5/5d5bb5639e3f2df33674 (Ruby/3.0.0)
+      Date:
+      - Thu, 22 Jul 2021 07:17:44 GMT
+      Authorization:
+      - Uploadcare 5d5bb5639e3f2df33674:2c946903fe8c7869f6849b781c1505d00cecbd82
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 22 Jul 2021 07:17:45 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.5+json
+      Content-Length:
+      - '3841'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - GET, HEAD, OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"next":null,"previous":null,"total":6,"per_page":100,"results":[{"datetime_removed":null,"datetime_stored":"2021-07-21T10:10:15.455617Z","datetime_uploaded":"2021-07-21T10:10:15.364863Z","image_info":{"width":82,"height":19,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":"https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/170.png","original_filename":"-17.0\u00b0\u0421.png","size":861,"url":"https://api.uploadcare.com/files/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/","uuid":"3542c513-5cf4-4adb-97b0-bfa7fbd31fb5","source":null},{"datetime_removed":null,"datetime_stored":"2021-07-21T10:30:47.059311Z","datetime_uploaded":"2021-07-21T10:30:46.967311Z","image_info":{"width":82,"height":19,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":"https://ucarecdn.com/64215d18-1356-42cb-ab8c-7542290b6e1b/170.png","original_filename":"-17.0\u00b0\u0421.png","size":861,"url":"https://api.uploadcare.com/files/64215d18-1356-42cb-ab8c-7542290b6e1b/","uuid":"64215d18-1356-42cb-ab8c-7542290b6e1b","source":null},{"datetime_removed":null,"datetime_stored":"2021-07-21T10:30:47.037717Z","datetime_uploaded":"2021-07-21T10:30:46.973279Z","image_info":{"width":55,"height":13,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":"https://ucarecdn.com/59af53a6-3995-4136-85c6-dcdd471237d1/1701.png","original_filename":"-17.0\u00b0\u0421
+        (1).png","size":987,"url":"https://api.uploadcare.com/files/59af53a6-3995-4136-85c6-dcdd471237d1/","uuid":"59af53a6-3995-4136-85c6-dcdd471237d1","source":null},{"datetime_removed":null,"datetime_stored":"2021-07-21T10:30:47.042454Z","datetime_uploaded":"2021-07-21T10:30:46.992745Z","image_info":{"width":48,"height":12,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":"https://ucarecdn.com/8ee53f06-47b7-4b32-902b-51bb2a94ea06/1702.png","original_filename":"-17.0\u00b0\u0421
+        (2).png","size":514,"url":"https://api.uploadcare.com/files/8ee53f06-47b7-4b32-902b-51bb2a94ea06/","uuid":"8ee53f06-47b7-4b32-902b-51bb2a94ea06","source":null},{"datetime_removed":null,"datetime_stored":null,"datetime_uploaded":"2021-07-22T06:51:48.199541Z","image_info":{"width":48,"height":12,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":"https://ucarecdn.com/7d1988a4-1bf5-4953-98ab-7ecd592dca90/1702.png","original_filename":"-17.0\u00b0\u0421
+        (2).png","size":514,"url":"https://api.uploadcare.com/files/7d1988a4-1bf5-4953-98ab-7ecd592dca90/","uuid":"7d1988a4-1bf5-4953-98ab-7ecd592dca90","source":null},{"datetime_removed":null,"datetime_stored":"2021-07-22T06:52:44.345836Z","datetime_uploaded":"2021-07-22T06:52:44.015656Z","image_info":{"width":48,"height":12,"format":"PNG","color_mode":"RGBA","geo_location":null,"orientation":null,"dpi":[72,72],"datetime_original":null,"sequence":false},"is_image":true,"is_ready":true,"mime_type":"image/png","original_file_url":"https://ucarecdn.com/d43e8281-a42a-4f30-9fee-4a166998d15a/1702.png","original_filename":"-17.0\u00b0\u0421
+        (2).png","size":514,"url":"https://api.uploadcare.com/files/d43e8281-a42a-4f30-9fee-4a166998d15a/","uuid":"d43e8281-a42a-4f30-9fee-4a166998d15a","source":null}]}'
+  recorded_at: Thu, 22 Jul 2021 07:17:45 GMT
+recorded_with: VCR 6.0.0
