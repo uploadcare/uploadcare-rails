@@ -32,6 +32,12 @@ module Uploadcare
             def store_group(uuid)
               Uploadcare::Group.store(uuid)
             end
+
+            # Create files group from a set of files by using their UUIDs.
+            # @see https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup
+            def create_group(files, **options)
+              Uploadcare::Group.create(files, **options)
+            end
           end
         end
       end

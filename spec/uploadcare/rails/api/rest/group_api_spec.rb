@@ -12,7 +12,7 @@ module Uploadcare
 
           context 'when checking methods' do
             it 'responds to expected REST methods' do
-              %i[get_groups get_group store_group].each do |method|
+              %i[get_groups get_group store_group create_group].each do |method|
                 expect(subject).to respond_to(method)
               end
             end
@@ -42,6 +42,15 @@ module Uploadcare
                 uuid = 'aeaeeb8d-43bc-444d-954f-a171fd872e58~2'
                 response = subject.store_group(uuid)
                 expect(response['id']).to eq(uuid)
+              end
+            end
+
+            it 'creates a group' do
+              VCR.use_cassette('group_api_create_group') do
+                file_ids = %w[f55fcc80-58c1-42eb-9e8f-54d500296d38 4a6ef027-d4cd-49be-a383-8cdbe503aa03]
+
+                response = subject.create_group(file_ids.map { |f| "#{f}/resize/x600" })
+                expect(response['files'].map { |f| f['file_id'] }).to contain_exactly(*file_ids)
               end
             end
           end
