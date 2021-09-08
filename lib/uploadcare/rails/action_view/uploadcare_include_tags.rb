@@ -34,7 +34,7 @@ module Uploadcare
           config_tag = javascript_tag(uploader_settings) if uploader_settings.present?
           include_tag = javascript_include_tag(uri.to_s.squeeze('.'))
 
-          config_tag.concat(include_tag)
+          include_tag.concat(config_tag)
         end
 
         def uploader_settings
