@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require 'uploadcare/rails/engine'
 require 'uploadcare/rails/configuration'
 
 module Uploadcare
+  # A root module for the gem
   module Rails
     module_function
 
