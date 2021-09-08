@@ -25,13 +25,11 @@ module Uploadcare
         #     valid options: 'full', 'default', 'ie8', 'api', 'lang.en'
         #   min: (true/false, default: true) - sets which version to get, minified or not
 
-        CDN_HOSTNAME = ENV.fetch('UPLOADCARE_CDN_HOSTNAME', 'ucarecdn.com')
-
         def uploadcare_include_tag(version: '3.x', bundle: 'full', min: true)
           min = min == true ? '.min' : ''
           bundle = bundle == 'default' ? '' : ".#{bundle}"
           path = "/libs/widget/#{version}/uploadcare#{bundle}#{min}.js"
-          uri = URI::HTTPS.build(host: CDN_HOSTNAME, path: path)
+          uri = URI::HTTPS.build(host: Uploadcare::Rails.configuration.cdn_hostname, path: path)
 
           config_tag = javascript_tag(uploader_settings) if uploader_settings.present?
           include_tag = javascript_include_tag(uri.to_s.squeeze('.'))
