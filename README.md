@@ -3,6 +3,30 @@
 A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
+### :heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
+
+* [Installation](#installation)
+  * [Using Gemfile](#using-gemfile)
+  * [Using command line](#using-command-line)
+* [Usage](#usage)
+  * [Configuration](#configuration)
+  * [Uploadcare File Uploader](#uploadcare-file-uploader)
+    * [Widget](#widget)
+      * [Using CDN](#using-cdn)
+      * [Using NPM](#using-npm)
+    * [Input](#input)
+  * [Using the File Uploader with Rails models](#using-the-file-uploader-with-rails-models)
+    * [Form data](#form-data)
+    * [File and Group wrappers](#file-and-group-wrappers)
+  * [Image Transformation](#image-transformation)
+  * [Uploadcare API interfaces](#uploadcare-api-interfaces)
+    * [Upload Api](#upload-api)
+    * [File Api](#file-api)
+    * [Group Api](#group-api)
+    * [Project Api](#project-api)
+    * [Webhook Api](#webhook-api)
+    * [Conversion Api](#conversion-api)
+* [Useful links](#useful-links)
 
 ## Installation
 
@@ -11,18 +35,18 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'uploadcare-rails'
+gem "uploadcare-rails"
 ```
 
 And then execute:
 
-```shell
+```console
 $ bundle install
 ```
 
 ### Using command line
 
-```shell
+```console
 $ gem install uploadcare-rails
 ```
 
@@ -33,7 +57,7 @@ $ gem install uploadcare-rails
 To start using Uploadcare API you just need to set your API keys (public key and secret key).
 These keys can be set as ENV variables using the `export` directive:
 
-```shell
+```console
 $ export UPLOADCARE_PUBLIC_KEY=demopublickey
 $ export UPLOADCARE_SECRET_KEY=demoprivatekey
 ```
@@ -41,7 +65,7 @@ Or you can use popular gems like `dotenv-rails` for setting ENV variables.
 
 Run the config generator command to generate a configuration file:
 
-```shell
+```console
 $ rails g uploadcare_config
 ```
 
@@ -54,7 +78,7 @@ This step is done automatically in the initializer if you set the ENV variable `
 ...
 Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
-  config.public_key = ENV.fetch('UPLOADCARE_PUBLIC_KEY', 'demopublickey')
+  config.public_key = ENV.fetch("UPLOADCARE_PUBLIC_KEY", "demopublickey")
   ...
 end
 ```
@@ -71,7 +95,7 @@ config.cache_files = true
 
 # Available locales currently are:
 # ar az ca cs da de el en es et fr he it ja ko lv nb nl pl pt ro ru sk sr sv tr uk vi zhTW zh
-config.locale = 'en'
+config.locale = "en"
 
 # If true, inputs on your page are initialized automatically, see the article for details -
 # https://uploadcare.com/docs/file-uploader-api/widget-initialization/
@@ -108,8 +132,8 @@ Add this string to your <head> html-tag
     <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
     <script>
       //<![CDATA[
-      UPLOADCARE_PUBLIC_KEY = 'your_public_key';
-      UPLOADCARE_LOCALE = 'en';
+      UPLOADCARE_PUBLIC_KEY = "your_public_key";
+      UPLOADCARE_LOCALE = "en";
       UPLOADCARE_LIVE = true;
       UPLOADCARE_MANUAL_START = false;
       //]]>
@@ -120,11 +144,11 @@ Add this string to your <head> html-tag
 ```
 This helper uses a CDN-url for the widget bundle and supports three options:
 
-- **version** - version of the Uploadcare widget. Default is '3.x'.
-- **bundle** - bundle name. Available names are 'full', 'default', 'api', 'ie8' and 'lang.en'.
-               Default bundle is 'full' - a full bundle with built-in jQuery.
+- **version** — version of the Uploadcare widget. Default is "3.x".
+- **bundle** — bundle name. Available names are "full", "default", "api", "ie8" and "lang.en".
+               Default bundle is "full" — a full bundle with built-in jQuery.
                More info about bundles [here](https://uploadcare.com/docs/uploads/file-uploader/#bundles).
-- **min** - bool value detecting if the bundle must be minified.
+- **min** — bool value detecting if the bundle must be minified.
 
 The <head> tag then also includes the <script> with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
 
@@ -151,8 +175,8 @@ When the widget is on a html-page, you want to add an input to your view that wi
 ...
 ```
 
-- **object** - object name;
-- **attribute** - object attribute name.
+- **object** — object name;
+- **attribute** — object attribute name.
 
 ### Using the File Uploader with Rails models
 
@@ -160,7 +184,7 @@ View helpers are good to be used for Rails models.
 First, you need to mount uploadcare file or group to the model attribute.
 For example you have a database table like this and model `Post`:
 ```
-# DB table 'posts'
+# DB table "posts"
 ---------------------
 title       | String
 ---------------------
@@ -185,14 +209,14 @@ end
 <!-- app/views/posts/new.html.erb -->
 <h1> NEW POST </h1>
 
-<%= form_tag('/posts', method: :post) do %>
+<%= form_tag("/posts", method: :post) do %>
   <%= uploadcare_uploader_field :post, :picture %>
   <!--
     results in:
     <input role="uploadcare-uploader" multiple="false" type="hidden" name="post[picture]" id="post_picture">
   -->
   <div>
-    <%= submit_tag 'Save' %>
+    <%= submit_tag "Save" %>
   </div>
 <% end %>
 ```
@@ -210,14 +234,14 @@ end
 <!-- app/views/posts/new.html.erb -->
 <h1> NEW POST </h1>
 
-<%= form_tag('/posts', method: :post) do %>
+<%= form_tag("/posts", method: :post) do %>
   <%= uploadcare_uploader_field :post, :attachments %>
   <!--
     results in:
     <input role="uploadcare-uploader" multiple="true" type="hidden" name="post[attachments]" id="post_attachments">
   -->
   <div>
-    <%= submit_tag 'Save' %>
+    <%= submit_tag "Save" %>
   </div>
 <% end %>
 ```
@@ -231,7 +255,7 @@ The input will have a `value` property set to CDN-urls when you will select file
 So, you get CDN-urls as a value of the attribute in the controller on form submit.
 The value will be available in the controller by `params[:post][:picture]`.
 
-The helper is detecting the value of the `multiple` property based on type of mount in the model.
+The helper is detecting the value of the `multiple` property based on the mount type in your model.
 
 ### File and Group wrappers
 
@@ -251,13 +275,13 @@ end
 
 And then you create a new Post object specifying a CDN-url for your prevously uploaded Uploadcare file:
 
-```shell
-$ post = Post.create(picture: 'https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/')
+```console
+$ post = Post.create(picture: "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/")
 ```
 
 Now the `post.picture` is an Uploadcare::Rails::File. Following methods are supported:
 
-```shell
+```console
 # Store the file on an Uploadcare server permanently:
 $ post.picture.store
 #   => {
@@ -292,7 +316,7 @@ $ post.picture.loaded?
 #
 # More about image transformations below.
 # Transform a CDN-url to get a new transformed image's source. Works for images only:
-$ post.picture.transform_url(quality: 'better')
+$ post.picture.transform_url(quality: "better")
 #   => "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/-/quality/better/"
 ```
 
@@ -309,13 +333,13 @@ end
 
 Creating a new `post` with the Group mounted:
 
-```shell
-$ post = Post.create(attachments: 'https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/')
+```console
+$ post = Post.create(attachments: "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/")
 ```
 
 Now the `post.attachments` is an Uploadcare::Rails::Group. Following methods are supported:
 
-```shell
+```console
 # Store the file group on an Uploadcare server permanently:
 $ post.attachments.store
 #   => {
@@ -338,7 +362,7 @@ $ post.attachments.delete
 $ post.attachments.to_s
 #   => "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/"
 #
-# Load object - works the same way as for the File:
+# Load object — works the same way as for the File:
 $ post.attachments.load
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
@@ -356,7 +380,7 @@ $ post.attachments.loaded?
 # As we don't want to show (on the html-page) a file group itself,
 # we can get CDN-urls for file that the group contains. No loading group or files needed.
 # This works for images only:
-$ post.attachments.transform_file_urls(quality: 'better')
+$ post.attachments.transform_file_urls(quality: "better")
 #   => ["https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/nth/0/-/quality/better/"]
 #
 # If you want to get non-transformed file urls, use:
@@ -370,33 +394,33 @@ $ post.attachments.file_urls
 Uploadcare provides a way to transform images stored on Uploadcare services specifying a list of operations.
 If an operation has just one option, you can specify it like key-value:
 
-```shell
-$ post.picture.transform_url(quality: 'better')
+```console
+$ post.picture.transform_url(quality: "better")
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/quality/better/"
 ```
 
-and if an operation supports several options, you just set them as a Hash:
+and if an operation supports several options — just set them as a Hash:
 
-```shell
-$ post.picture.transform_url(crop: { dimensions: '300x500', coords: '50, 50', alignment: 'center' })
+```console
+$ post.picture.transform_url(crop: { dimensions: "300x500", coords: "50, 50", alignment: "center" })
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/crop/300x500/50,50/center/"
 ```
 
-Full list of operations and valid values can be found [here](https://uploadcare.com/docs/transformations/image/#image-transformations).
+Full list of operations and valid values can be found [here](https://uploadcare.com/docs/transformations/image/).
 
 ### Uploadcare API interfaces
 
-The Uploadcare service provides a wide API to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
+Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
 
-### UploadApi
+### Upload API
 
-UploadApi provides methods to upload files in many ways.
+[Upload Api](https://uploadcare.com/api-refs/upload-api/) provides methods to upload files in many ways.
 
 #### Upload a single file
 
-```shell
+```console
 # Load a file
-$ file = File.open('kitten.png')
+$ file = File.open("kitten.png")
 #   => #<File:kitten.png>
 # Upload file to Uploadcare
 $ uploadcare_file = Uploadcare::UploadApi.upload_file(file)
@@ -408,9 +432,9 @@ $ uploadcare_file = Uploadcare::UploadApi.upload_file(file)
 
 This method supports single file uploading and uploading files from an URL (depending on the type of first argument - can be either String (i.e. URL) or File).
 
-```shell
+```console
 # Upload file from URL
-$ url = 'https://ucarecdn.com/80b807be-faad-4f01-bbbe-0bbde172b9de/1secVIDEO.mp4'
+$ url = "https://ucarecdn.com/80b807be-faad-4f01-bbbe-0bbde172b9de/1secVIDEO.mp4"
 $ uploadcare_file = Uploadcare::UploadApi.upload_file(url)
 #   => [
 #        {
@@ -428,9 +452,9 @@ $ uploadcare_file = Uploadcare::UploadApi.upload_file(url)
 
 #### Upload several files
 
-```shell
+```console
 # Load a file
-$ file = File.open('kitten.png')
+$ file = File.open("kitten.png")
 #   => #<File:kitten.png>
 # Upload several files to Uploadcare
 $ uploadcare_file = Uploadcare::UploadApi.upload_files([file])
@@ -443,20 +467,20 @@ $ uploadcare_file = Uploadcare::UploadApi.upload_files([file])
 ```
 
 
-### FileApi
+### File API
 
 FileApi provides an interface to manage single files, stored on Uploadcare Servers.
 
 #### Get files
 
-```shell
+```console
 # Valid options:
 # removed: [true|false]
 # stored: [true|false]
 # limit: (1..1000)
 # ordering: ["datetime_uploaded"|"-datetime_uploaded"|"size"|"-size"]
 # from: A starting point for filtering files. The value depends on your ordering parameter value.
-$ Uploadcare::FileApi.get_files(ordering: 'datetime_uploaded', limit: 10)
+$ Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
 #   => {
 #        "next"=>nil,
 #        "previous"=>nil,
@@ -474,8 +498,8 @@ $ Uploadcare::FileApi.get_files(ordering: 'datetime_uploaded', limit: 10)
 
 #### Get a file by UUID
 
-```shell
-$ Uploadcare::FileApi.get_file('7b2b35b4-125b-4c1e-9305-12e8da8916eb')
+```console
+$ Uploadcare::FileApi.get_file("7b2b35b4-125b-4c1e-9305-12e8da8916eb")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/7b2b35b4-125b-4c1e-9305-12e8da8916eb/",
 #          ...other file data...
@@ -485,10 +509,10 @@ $ Uploadcare::FileApi.get_file('7b2b35b4-125b-4c1e-9305-12e8da8916eb')
 
 #### Copy a file by UUID
 
-```shell
+```console
 # Valid options:
 # stored: [true|false]
-$ Uploadcare::FileApi.copy_file('2d33999d-c74a-4ff9-99ea-abc23496b052', store: false)
+$ Uploadcare::FileApi.copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", store: false)
 #   => {
 #         "uuid"=>"f486132c-2fa5-454e-9e70-93c5e01a7e04",
 #          ...other file data...
@@ -498,8 +522,8 @@ $ Uploadcare::FileApi.copy_file('2d33999d-c74a-4ff9-99ea-abc23496b052', store: f
 
 #### Store a file by UUID
 
-```shell
-$ Uploadcare::FileApi.store_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
+```console
+$ Uploadcare::FileApi.store_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 #   => {
 #         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
 #          ...other file data...
@@ -509,8 +533,8 @@ $ Uploadcare::FileApi.store_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
 
 #### Store several files by UUIDs
 
-```shell
-$ Uploadcare::FileApi.store_files(['f486132c-2fa5-454e-9e70-93c5e01a7e04'])
+```console
+$ Uploadcare::FileApi.store_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 #   => {
 #        "result" => [
 #          {
@@ -524,8 +548,8 @@ $ Uploadcare::FileApi.store_files(['f486132c-2fa5-454e-9e70-93c5e01a7e04'])
 
 #### Delete a file by UUID
 
-```shell
-$ Uploadcare::FileApi.delete_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
+```console
+$ Uploadcare::FileApi.delete_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 #   => {
 #         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
 #          ...other file data...
@@ -535,8 +559,8 @@ $ Uploadcare::FileApi.delete_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
 
 #### Delete several files by UUIDs
 
-```shell
-$ Uploadcare::FileApi.delete_files(['f486132c-2fa5-454e-9e70-93c5e01a7e04'])
+```console
+$ Uploadcare::FileApi.delete_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 #   => {
 #        "result" => [
 #          {
@@ -548,19 +572,19 @@ $ Uploadcare::FileApi.delete_files(['f486132c-2fa5-454e-9e70-93c5e01a7e04'])
 ```
 
 
-### GroupApi
+### Group API
 
 GroupApi provides an interface to manage file groups stored on Uploadcare Servers.
 
 #### Get file groups
 
-```shell
+```console
 # Valid options:
 # limit: (1..1000)
 # ordering: ["datetime_created"|"-datetime_created"]
 # from: A starting point for filtering group lists. MUST be a datetime value with T used as a separator.
-#   example: '2015-01-02T10:00:00'
-$ Uploadcare::GroupApi.get_groups(ordering: 'datetime_uploaded', limit: 10)
+#   example: "2015-01-02T10:00:00"
+$ Uploadcare::GroupApi.get_groups(ordering: "datetime_uploaded", limit: 10)
 #   => {
 #        "next"=>"next"=>"https://api.uploadcare.com/groups/?ordering=datetime_uploaded&limit=10&from=2021-07-16T11%3A12%3A12.236280%2B00%3A00&offset=0",
 #        "previous"=>nil,
@@ -583,8 +607,8 @@ $ Uploadcare::GroupApi.get_groups(ordering: 'datetime_uploaded', limit: 10)
 
 #### Get a single file group by a group ID
 
-```shell
-$ Uploadcare::GroupApi.get_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
+```console
+$ Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20/",
 #          ...other group data...
@@ -598,8 +622,8 @@ $ Uploadcare::GroupApi.get_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
 
 #### Store files of a group by a group ID
 
-```shell
-$ Uploadcare::GroupApi.store_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
+```console
+$ Uploadcare::GroupApi.store_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20/",
 #          ...other group data...
@@ -616,11 +640,11 @@ $ Uploadcare::GroupApi.store_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
 It is possible to specify transformed URLs with UUIDs of files OR just UUIDs.
 
 ```
-  NOTE: Be sure to add a trailing slash '/' to the URL in case of specifying transformed URLs.
+  NOTE: Be sure to add a trailing slash "/" to the URL in case of specifying transformed URLs.
 ```
 
-```shell
-$ Uploadcare::GroupApi.create_group(['e08dec9e-7e25-49c5-810e-4c360d86bbae/-/resize/300x500/'])
+```console
+$ Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/resize/300x500/"])
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~1/",
 #          ...other group data...
@@ -632,11 +656,11 @@ $ Uploadcare::GroupApi.create_group(['e08dec9e-7e25-49c5-810e-4c360d86bbae/-/res
 ```
 
 
-### ProjectApi
+### Project API
 
 ProjectApi interface provides just one method - to get a configuration of your Uploadcare project.
 
-```shell
+```console
 $ Uploadcare::ProjectApi.get_project
 #   => {
 #        "collaborators"=>[],
@@ -647,7 +671,7 @@ $ Uploadcare::ProjectApi.get_project
 ```
 
 
-### WebhookApi
+### Webhook API
 
 WebhookApi allows to manage Uploadcare webhooks.
 
@@ -655,10 +679,17 @@ WebhookApi allows to manage Uploadcare webhooks.
 
 This method returns a non-paginated list of webhooks set in your project
 
-```shell
+```console
 $ Uploadcare::WebhookApi.get_webhooks
-#   =>
-#
+#   => [{
+#        "id"=>815677,
+#        "created"=>"2021-08-02T05:02:14.588794Z",
+#        "updated"=>"2021-08-02T05:02:14.588814Z",
+#        "event"=>"file.uploaded",
+#        "target_url"=>"https://example.com",
+#        "project"=>123682,
+#        "is_active"=>true
+#      }]
 ```
 
 
@@ -666,37 +697,52 @@ $ Uploadcare::WebhookApi.get_webhooks
 
 This method requires an URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
 
-```shell
+```console
 # Valid options:
-# event: Presently, we only support the 'file.uploaded' event
+# event: ["file.uploaded"]
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.create_webhook('https://example.com', event: 'file.uploaded', is_active: true)
-#   =>
-#
+$ Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uploaded", is_active: true)
+#   => {
+#        "id"=>815671,
+#        "created"=>"2021-08-02T05:02:14.588794Z",
+#        "updated"=>"2021-08-02T05:02:14.588814Z",
+#        "event"=>"file.uploaded",
+#        "target_url"=>"https://example.com",
+#        "project"=>123682,
+#        "is_active"=>true
+#      }
 ```
 
 
 #### Update an existing webhook by ID
 
-```shell
+Updating a webhook is available if webhook ID is known. The ID is returned in a response on creating or listing webhooks.
+
+```console
 # Valid options:
-# event: Presently, we only support the 'file.uploaded' event
+# event: Presently, we only support the "file.uploaded" event
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.update_webhook('webhook_id', event: 'file.uploaded', is_active: false)
-#   =>
-#
+$ Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example1.com", event: "file.uploaded", is_active: false)
+#   => {
+#        "id"=>815671,
+#        "created"=>"2021-08-02T05:02:14.588794Z",
+#        "updated"=>"2021-08-02T05:02:14.588814Z",
+#        "event"=>"file.uploaded",
+#        "target_url"=>"https://example1.com",
+#        "project"=>123682,
+#        "is_active"=>false
+#      }
 ```
 
 
 #### Delete an existing webhook by a target_url
 
-```shell
-$ Uploadcare::WebhookApi.delete_webhook('')
-#   =>
-#
+```console
+$ Uploadcare::WebhookApi.delete_webhook("https://example1.com")
+#   => Success(nil)
 ```
 
-### ConversionApi
+### Conversion API
 
 ConversionApi provides methods to manage video and documents conversion.
 
@@ -706,9 +752,9 @@ This method requires an UUID of a previously uploaded to Uploadcare file and tar
 If using an image format, you can also specify a page number that must be converted for a document containing pages.
 More info about document conversion can be found [here](https://uploadcare.com/docs/transformations/document-conversion/).
 
-```shell
+```console
 $ Uploadcare::ConversionApi.convert_document(
-$   { uuid: '466740dd-cfad-4de4-9218-1ddc0edf7aa6', format: 'png', page: 1 },
+$   { uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6", format: "png", page: 1 },
 $   store: false
 $ )
 #   => Success({
@@ -724,9 +770,9 @@ $ )
 
 #### Get a document conversion job status
 
-This method requires a token obtained in a response to the `convert_document` method.
+This method requires a token obtained in a response to the [convert_document](#convert-a-document) method.
 
-```shell
+```console
 $ Uploadcare::ConversionApi.get_document_conversion_status(21316034)
 #   => Success({
 #        :result=>{
@@ -742,15 +788,15 @@ $ Uploadcare::ConversionApi.get_document_conversion_status(21316034)
 
 Such as the document conversion method, this method requires an UUID of a previously uploaded to Uploadcare file.
 Also you have several options to control the way a video will be converted. All of them are optional.
-Description of valid options and other info about video conversion can be found [here](https://uploadcare.com/docs/transformations/video-encoding/#video-encoding).
+Description of valid options and other info about video conversion can be found [here](https://uploadcare.com/docs/transformations/video-encoding/).
 
-```shell
+```console
 $ Uploadcare::ConversionApi.convert_video(
 $   {
-$     uuid: '466740dd-cfad-4de4-9218-1ddc0edf7aa6',
-$     format: 'ogg',
-$     quality: 'best',
-$     cut: { start_time: '0:0:0.0', length: '0:0:1.0' },
+$     uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6",
+$     format: "ogg",
+$     quality: "best",
+$     cut: { start_time: "0:0:0.0", length: "0:0:1.0" },
 $     thumbs: { N: 2, number: 1 }
 $   },
 $   store: false
@@ -769,9 +815,9 @@ $ )
 
 #### Get a video conversion job status
 
-This method requires a token obtained in a response to the `convert_video` method.
+This method requires a token obtained in a response to the [convert_video](#convert-a-video) method.
 
-```shell
+```console
 $ Uploadcare::ConversionApi.get_video_conversion_status(916090555)
 #   => Success({
 #        :result=>{
@@ -784,3 +830,10 @@ $ Uploadcare::ConversionApi.get_video_conversion_status(916090555)
 ```
 
 ## Useful links
+* [Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)  
+* [Upload API reference](https://uploadcare.com/api-refs/upload-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)  
+* [REST API reference](https://uploadcare.com/api-refs/rest-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)  
+* [Changelog](./CHANGELOG.md)  
+* [Contributing guide](https://github.com/uploadcare/.github/blob/master/CONTRIBUTING.md)  
+* [Security policy](https://github.com/uploadcare/uploadcare-rails/security/policy)  
+* [Support](https://github.com/uploadcare/.github/blob/master/SUPPORT.md)  

@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.1.0'
 
   gem.name          = 'uploadcare-rails'
-  gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanhcneko)']
+  gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanchenko)']
   gem.email         = ['hello@uploadcare.com']
   gem.summary       = 'Rails gem for Uploadcare'
   gem.description   = <<~DESCRIPTION
