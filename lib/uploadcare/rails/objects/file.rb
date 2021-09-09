@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
+require 'uploadcare/rails/objects/concerns/loadable'
 require 'uploadcare/rails/api/rest/file_api'
 require 'uploadcare/rails/transformations/image_transformations'
-require 'uploadcare/rails/objects/concerns/loadable'
 
 module Uploadcare
   module Rails
