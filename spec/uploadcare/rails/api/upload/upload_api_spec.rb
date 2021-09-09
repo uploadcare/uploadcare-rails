@@ -3,6 +3,8 @@
 require 'spec_helper'
 require 'uploadcare/rails/api/upload/upload_api'
 
+# These specs include specs from uploadcare-ruby to check proper work with different rails versions.
+# They probably will be moved to the uploadcare-ruby gem in future releases.
 module Uploadcare
   module Rails
     module Api

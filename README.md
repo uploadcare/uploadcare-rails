@@ -35,7 +35,7 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'uploadcare-rails'
+gem "uploadcare-rails"
 ```
 
 And then execute:
@@ -78,7 +78,7 @@ This step is done automatically in the initializer if you set the ENV variable `
 ...
 Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
-  config.public_key = ENV.fetch('UPLOADCARE_PUBLIC_KEY', 'demopublickey')
+  config.public_key = ENV.fetch("UPLOADCARE_PUBLIC_KEY", "demopublickey")
   ...
 end
 ```
@@ -95,7 +95,7 @@ config.cache_files = true
 
 # Available locales currently are:
 # ar az ca cs da de el en es et fr he it ja ko lv nb nl pl pt ro ru sk sr sv tr uk vi zhTW zh
-config.locale = 'en'
+config.locale = "en"
 
 # If true, inputs on your page are initialized automatically, see the article for details -
 # https://uploadcare.com/docs/file-uploader-api/widget-initialization/
@@ -132,8 +132,8 @@ Add this string to your <head> html-tag
     <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
     <script>
       //<![CDATA[
-      UPLOADCARE_PUBLIC_KEY = 'your_public_key';
-      UPLOADCARE_LOCALE = 'en';
+      UPLOADCARE_PUBLIC_KEY = "your_public_key";
+      UPLOADCARE_LOCALE = "en";
       UPLOADCARE_LIVE = true;
       UPLOADCARE_MANUAL_START = false;
       //]]>
@@ -144,9 +144,9 @@ Add this string to your <head> html-tag
 ```
 This helper uses a CDN-url for the widget bundle and supports three options:
 
-- **version** — version of the Uploadcare widget. Default is '3.x'.
-- **bundle** — bundle name. Available names are 'full', 'default', 'api', 'ie8' and 'lang.en'.
-               Default bundle is 'full' — a full bundle with built-in jQuery.
+- **version** — version of the Uploadcare widget. Default is "3.x".
+- **bundle** — bundle name. Available names are "full", "default", "api", "ie8" and "lang.en".
+               Default bundle is "full" — a full bundle with built-in jQuery.
                More info about bundles [here](https://uploadcare.com/docs/uploads/file-uploader/#bundles).
 - **min** — bool value detecting if the bundle must be minified.
 
@@ -184,7 +184,7 @@ View helpers are good to be used for Rails models.
 First, you need to mount uploadcare file or group to the model attribute.
 For example you have a database table like this and model `Post`:
 ```
-# DB table 'posts'
+# DB table "posts"
 ---------------------
 title       | String
 ---------------------
@@ -209,14 +209,14 @@ end
 <!-- app/views/posts/new.html.erb -->
 <h1> NEW POST </h1>
 
-<%= form_tag('/posts', method: :post) do %>
+<%= form_tag("/posts", method: :post) do %>
   <%= uploadcare_uploader_field :post, :picture %>
   <!--
     results in:
     <input role="uploadcare-uploader" multiple="false" type="hidden" name="post[picture]" id="post_picture">
   -->
   <div>
-    <%= submit_tag 'Save' %>
+    <%= submit_tag "Save" %>
   </div>
 <% end %>
 ```
@@ -234,14 +234,14 @@ end
 <!-- app/views/posts/new.html.erb -->
 <h1> NEW POST </h1>
 
-<%= form_tag('/posts', method: :post) do %>
+<%= form_tag("/posts", method: :post) do %>
   <%= uploadcare_uploader_field :post, :attachments %>
   <!--
     results in:
     <input role="uploadcare-uploader" multiple="true" type="hidden" name="post[attachments]" id="post_attachments">
   -->
   <div>
-    <%= submit_tag 'Save' %>
+    <%= submit_tag "Save" %>
   </div>
 <% end %>
 ```
@@ -276,7 +276,7 @@ end
 And then you create a new Post object specifying a CDN-url for your prevously uploaded Uploadcare file:
 
 ```console
-$ post = Post.create(picture: 'https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/')
+$ post = Post.create(picture: "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/")
 ```
 
 Now the `post.picture` is an Uploadcare::Rails::File. Following methods are supported:
@@ -316,7 +316,7 @@ $ post.picture.loaded?
 #
 # More about image transformations below.
 # Transform a CDN-url to get a new transformed image's source. Works for images only:
-$ post.picture.transform_url(quality: 'better')
+$ post.picture.transform_url(quality: "better")
 #   => "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/-/quality/better/"
 ```
 
@@ -334,7 +334,7 @@ end
 Creating a new `post` with the Group mounted:
 
 ```console
-$ post = Post.create(attachments: 'https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/')
+$ post = Post.create(attachments: "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/")
 ```
 
 Now the `post.attachments` is an Uploadcare::Rails::Group. Following methods are supported:
@@ -380,7 +380,7 @@ $ post.attachments.loaded?
 # As we don't want to show (on the html-page) a file group itself,
 # we can get CDN-urls for file that the group contains. No loading group or files needed.
 # This works for images only:
-$ post.attachments.transform_file_urls(quality: 'better')
+$ post.attachments.transform_file_urls(quality: "better")
 #   => ["https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/nth/0/-/quality/better/"]
 #
 # If you want to get non-transformed file urls, use:
@@ -395,14 +395,14 @@ Uploadcare provides a way to transform images stored on Uploadcare services spec
 If an operation has just one option, you can specify it like key-value:
 
 ```console
-$ post.picture.transform_url(quality: 'better')
+$ post.picture.transform_url(quality: "better")
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/quality/better/"
 ```
 
 and if an operation supports several options — just set them as a Hash:
 
 ```console
-$ post.picture.transform_url(crop: { dimensions: '300x500', coords: '50, 50', alignment: 'center' })
+$ post.picture.transform_url(crop: { dimensions: "300x500", coords: "50, 50", alignment: "center" })
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/crop/300x500/50,50/center/"
 ```
 
@@ -420,7 +420,7 @@ Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage fil
 
 ```console
 # Load a file
-$ file = File.open('kitten.png')
+$ file = File.open("kitten.png")
 #   => #<File:kitten.png>
 # Upload file to Uploadcare
 $ uploadcare_file = Uploadcare::UploadApi.upload_file(file)
@@ -434,7 +434,7 @@ This method supports single file uploading and uploading files from an URL (depe
 
 ```console
 # Upload file from URL
-$ url = 'https://ucarecdn.com/80b807be-faad-4f01-bbbe-0bbde172b9de/1secVIDEO.mp4'
+$ url = "https://ucarecdn.com/80b807be-faad-4f01-bbbe-0bbde172b9de/1secVIDEO.mp4"
 $ uploadcare_file = Uploadcare::UploadApi.upload_file(url)
 #   => [
 #        {
@@ -454,7 +454,7 @@ $ uploadcare_file = Uploadcare::UploadApi.upload_file(url)
 
 ```console
 # Load a file
-$ file = File.open('kitten.png')
+$ file = File.open("kitten.png")
 #   => #<File:kitten.png>
 # Upload several files to Uploadcare
 $ uploadcare_file = Uploadcare::UploadApi.upload_files([file])
@@ -480,7 +480,7 @@ FileApi provides an interface to manage single files, stored on Uploadcare Serve
 # limit: (1..1000)
 # ordering: ["datetime_uploaded"|"-datetime_uploaded"|"size"|"-size"]
 # from: A starting point for filtering files. The value depends on your ordering parameter value.
-$ Uploadcare::FileApi.get_files(ordering: 'datetime_uploaded', limit: 10)
+$ Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
 #   => {
 #        "next"=>nil,
 #        "previous"=>nil,
@@ -499,7 +499,7 @@ $ Uploadcare::FileApi.get_files(ordering: 'datetime_uploaded', limit: 10)
 #### Get a file by UUID
 
 ```console
-$ Uploadcare::FileApi.get_file('7b2b35b4-125b-4c1e-9305-12e8da8916eb')
+$ Uploadcare::FileApi.get_file("7b2b35b4-125b-4c1e-9305-12e8da8916eb")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/7b2b35b4-125b-4c1e-9305-12e8da8916eb/",
 #          ...other file data...
@@ -512,7 +512,7 @@ $ Uploadcare::FileApi.get_file('7b2b35b4-125b-4c1e-9305-12e8da8916eb')
 ```console
 # Valid options:
 # stored: [true|false]
-$ Uploadcare::FileApi.copy_file('2d33999d-c74a-4ff9-99ea-abc23496b052', store: false)
+$ Uploadcare::FileApi.copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", store: false)
 #   => {
 #         "uuid"=>"f486132c-2fa5-454e-9e70-93c5e01a7e04",
 #          ...other file data...
@@ -523,7 +523,7 @@ $ Uploadcare::FileApi.copy_file('2d33999d-c74a-4ff9-99ea-abc23496b052', store: f
 #### Store a file by UUID
 
 ```console
-$ Uploadcare::FileApi.store_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
+$ Uploadcare::FileApi.store_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 #   => {
 #         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
 #          ...other file data...
@@ -534,7 +534,7 @@ $ Uploadcare::FileApi.store_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
 #### Store several files by UUIDs
 
 ```console
-$ Uploadcare::FileApi.store_files(['f486132c-2fa5-454e-9e70-93c5e01a7e04'])
+$ Uploadcare::FileApi.store_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 #   => {
 #        "result" => [
 #          {
@@ -549,7 +549,7 @@ $ Uploadcare::FileApi.store_files(['f486132c-2fa5-454e-9e70-93c5e01a7e04'])
 #### Delete a file by UUID
 
 ```console
-$ Uploadcare::FileApi.delete_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
+$ Uploadcare::FileApi.delete_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 #   => {
 #         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
 #          ...other file data...
@@ -560,7 +560,7 @@ $ Uploadcare::FileApi.delete_file('2d33999d-c74a-4ff9-99ea-abc23496b052')
 #### Delete several files by UUIDs
 
 ```console
-$ Uploadcare::FileApi.delete_files(['f486132c-2fa5-454e-9e70-93c5e01a7e04'])
+$ Uploadcare::FileApi.delete_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 #   => {
 #        "result" => [
 #          {
@@ -583,8 +583,8 @@ GroupApi provides an interface to manage file groups stored on Uploadcare Server
 # limit: (1..1000)
 # ordering: ["datetime_created"|"-datetime_created"]
 # from: A starting point for filtering group lists. MUST be a datetime value with T used as a separator.
-#   example: '2015-01-02T10:00:00'
-$ Uploadcare::GroupApi.get_groups(ordering: 'datetime_uploaded', limit: 10)
+#   example: "2015-01-02T10:00:00"
+$ Uploadcare::GroupApi.get_groups(ordering: "datetime_uploaded", limit: 10)
 #   => {
 #        "next"=>"next"=>"https://api.uploadcare.com/groups/?ordering=datetime_uploaded&limit=10&from=2021-07-16T11%3A12%3A12.236280%2B00%3A00&offset=0",
 #        "previous"=>nil,
@@ -608,7 +608,7 @@ $ Uploadcare::GroupApi.get_groups(ordering: 'datetime_uploaded', limit: 10)
 #### Get a single file group by a group ID
 
 ```console
-$ Uploadcare::GroupApi.get_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
+$ Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20/",
 #          ...other group data...
@@ -623,7 +623,7 @@ $ Uploadcare::GroupApi.get_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
 #### Store files of a group by a group ID
 
 ```console
-$ Uploadcare::GroupApi.store_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
+$ Uploadcare::GroupApi.store_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20/",
 #          ...other group data...
@@ -640,11 +640,11 @@ $ Uploadcare::GroupApi.store_group('d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20')
 It is possible to specify transformed URLs with UUIDs of files OR just UUIDs.
 
 ```
-  NOTE: Be sure to add a trailing slash '/' to the URL in case of specifying transformed URLs.
+  NOTE: Be sure to add a trailing slash "/" to the URL in case of specifying transformed URLs.
 ```
 
 ```console
-$ Uploadcare::GroupApi.create_group(['e08dec9e-7e25-49c5-810e-4c360d86bbae/-/resize/300x500/'])
+$ Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/resize/300x500/"])
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~1/",
 #          ...other group data...
@@ -699,9 +699,9 @@ This method requires an URL that is triggered by an event, for example, a file u
 
 ```console
 # Valid options:
-# event: ['file.uploaded']
+# event: ["file.uploaded"]
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.create_webhook('https://example.com', event: 'file.uploaded', is_active: true)
+$ Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uploaded", is_active: true)
 #   => {
 #        "id"=>815671,
 #        "created"=>"2021-08-02T05:02:14.588794Z",
@@ -720,9 +720,9 @@ Updating a webhook is available if webhook ID is known. The ID is returned in a 
 
 ```console
 # Valid options:
-# event: Presently, we only support the 'file.uploaded' event
+# event: Presently, we only support the "file.uploaded" event
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.update_webhook('webhook_id', target_url: 'https://example1.com', event: 'file.uploaded', is_active: false)
+$ Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example1.com", event: "file.uploaded", is_active: false)
 #   => {
 #        "id"=>815671,
 #        "created"=>"2021-08-02T05:02:14.588794Z",
@@ -738,7 +738,7 @@ $ Uploadcare::WebhookApi.update_webhook('webhook_id', target_url: 'https://examp
 #### Delete an existing webhook by a target_url
 
 ```console
-$ Uploadcare::WebhookApi.delete_webhook('https://example1.com')
+$ Uploadcare::WebhookApi.delete_webhook("https://example1.com")
 #   => Success(nil)
 ```
 
@@ -754,7 +754,7 @@ More info about document conversion can be found [here](https://uploadcare.com/d
 
 ```console
 $ Uploadcare::ConversionApi.convert_document(
-$   { uuid: '466740dd-cfad-4de4-9218-1ddc0edf7aa6', format: 'png', page: 1 },
+$   { uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6", format: "png", page: 1 },
 $   store: false
 $ )
 #   => Success({
@@ -793,10 +793,10 @@ Description of valid options and other info about video conversion can be found 
 ```console
 $ Uploadcare::ConversionApi.convert_video(
 $   {
-$     uuid: '466740dd-cfad-4de4-9218-1ddc0edf7aa6',
-$     format: 'ogg',
-$     quality: 'best',
-$     cut: { start_time: '0:0:0.0', length: '0:0:1.0' },
+$     uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6",
+$     format: "ogg",
+$     quality: "best",
+$     cut: { start_time: "0:0:0.0", length: "0:0:1.0" },
 $     thumbs: { N: 2, number: 1 }
 $   },
 $   store: false
