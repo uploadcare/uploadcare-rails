@@ -22,10 +22,11 @@ describe Uploadcare::Rails::File do
   end
 
   context 'when checking file storing' do
-    it 'stores a file' do
+    it 'stores a file', :aggregate_failures do
       VCR.use_cassette 'file_api_store_file' do
         response = file.store
         expect(response[:uuid]).to eq file.uuid
+        expect(file.loaded?).to be_truthy
       end
     end
   end
@@ -58,7 +59,7 @@ describe Uploadcare::Rails::File do
     end
   end
 
-  context 'when url transformations' do
+  context 'when checking url transformations' do
     subject { file.transform_url(**transformation_args) }
 
     let(:transformator_class) { Uploadcare::Rails::Transformations::ImageTransformations }

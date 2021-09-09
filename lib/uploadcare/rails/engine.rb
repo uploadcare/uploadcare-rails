@@ -15,9 +15,10 @@ module Uploadcare
         end
 
         # Load extensions for active_record
-        # Extend active_record with mount_uploadcare_file method
+        # Extend active_record with mount_uploadcare_file and mount_uploadcare_file_group methods
         ActiveSupport.on_load :active_record do
           require 'uploadcare/rails/active_record/mount_uploadcare_file'
+          require 'uploadcare/rails/active_record/mount_uploadcare_file_group'
         end
       end
     end

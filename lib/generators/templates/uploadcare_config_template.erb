@@ -5,8 +5,8 @@
 
 Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
-  config.public_key = 'demopublickey'
-  # config.secret_key = 'demosecretkey'
+  config.public_key = ENV.fetch('UPLOADCARE_PUBLIC_KEY', 'demopublickey')
+  # config.secret_key = ENV.fetch('UPLOADCARE_SECRET_KEY', 'demosecretkey')
 
   # Stores files to Uploadcare servers after object save.
   config.store_files_after_save = true
@@ -100,7 +100,8 @@ Uploadcare::Rails.configure do |config|
   # See https://uploadcare.com/docs/security/secure-delivery/#proxy-backend.
   # config.preview_proxy = 'https://domain.com/preview?'
 
-  # If true, inputs on your page are initialized automatically, see this article for details.
+  # If true, inputs on your page are initialized automatically, see the article for details -
+  # https://uploadcare.com/docs/file-uploader-api/widget-initialization/
   config.live = true
 
   # If true, input initialization is invoked manually.
