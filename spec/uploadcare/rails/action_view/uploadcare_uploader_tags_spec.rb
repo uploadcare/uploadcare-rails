@@ -7,15 +7,31 @@ describe Uploadcare::Rails::ActionView::UploadcareUploaderTags, type: :helper do
   it 'includes a hidden field' do
     tag = uploadcare_uploader_field(:post, :title)
 
-    expect(tag)
-      .to match('<input role="uploadcare-uploader" type="hidden" name="post[title]" id="post_title" />')
+    [
+      '<input',
+      'role="uploadcare-uploader"',
+      'type="hidden"',
+      'name="post[title]"',
+      'id="post_title"',
+      '/>'
+    ].each do |fragment|
+      expect(tag).to include(fragment)
+    end
   end
 
   it 'includes a hidden field tag' do
     tag = uploadcare_uploader_field_tag(:title)
 
-    expect(tag)
-      .to match('<input type="hidden" name="title" id="title" role="uploadcare-uploader" />')
+    [
+      '<input',
+      'role="uploadcare-uploader"',
+      'type="hidden"',
+      'name="title"',
+      'id="title"',
+      '/>'
+    ].each do |fragment|
+      expect(tag).to include(fragment)
+    end
   end
 end
 
