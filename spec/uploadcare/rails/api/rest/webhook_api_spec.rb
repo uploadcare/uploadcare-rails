@@ -26,7 +26,7 @@ module Uploadcare
               end
             end
 
-            xit 'creates a webhook', :aggregate_failures do
+            it 'creates a webhook', :aggregate_failures do
               VCR.use_cassette('webhook_api_create_webhook') do
                 response = subject.create_webhook('https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png')
                 %w[id created updated event target_url project is_active].each do |key|
@@ -35,7 +35,7 @@ module Uploadcare
               end
             end
 
-            xit 'updates a webhook', :aggregate_failures do
+            it 'updates a webhook', :aggregate_failures do
               VCR.use_cassette('webhook_api_update_webhook') do
                 new_target_url = 'https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png'
                 response = subject.update_webhook('811134', target_url: new_target_url, is_active: false)

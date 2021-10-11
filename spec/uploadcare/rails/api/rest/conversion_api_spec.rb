@@ -24,7 +24,7 @@ module Uploadcare
             context 'and when converting a video' do
               let(:uuid) { '169d4bf8-206d-4fa1-8aca-a3aaa73c5cf5' }
 
-              xcontext 'and when request is succeeded' do
+              context 'and when request is succeeded' do
                 it 'converts a video' do
                   VCR.use_cassette('conversion_api_convert_video') do
                     params = {
@@ -51,15 +51,14 @@ module Uploadcare
                 end
               end
 
-              xcontext 'and when request is failed' do
+              context 'and when request is failed' do
                 it 'raises a conversion error' do
                   VCR.use_cassette('conversion_api_convert_video_with_error') do
                     params = {
                       uuid: uuid,
                       size: { resize_mode: 'change_ratio' }
                     }
-                    expect { subject.convert_video(params, store: false) }
-                      .to raise_error(Uploadcare::Exception::ConversionError)
+                    expect(subject.convert_video(params, store: false)).to be_failure
                   end
                 end
               end
@@ -68,7 +67,7 @@ module Uploadcare
             context 'and when converting a document' do
               let(:uuid) { '86c54d9a-3453-4b12-8dcc-49883ae8f084' }
 
-              xcontext 'and when request is succeeded' do
+              context 'and when request is succeeded' do
                 it 'converts a document' do
                   VCR.use_cassette('conversion_api_convert_document') do
                     params = {
@@ -91,15 +90,14 @@ module Uploadcare
                 end
               end
 
-              xcontext 'and when request is failed' do
+              context 'and when request is failed' do
                 it 'raises a conversion error' do
                   VCR.use_cassette('conversion_api_convert_document_with_error') do
                     params = {
                       uuid: uuid,
                       format: 'jpg'
                     }
-                    expect { subject.convert_document(params, store: false) }
-                      .to raise_error(Uploadcare::Exception::ConversionError)
+                    expect(subject.convert_document(params, store: false)).to be_failure
                   end
                 end
               end
