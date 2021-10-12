@@ -1,5 +1,11 @@
 # Uploadcare Rails
 
+![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)
+[![Build Status][actions-img]][actions-badge]
+
+[actions-badge]: https://github.com/uploadcare/uploadcare-rails/actions/workflows/test.yml
+[actions-img]: https://github.com/uploadcare/uploadcare-rails/actions/workflows/test.yml/badge.svg
+
 A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
