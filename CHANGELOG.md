@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## 2.0.1 2021-11-16
+## 2.1.0 2021-11-16
+### Added
 
-- Add option "signing_secret" to Webhooks API
-
+- Option `signing_secret` in the `Uploadcare::WebhookApi`.
 
 ## 2.0.0 - 2021-10-11
 ### :heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
@@ -96,7 +96,3 @@ Configuration object is available as `Uploadcare::Rails.configuration` now
 ### Devepopment
 - Tests have been refactored, VCR appended to development environment.
 - Tests perfomance improvements.
-
-
-[Unreleased]: https://github.com/uploadcare/uploadcare-rails/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/uploadcare/uploadcare-rails/compare/v1.2.0...v1.1.1
