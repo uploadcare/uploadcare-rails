@@ -28,7 +28,10 @@ module Uploadcare
 
             it 'creates a webhook', :aggregate_failures do
               VCR.use_cassette('webhook_api_create_webhook') do
-                response = subject.create_webhook('https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png')
+                response = subject.create_webhook(
+                  'https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png',
+                  signing_secret: '1234'
+                )
                 %w[id created updated event target_url project is_active].each do |key|
                   expect(response).to have_key(key)
                 end
@@ -38,7 +41,12 @@ module Uploadcare
             it 'updates a webhook', :aggregate_failures do
               VCR.use_cassette('webhook_api_update_webhook') do
                 new_target_url = 'https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png'
-                response = subject.update_webhook('811134', target_url: new_target_url, is_active: false)
+                response = subject.update_webhook(
+                  '811134',
+                  target_url: new_target_url,
+                  is_active: false,
+                  signing_secret: '1234'
+                )
                 expect(response['target_url']).to eq(new_target_url)
                 expect(response['is_active']).to eq(false)
               end
