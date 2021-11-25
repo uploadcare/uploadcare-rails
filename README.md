@@ -703,11 +703,14 @@ $ Uploadcare::WebhookApi.get_webhooks
 
 This method requires an URL that is triggered by an event, for example, a file upload. A target URL MUST be unique for each project — event type combination.
 
+Each webhook payload can be signed with a secret (the `signing_secret` option) to ensure that the request comes from the expected sender.
+More info about secure webhooks [here](https://uploadcare.com/docs/security/secure-webhooks/).
+
 ```console
 # Valid options:
 # event: ["file.uploaded"]
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uploaded", is_active: true)
+$ Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uploaded", is_active: true, signing_secret: "some-secret")
 #   => {
 #        "id"=>815671,
 #        "created"=>"2021-08-02T05:02:14.588794Z",
@@ -722,13 +725,13 @@ $ Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uplo
 
 #### Update an existing webhook by ID
 
-Updating a webhook is available if webhook ID is known. The ID is returned in a response on creating or listing webhooks.
+Updating a webhook is available if webhook ID is known. The ID is returned in a response on creating or listing webhooks. Setting a signing secret is supported when updating a webhook as well.
 
 ```console
 # Valid options:
 # event: Presently, we only support the "file.uploaded" event
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example1.com", event: "file.uploaded", is_active: false)
+$ Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example1.com", event: "file.uploaded", is_active: false, signing_secret: "some-secret")
 #   => {
 #        "id"=>815671,
 #        "created"=>"2021-08-02T05:02:14.588794Z",

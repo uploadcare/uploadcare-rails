@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 2.1.0 2021-11-16
+### Added
+
+- Option `signing_secret` in the `Uploadcare::WebhookApi`.
+
 ## 2.0.0 - 2021-10-11
 ### :heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
-
 
 ### Added
 
@@ -82,17 +86,13 @@ Configuration object is available as `Uploadcare::Rails.configuration` now
 
 ## 1.1.0 - 2016-07-12
 ### Added
-- Removed widget from the asset pipeline. It is expected to use helper or to append to the asset pipeline mannualy.
+- Removed widget from the asset pipeline. It is expected to use helper or to append to the asset pipeline manually.
 - Operations for image_tag helpers.
 
 ### Fixed
 - Bug with creating object with empty file or file_group.
-- Workaround to remove unnecessery API cals for groups of images.
+- Workaround to remove unnecessary API-calls for groups of images.
 
-### Devepopment
+### Development
 - Tests have been refactored, VCR appended to development environment.
-- Tests perfomance improvements.
-
-
-[Unreleased]: https://github.com/uploadcare/uploadcare-rails/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/uploadcare/uploadcare-rails/compare/v1.2.0...v1.1.1
+- Tests performance improvements.
