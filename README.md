@@ -73,6 +73,7 @@ You must set the gem before `uploadcare-rails` like this :
 gem "dotenv-rails", require: "dotenv/rails-now", groups: [:development, :test]
 gem "uploadcare-rails"
 ```
+`require: "dotenv/rails-now"` is very important
 
 Run the config generator command to generate a configuration file:
 
