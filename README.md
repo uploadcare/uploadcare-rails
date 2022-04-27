@@ -68,6 +68,11 @@ $ export UPLOADCARE_PUBLIC_KEY=demopublickey
 $ export UPLOADCARE_SECRET_KEY=demoprivatekey
 ```
 Or you can use popular gems like `dotenv-rails` for setting ENV variables.
+You must set the gem before `uploadcare-rails` like this :
+```ruby
+gem "dotenv-rails", require: "dotenv/rails-now", groups: [:development, :test]
+gem "uploadcare-rails"
+```
 
 Run the config generator command to generate a configuration file:
 
