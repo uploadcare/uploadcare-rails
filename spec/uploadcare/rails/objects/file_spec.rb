@@ -70,7 +70,7 @@ describe Uploadcare::Rails::File do
     before { allow(transformator_class).to receive_message_chain(:new, :call).and_return(transformations) }
 
     it 'checks that the transformator received :new method', :aggregate_failures do
-      expect(transformator_class).to receive(:new).with(**transformation_args)
+      expect(transformator_class).to receive(:new).with(transformation_args)
       expect(subject).to eq new_url
     end
   end
