@@ -80,7 +80,7 @@ describe Uploadcare::Rails::Group do
     before { allow(transformator_class).to receive_message_chain(:new, :call).and_return(transformations) }
 
     it 'sends a :new method to the transformator_class', :aggregate_failures do
-      expect(transformator_class).to receive(:new).with(**transformation_args)
+      expect(transformator_class).to receive(:new).with(transformation_args)
       expect(subject).to contain_exactly(*expected_urls)
     end
   end
