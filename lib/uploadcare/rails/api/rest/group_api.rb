@@ -33,6 +33,12 @@ module Uploadcare
               Uploadcare::Group.store(uuid)
             end
 
+            # Delete a file group by its ID.
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteGroup
+            def delete_group(uuid)
+              Uploadcare::Group.delete(uuid)
+            end
+
             # Create files group from a set of files by using their UUIDs.
             # @see https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup
             def create_group(files, **options)
