@@ -7,8 +7,8 @@ require 'rails/all'
 describe Uploadcare::Rails::Group do
   let(:group) do
     described_class.new(
-      cdn_url: 'https://ucarecdn.com/aeaeeb8d-43bc-444d-954f-a171fd872e58~2/',
-      id: 'aeaeeb8d-43bc-444d-954f-a171fd872e58~2',
+      cdn_url: 'https://ucarecdn.com/ef40303c-a326-44d1-b12e-4b4b92144fc0~2/',
+      id: 'ef40303c-a326-44d1-b12e-4b4b92144fc0~2',
       files_count: '2'
     )
   end
@@ -26,8 +26,7 @@ describe Uploadcare::Rails::Group do
     it 'stores a group', :aggregate_failures do
       VCR.use_cassette 'group_api_store_group' do
         response = group.store
-        expect(response[:id]).to eq group.id
-        expect(group.loaded?).to be_truthy
+        expect(response).to eq('200 OK')
       end
     end
   end

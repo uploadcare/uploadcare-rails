@@ -7,8 +7,8 @@ require 'rails/all'
 describe Uploadcare::Rails::File do
   let(:file) do
     described_class.new(
-      cdn_url: 'https://ucarecdn.com/5ae54c37-754c-4982-8de4-3f242a88ce17/',
-      uuid: '5ae54c37-754c-4982-8de4-3f242a88ce17'
+      cdn_url: 'https://ucarecdn.com/c8e24d55-a34f-4caa-afc5-30345635d026/',
+      uuid: 'c8e24d55-a34f-4caa-afc5-30345635d026'
     )
   end
   let(:cache) { Rails.cache }

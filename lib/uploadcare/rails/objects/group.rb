@@ -32,9 +32,7 @@ module Uploadcare
       end
 
       def store
-        group_info = Uploadcare::GroupApi.store_group(id).to_h
-        ::Rails.cache.write(cache_key, group_info, expires_in: cache_expires_in) if caching_enabled?
-        update_attrs(group_info)
+        Uploadcare::GroupApi.store_group(id)
       end
 
       def to_s

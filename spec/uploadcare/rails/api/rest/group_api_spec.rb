@@ -12,7 +12,7 @@ module Uploadcare
 
           context 'when checking methods' do
             it 'responds to expected REST methods' do
-              %i[get_groups get_group store_group create_group].each do |method|
+              %i[get_groups get_group store_group delete_group create_group].each do |method|
                 expect(subject).to respond_to(method)
               end
             end
@@ -39,9 +39,9 @@ module Uploadcare
 
             it 'stores a group' do
               VCR.use_cassette('group_api_store_group') do
-                uuid = 'aeaeeb8d-43bc-444d-954f-a171fd872e58~2'
+                uuid = 'ef40303c-a326-44d1-b12e-4b4b92144fc0~2'
                 response = subject.store_group(uuid)
-                expect(response['id']).to eq(uuid)
+                expect(response['id']).to be_nil
               end
             end
 
