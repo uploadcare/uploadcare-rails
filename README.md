@@ -663,7 +663,7 @@ $ Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/res
 ```
 
 
-#### Delete a file group by its ID.
+#### Delete a file group by its ID
 
 ```console
 $ Uploadcare::GroupApi.delete_group("90c93e96-965b-4dd2-b323-39d9bd5f492c~1")
@@ -868,7 +868,9 @@ $ Uploadcare::FileMetadataApi.file_metadata_value('f757ea10-8b1a-4361-9a7c-56bfa
 #   => "sample-value"
 ```
 
-#### Update the value of a single metadata key. If the key does not exist, it will be created
+#### Update the value of a single metadata key
+
+If the key does not exist, it will be created.
 
 ```console
 $ Uploadcare::FileMetadataApi.update_file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key', 'new-value')
@@ -887,7 +889,7 @@ $ Uploadcare::FileMetadataApi.delete_file_metadata('f757ea10-8b1a-4361-9a7c-56bf
 
 An Add-On is an application implemented by Uploadcare that accepts uploaded files as an input and can produce other files and/or appdata as an output.
 
-#### Execute AWS Rekognition Add-On for a given target to detect labels in an image.
+#### Execute AWS Rekognition Add-On for a given target to detect labels in an image
 
 ```
   Note: Detected labels are stored in the file's appdata.
@@ -898,35 +900,35 @@ $ Uploadcare::AddonsApi.rekognition_detect_labels('f757ea10-8b1a-4361-9a7c-56bfa
 #   => {"request_id"=>"dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e"}
 ```
 
-#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation.
+#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
 
 ```console
 $ Uploadcare::AddonsApi.rekognition_detect_labels_status('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
 #   => {"status"=>"done"}
 ```
 
-#### Execute ClamAV virus checking Add-On for a given target.
+#### Execute ClamAV virus checking Add-On for a given target
 
 ```console
 $ Uploadcare::AddonsApi.virus_scan('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
 #   => {"request_id"=>"1b0126de-ace6-455b-82e2-25f4aa33fc6f"}
 ```
 
-#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation.
+#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
 
 ```console
 $ Uploadcare::AddonsApi.virus_scan_status('1b0126de-ace6-455b-82e2-25f4aa33fc6f')
 #   => {"status"=>"done"}
 ```
 
-#### Execute remove.bg background image removal Add-On for a given target.
+#### Execute remove.bg background image removal Add-On for a given target
 
 ```console
 $ Uploadcare::AddonsApi.remove_bg('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
 #   => {"request_id"=>"6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c"}
 ```
 
-#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation.
+#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
 
 ```console
 $ Uploadcare::AddonsApi.remove_bg_status('6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c')

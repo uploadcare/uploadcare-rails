@@ -15,16 +15,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Removed `rekognition_info` in favor of `appdata`
   - Parameter `add_fields` was renamed to `include`
 - For Uploadcare::FileApi#get_files
-  - Remove the option of sorting the file list by file size
+  - Removed the option of sorting the file list by file size
 - For Uploadcare::GroupApi#store_group
- - Change response format
+ - Changed response format
 
 ### Added
 
 - Add Uploadcare API interface:
   - Uploadcare::FileMetadataApi
   - Uploadcare::AddonsApi
-- Added a possibility to delete a Group
+- Added an option to delete a Group
 
 ## 2.1.1 2022-05-13
 ### Fix
