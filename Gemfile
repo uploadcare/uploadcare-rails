@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in uploadcare-rails.gemspec
 gemspec
 
-gem 'dry-configurable'
+gem 'dry-configurable', '~> 0.13.0'
 gem 'dry-initializer'
 gem 'dry-matcher'
 gem 'dry-monads'
