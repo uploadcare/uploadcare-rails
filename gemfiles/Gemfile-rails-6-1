@@ -4,7 +4,7 @@ gemspec path: ".."
 
 gem "rails", '~> 6.1.0', github: 'rails/rails', branch: '6-1-stable'
 
-gem 'dry-configurable'
+gem 'dry-configurable', '~> 0.13.0'
 gem 'dry-initializer'
 gem 'dry-matcher'
 gem 'dry-monads'
