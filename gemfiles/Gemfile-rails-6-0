@@ -4,6 +4,12 @@ gemspec path: ".."
 
 gem "rails", '~> 6.0.0', github: 'rails/rails', branch: '6-0-stable'
 
+gem 'dry-initializer'
+gem 'dry-matcher'
+gem 'dry-monads'
+gem 'dry-struct'
+gem 'dry-types'
+gem 'dry-validation'
 gem 'dry-configurable'
 gem 'api_struct'
 gem 'rake', '~> 13.0.6'
