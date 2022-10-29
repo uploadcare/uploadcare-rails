@@ -3,7 +3,6 @@
 require 'rspec'
 require 'bundler/setup'
 require 'uploadcare/rails'
-require 'dry/monads/result'
 require 'api_struct'
 require 'uploadcare'
 require 'action_view'
