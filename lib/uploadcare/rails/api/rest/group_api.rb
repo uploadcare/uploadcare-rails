@@ -10,7 +10,7 @@ module Uploadcare
         class GroupApi < Base
           class << self
             # Returns paginated list of groups
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/groupsList
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/groupsList
             #
             # valid options:
             # limit: (1..1000)
@@ -28,7 +28,7 @@ module Uploadcare
             end
 
             # Stores all files in a group
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put
             def store_group(uuid)
               Uploadcare::Group.store(uuid)
             end
