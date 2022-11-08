@@ -18,8 +18,8 @@ module Uploadcare
             # limit: (1..1000)
             # ordering: ["datetime_uploaded"|"-datetime_uploaded"]
             # from: A starting point for filtering files. The value depends on your ordering parameter value.
-            def get_files(**options)
-              Uploadcare::FileList.file_list(**options)
+            def get_files(options = {})
+              Uploadcare::FileList.file_list(options)
             end
 
             # Acquire file info
@@ -31,8 +31,8 @@ module Uploadcare
             # 'copy' method is used to copy original files or their modified versions to default storage.
             # Source files MAY either be stored or just uploaded and MUST NOT be deleted.
             # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/copyFile
-            def copy_file(source, **options)
-              Uploadcare::File.copy(source, **options)
+            def copy_file(source, options = {})
+              Uploadcare::File.copy(source, options)
             end
 
             # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/deleteFile

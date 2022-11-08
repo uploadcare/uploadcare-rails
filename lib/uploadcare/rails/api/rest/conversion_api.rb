@@ -11,8 +11,8 @@ module Uploadcare
           class << self
             # Converts video files
             # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/videoConvert
-            def convert_video(video_params, **options)
-              Uploadcare::VideoConverter.convert(video_params, **options)
+            def convert_video(video_params, options = {})
+              Uploadcare::VideoConverter.convert(video_params, options)
             end
 
             # Returns a status of video conversion job
@@ -23,8 +23,8 @@ module Uploadcare
 
             # Converts documents
             # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/documentConvert
-            def convert_document(document_params, **options)
-              Uploadcare::DocumentConverter.convert(document_params, **options)
+            def convert_document(document_params, options = {})
+              Uploadcare::DocumentConverter.convert(document_params, options)
             end
 
             # Returns a status of video conversion job

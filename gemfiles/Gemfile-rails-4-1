@@ -9,5 +9,6 @@ end
 
 gem "rails", github: "rails/rails", branch: "4-1-stable"
 
+gem 'uploadcare-ruby', git: 'https://github.com/uploadcare/uploadcare-ruby.git', branch: 'version_4.0.0_fix_rails_specs'
 gem 'rake', '~> 12.0.0'
 gem 'rspec', '~> 3.10'

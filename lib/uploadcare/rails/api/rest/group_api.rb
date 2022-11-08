@@ -17,8 +17,8 @@ module Uploadcare
             # ordering: ["datetime_created"|"-datetime_created"]
             # from: A starting point for filtering group lists. MUST be a datetime value with T used as a separator.
             #   example: '2015-01-02T10:00:00'
-            def get_groups(**options)
-              Uploadcare::GroupList.list(**options)
+            def get_groups(options = {})
+              Uploadcare::GroupList.list(options)
             end
 
             # Get group info
@@ -41,8 +41,8 @@ module Uploadcare
 
             # Create files group from a set of files by using their UUIDs.
             # @see https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup
-            def create_group(files, **options)
-              Uploadcare::Group.create(files, **options)
+            def create_group(files, options = {})
+              Uploadcare::Group.create(files, options)
             end
           end
         end

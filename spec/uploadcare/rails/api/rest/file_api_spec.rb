@@ -21,7 +21,7 @@ module Uploadcare
           context 'when sending requests' do
             it 'gets file info' do
               VCR.use_cassette('file_api_get_file') do
-                uuid = '5ae54c37-754c-4982-8de4-3f242a88ce17'
+                uuid = '2254146d-3652-4419-abf6-305d36ef30a8'
                 file = subject.get_file(uuid)
                 expect(file.uuid).to eq(uuid)
               end
@@ -48,7 +48,7 @@ module Uploadcare
 
             it 'stores a file' do
               VCR.use_cassette('file_api_store_file') do
-                uuid = '5ae54c37-754c-4982-8de4-3f242a88ce17'
+                uuid = '2254146d-3652-4419-abf6-305d36ef30a8'
                 response = subject.store_file(uuid)
                 expect(response['uuid']).to eq uuid
               end
@@ -56,7 +56,7 @@ module Uploadcare
 
             it 'deletes a file' do
               VCR.use_cassette('file_api_delete_file') do
-                uuid = '5ae54c37-754c-4982-8de4-3f242a88ce17'
+                uuid = '2254146d-3652-4419-abf6-305d36ef30a8'
                 response = subject.delete_file(uuid)
                 expect(response['uuid']).to eq uuid
               end

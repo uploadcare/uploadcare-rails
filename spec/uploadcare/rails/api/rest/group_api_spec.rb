@@ -21,7 +21,7 @@ module Uploadcare
           context 'when sending requests' do
             it 'gets group info' do
               VCR.use_cassette('group_api_get_group') do
-                uuid = '8b1362ed-b477-4a15-819a-2c6bb497d8bd~3'
+                uuid = '6053b054-b8d4-4f57-992d-94b8f1d6ba65~2'
                 response = subject.get_group(uuid)
                 expect(response['id']).to eq(uuid)
               end
@@ -39,15 +39,15 @@ module Uploadcare
 
             it 'stores a group' do
               VCR.use_cassette('group_api_store_group') do
-                uuid = 'aeaeeb8d-43bc-444d-954f-a171fd872e58~2'
+                uuid = '6053b054-b8d4-4f57-992d-94b8f1d6ba65~2'
                 response = subject.store_group(uuid)
-                expect(response['id']).to eq(uuid)
+                expect(response).to eq('200 OK')
               end
             end
 
             it 'creates a group' do
               VCR.use_cassette('group_api_create_group') do
-                file_ids = %w[f55fcc80-58c1-42eb-9e8f-54d500296d38 4a6ef027-d4cd-49be-a383-8cdbe503aa03]
+                file_ids = %w[272cbffa-4a27-4aba-98f1-a36e2e017e24 36892dd8-ccb1-4225-bc48-96a0fde93b33]
 
                 response = subject.create_group(file_ids.map { |f| "#{f}/resize/x600" })
                 expect(response['files'].map { |f| f['file_id'] }).to contain_exactly(*file_ids)

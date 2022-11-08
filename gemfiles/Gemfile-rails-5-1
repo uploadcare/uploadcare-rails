@@ -4,5 +4,6 @@ gemspec path: ".."
 
 gem "rails", '~> 5.1.0'
 
+gem 'uploadcare-ruby', git: 'https://github.com/uploadcare/uploadcare-ruby.git', branch: 'version_4.0.0_fix_rails_specs'
 gem 'rake', '~> 13.0.6'
 gem 'rspec', '~> 3.10'
