@@ -11,7 +11,7 @@ module Uploadcare
           class << self
             # Get information about the current project.
             # Current project is determined by public and secret keys combination.
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#tag/Project
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Project
             # rubocop:disable Naming/AccessorMethodName
             def get_project
               Uploadcare::Project.show

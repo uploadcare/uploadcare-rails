@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.0.0 2022-02-10
+### Changed
+
+- For Uploadcare::FileApi#get_file
+  - File information doesn't return `image_info` and `video_info` fields anymore
+  - Field `content_info` that includes mime-type, image (dimensions, format, etc), video information (duration, format, bitrate, etc), audio information, etc
+  - Field `metadata` that includes arbitrary metadata associated with a file
+  - Field `appdata` that includes dictionary of application names and data associated with these applications
+  - Removed `rekognition_info` in favor of `appdata`
+  - Parameter `add_fields` was renamed to `include`
+- For Uploadcare::FileApi#get_files
+  - Removed the option of sorting the file list by file size
+- For Uploadcare::GroupApi#store_group
+ - Changed response format
+
+### Added
+
+- Add Uploadcare API interface:
+  - Uploadcare::FileMetadataApi
+  - Uploadcare::AddonsApi
+- Added an option to delete a Group
+
 ## 2.1.1 2022-05-13
 ### Fix
 

@@ -32,6 +32,8 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
     * [Project Api](#project-api)
     * [Webhook Api](#webhook-api)
     * [Conversion Api](#conversion-api)
+    * [File Metadata Api](#file-metadata-api)
+    * [Add-Ons Api](#add-ons-api)
 * [Useful links](#useful-links)
 
 ## Installation
@@ -490,7 +492,7 @@ FileApi provides an interface to manage single files, stored on Uploadcare Serve
 # removed: [true|false]
 # stored: [true|false]
 # limit: (1..1000)
-# ordering: ["datetime_uploaded"|"-datetime_uploaded"|"size"|"-size"]
+# ordering: ["datetime_uploaded"|"-datetime_uploaded"]
 # from: A starting point for filtering files. The value depends on your ordering parameter value.
 $ Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
 #   => {
@@ -636,14 +638,7 @@ $ Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 
 ```console
 $ Uploadcare::GroupApi.store_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
-#   => {
-#         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20/",
-#          ...other group data...
-#         "files"=> [{
-#            "datetime_stored"=>"2021-07-29T08:31:45.668354Z",
-#            ...other file data...
-#         }]
-#      }
+#   => "200 OK"
 ```
 
 
@@ -665,6 +660,14 @@ $ Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/res
 #            ...other file data...
 #         }]
 #      }
+```
+
+
+#### Delete a file group by its ID
+
+```console
+$ Uploadcare::GroupApi.delete_group("90c93e96-965b-4dd2-b323-39d9bd5f492c~1")
+#   => "200 OK"
 ```
 
 
@@ -843,6 +846,95 @@ $ Uploadcare::ConversionApi.get_video_conversion_status(916090555)
 #        :status=>"finished"
 #     })
 ```
+
+
+### File Metadata Api
+
+File metadata is additional, arbitrary data, associated with uploaded file.
+As an example, you could store unique file identifier from your system.
+Metadata is key-value data.
+
+#### Get file's metadata keys and values
+
+```console
+$ Uploadcare::FileMetadataApi.file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
+#   => {:"sample-key"=>"sample-value"}
+```
+
+#### Get the value of a single metadata key
+
+```console
+$ Uploadcare::FileMetadataApi.file_metadata_value('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key')
+#   => "sample-value"
+```
+
+#### Update the value of a single metadata key
+
+If the key does not exist, it will be created.
+
+```console
+$ Uploadcare::FileMetadataApi.update_file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key', 'new-value')
+#   => "new-value"
+```
+
+#### Delete a file's metadata key
+
+```console
+$ Uploadcare::FileMetadataApi.delete_file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key')
+#   => "200 OK"
+```
+
+
+### Add-Ons Api
+
+An Add-On is an application implemented by Uploadcare that accepts uploaded files as an input and can produce other files and/or appdata as an output.
+
+#### Execute AWS Rekognition Add-On for a given target to detect labels in an image
+
+```
+  Note: Detected labels are stored in the file's appdata.
+```
+
+```console
+$ Uploadcare::AddonsApi.rekognition_detect_labels('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
+#   => {"request_id"=>"dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e"}
+```
+
+#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
+
+```console
+$ Uploadcare::AddonsApi.rekognition_detect_labels_status('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
+#   => {"status"=>"done"}
+```
+
+#### Execute ClamAV virus checking Add-On for a given target
+
+```console
+$ Uploadcare::AddonsApi.virus_scan('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
+#   => {"request_id"=>"1b0126de-ace6-455b-82e2-25f4aa33fc6f"}
+```
+
+#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
+
+```console
+$ Uploadcare::AddonsApi.virus_scan_status('1b0126de-ace6-455b-82e2-25f4aa33fc6f')
+#   => {"status"=>"done"}
+```
+
+#### Execute remove.bg background image removal Add-On for a given target
+
+```console
+$ Uploadcare::AddonsApi.remove_bg('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
+#   => {"request_id"=>"6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c"}
+```
+
+#### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
+
+```console
+$ Uploadcare::AddonsApi.remove_bg_status('6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c')
+#   => {"status"=>"done", "result"=>{"file_id"=>"8f0a2a28-3ed7-481e-b415-ee3cce982aaa"}}
+```
+
 
 ## Useful links
 * [Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)  
