@@ -62,12 +62,12 @@ $ gem install uploadcare-rails
 
 ### Configuration
 
-To start using Uploadcare API you just need to set your API keys (public key and secret key).
+To start using Uploadcare API you just need to set your [API keys](https://app.uploadcare.com/projects/-/api-keys/) (public key and secret key).
 These keys can be set as ENV variables using the `export` directive:
 
 ```console
-$ export UPLOADCARE_PUBLIC_KEY=demopublickey
-$ export UPLOADCARE_SECRET_KEY=demoprivatekey
+$ export UPLOADCARE_PUBLIC_KEY=your_public_key
+$ export UPLOADCARE_SECRET_KEY=your_private_key
 ```
 Or you can use popular gems like `dotenv-rails` for setting ENV variables.
 You must set the gem before `uploadcare-rails` like this :
@@ -92,7 +92,7 @@ This step is done automatically in the initializer if you set the ENV variable `
 ...
 Uploadcare::Rails.configure do |config|
   # Sets your Uploadcare public key.
-  config.public_key = ENV.fetch("UPLOADCARE_PUBLIC_KEY", "demopublickey")
+  config.public_key = ENV.fetch("UPLOADCARE_PUBLIC_KEY", "your_public_key")
   ...
 end
 ```
@@ -680,7 +680,7 @@ $ Uploadcare::ProjectApi.get_project
 #   => {
 #        "collaborators"=>[],
 #        "name"=>"New project",
-#        "pub_key"=>"demopublickey",
+#        "pub_key"=>"your_public_key",
 #        "autostore_enabled"=>true
 #      }
 ```
