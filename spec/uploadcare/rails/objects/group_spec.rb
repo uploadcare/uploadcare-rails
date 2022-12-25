@@ -7,8 +7,8 @@ require 'rails/all'
 describe Uploadcare::Rails::Group do
   let(:group) do
     described_class.new(
-      cdn_url: 'https://ucarecdn.com/aeaeeb8d-43bc-444d-954f-a171fd872e58~2/',
-      id: 'aeaeeb8d-43bc-444d-954f-a171fd872e58~2',
+      cdn_url: 'https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/',
+      id: '6053b054-b8d4-4f57-992d-94b8f1d6ba65~2',
       files_count: '2'
     )
   end
@@ -26,8 +26,7 @@ describe Uploadcare::Rails::Group do
     it 'stores a group', :aggregate_failures do
       VCR.use_cassette 'group_api_store_group' do
         response = group.store
-        expect(response[:id]).to eq group.id
-        expect(group.loaded?).to be_truthy
+        expect(response).to eq('200 OK')
       end
     end
   end
@@ -35,27 +34,6 @@ describe Uploadcare::Rails::Group do
   context 'when checking group to_s method' do
     it 'returns the cdn_url of a group' do
       expect(group.to_s).to eq group.cdn_url
-    end
-  end
-
-  context 'when checking group loading' do
-    let(:group) do
-      described_class.new(
-        cdn_url: 'https://ucarecdn.com/8b1362ed-b477-4a15-819a-2c6bb497d8bd~3/',
-        id: '8b1362ed-b477-4a15-819a-2c6bb497d8bd~3',
-        files_count: '2'
-      )
-    end
-
-    it 'checks that a group is not loaded by default' do
-      expect(group.loaded?).to be_falsey
-    end
-
-    it 'checks that a group is loaded' do
-      VCR.use_cassette 'group_api_get_group' do
-        group.load
-        expect(group.loaded?).to be_truthy
-      end
     end
   end
 

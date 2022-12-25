@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.4.0'
 
   gem.name          = 'uploadcare-rails'
-  gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanchenko)']
+  gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanchenko), @T0mbery (Andrey Aksenov)']
   gem.email         = ['hello@uploadcare.com']
   gem.summary       = 'Rails gem for Uploadcare'
   gem.description   = <<~DESCRIPTION
@@ -28,7 +28,14 @@ Gem::Specification.new do |gem|
   gem.test_files = Dir['spec/**/*']
   gem.version = Uploadcare::Rails::VERSION
   gem.add_dependency 'rails', '>= 4'
-  gem.add_dependency 'uploadcare-ruby'
+  gem.add_dependency 'uploadcare-ruby', '>= 4.1'
+  # rubocop:disable Gemspec/RubyVersionGlobalsUsage
+  if RUBY_VERSION.start_with?('3')
+    gem.add_dependency 'dry-configurable', '0.13.0'
+  else
+    gem.add_dependency 'dry-configurable'
+  end
+  # rubocop:enable Gemspec/RubyVersionGlobalsUsage
 
   gem.add_development_dependency 'rspec', '> 3.4.4'
   gem.add_development_dependency 'rspec-rails'

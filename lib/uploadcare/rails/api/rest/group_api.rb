@@ -10,15 +10,15 @@ module Uploadcare
         class GroupApi < Base
           class << self
             # Returns paginated list of groups
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/groupsList
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/groupsList
             #
             # valid options:
             # limit: (1..1000)
             # ordering: ["datetime_created"|"-datetime_created"]
             # from: A starting point for filtering group lists. MUST be a datetime value with T used as a separator.
             #   example: '2015-01-02T10:00:00'
-            def get_groups(**options)
-              Uploadcare::GroupList.list(**options)
+            def get_groups(options = {})
+              Uploadcare::GroupList.list(options)
             end
 
             # Get group info
@@ -28,15 +28,21 @@ module Uploadcare
             end
 
             # Stores all files in a group
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Group/paths/~1groups~1%3Cuuid%3E~1storage~1/put
             def store_group(uuid)
               Uploadcare::Group.store(uuid)
             end
 
+            # Delete a file group by its ID.
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteGroup
+            def delete_group(uuid)
+              Uploadcare::Group.delete(uuid)
+            end
+
             # Create files group from a set of files by using their UUIDs.
             # @see https://uploadcare.com/api-refs/upload-api/#operation/createFilesGroup
-            def create_group(files, **options)
-              Uploadcare::Group.create(files, **options)
+            def create_group(files, options = {})
+              Uploadcare::Group.create(files, options)
             end
           end
         end

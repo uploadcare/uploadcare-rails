@@ -31,6 +31,10 @@ jobs:
             gemfile: gemfiles/Gemfile-rails-4-1
           - ruby: 2.5
             gemfile: gemfiles/Gemfile-rails-4-1
+          - ruby: 2.5
+            gemfile: gemfiles/Gemfile-rails-6-0
+          - ruby: 2.5
+            gemfile: gemfiles/Gemfile-rails-6-1
           - ruby: 2.6
             gemfile: gemfiles/Gemfile-rails-4-1
           - ruby: 2.6
@@ -63,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup Bundler 1.x for Rails 4.x
-        if: ${{ matrix.gemfile == 'gemfiles/Gemfile-rails-4-1' || matrix.gemfile == 'gemfiles/Gemfile-rails-4-2' }}
+        if: ${{ matrix.ruby == '2.4' || matrix.ruby == '2.5' }}
         run: echo "BUNDLER_VERSION=1.17.3" >> $GITHUB_ENV
       - uses: ruby/setup-ruby@v1
         with:

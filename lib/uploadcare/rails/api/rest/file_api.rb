@@ -10,51 +10,58 @@ module Uploadcare
         class FileApi < Base
           class << self
             # Returns a pagination json of files stored in project
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/filesList
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/filesList
             #
             # valid options:
             # removed: [true|false]
             # stored: [true|false]
             # limit: (1..1000)
-            # ordering: ["datetime_uploaded"|"-datetime_uploaded"|"size"|"-size"]
+            # ordering: ["datetime_uploaded"|"-datetime_uploaded"]
             # from: A starting point for filtering files. The value depends on your ordering parameter value.
-            def get_files(**options)
-              Uploadcare::FileList.file_list(**options)
+            def get_files(options = {})
+              Uploadcare::FileList.file_list(options)
             end
 
             # Acquire file info
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/fileInfo
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/fileInfo
             def get_file(uuid)
               Uploadcare::File.info(uuid)
             end
 
-            # 'copy' method is used to copy original files or their modified versions to default storage.
+            # 'local_copy' method is used to copy original files or their modified versions to a default storage.
             # Source files MAY either be stored or just uploaded and MUST NOT be deleted.
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/copyFile
-            def copy_file(source, **options)
-              Uploadcare::File.copy(source, **options)
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/File/operation/createLocalCopy
+            def local_copy_file(source, options = {})
+              Uploadcare::File.local_copy(source, options)
             end
 
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/deleteFile
+            # 'remote_copy' method is used to copy original files or their modified versions to a custom storage.
+            # Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/File/operation/createRemoteCopy
+            def remote_copy_file(source, target, options = {})
+              Uploadcare::File.remote_copy(source, target, options)
+            end
+
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/deleteFile
             def delete_file(uuid)
               Uploadcare::File.delete(uuid)
             end
 
             # Store a single file, preventing it from being deleted in 2 weeks
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/storeFile
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/storeFile
             def store_file(uuid)
               Uploadcare::File.store(uuid)
             end
 
             # Make a set of files "stored". This will prevent them from being deleted automatically
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/filesStoring
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/filesStoring
             # uuids: Array
             def store_files(uuids)
               Uploadcare::FileList.batch_store(uuids)
             end
 
             # Delete several files by list of uids
-            # @see https://uploadcare.com/api-refs/rest-api/v0.5.0/#operation/filesDelete
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/filesDelete
             # uuids: Array
             def delete_files(uuids)
               Uploadcare::FileList.batch_delete(uuids)
