@@ -52,6 +52,17 @@ And then execute:
 $ bundle install
 ```
 
+If you have Ruby version >= 3, then you probably will get error:
+```
+ArgumentError: wrong number of arguments (given 2, expected 1)
+```
+
+To fix this errors, add this line to your application's Gemfile:
+```ruby
+gem 'dry-configurable', '0.13.0'
+```
+and run `bundle install`
+
 ### Using command line
 
 ```console

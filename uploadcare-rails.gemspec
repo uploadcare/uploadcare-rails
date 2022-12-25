@@ -28,7 +28,7 @@ Gem::Specification.new do |gem|
   gem.test_files = Dir['spec/**/*']
   gem.version = Uploadcare::Rails::VERSION
   gem.add_dependency 'rails', '>= 4'
-  gem.add_dependency 'uploadcare-ruby', '>= 4.1'
+  gem.add_dependency 'uploadcare-ruby', '>= 4.2'
 
   # rubocop:disable Gemspec/RubyVersionGlobalsUsage
   if RUBY_VERSION.start_with?('3')
