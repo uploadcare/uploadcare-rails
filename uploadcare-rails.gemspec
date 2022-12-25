@@ -29,16 +29,7 @@ Gem::Specification.new do |gem|
   gem.version = Uploadcare::Rails::VERSION
   gem.add_dependency 'rails', '>= 4'
   gem.add_dependency 'uploadcare-ruby', '>= 4.1'
-
   gem.add_dependency 'dry-configurable', '<= 0.13.0'
-
-  # rubocop:disable Gemspec/RubyVersionGlobalsUsage
-  # if RUBY_VERSION.start_with?('3')
-  #   gem.add_development_dependency 'dry-configurable', '0.13.0'
-  # else
-  #   gem.add_development_dependency 'dry-configurable'
-  # end
-  # rubocop:enable Gemspec/RubyVersionGlobalsUsage
 
   gem.add_development_dependency 'rspec', '> 3.4.4'
   gem.add_development_dependency 'rspec-rails'
