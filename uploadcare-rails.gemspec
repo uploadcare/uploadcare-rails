@@ -27,9 +27,9 @@ Gem::Specification.new do |gem|
   gem.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.rdoc']
   gem.test_files = Dir['spec/**/*']
   gem.version = Uploadcare::Rails::VERSION
+  gem.add_dependency 'dry-configurable', '<= 0.13.0'
   gem.add_dependency 'rails', '>= 4'
   gem.add_dependency 'uploadcare-ruby', '>= 4.1'
-  gem.add_dependency 'dry-configurable', '<= 0.13.0'
 
   gem.add_development_dependency 'rspec', '> 3.4.4'
   gem.add_development_dependency 'rspec-rails'
