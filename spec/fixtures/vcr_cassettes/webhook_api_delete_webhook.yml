@@ -1,7 +1,7 @@
 ---
 http_interactions:
 - request:
-    method: post
+    method: delete
     uri: https://api.uploadcare.com/webhooks/unsubscribe/
     body:
       encoding: UTF-8
@@ -10,13 +10,13 @@ http_interactions:
       Content-Type:
       - application/json
       Accept:
-      - application/vnd.uploadcare-v0.5+json
+      - application/vnd.uploadcare-v0.7+json
       User-Agent:
-      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.0)
+      - UploadcareRuby/4.1.0/demopublickey (Ruby/3.0.0)
       Date:
-      - Thu, 22 Jul 2021 10:34:48 GMT
+      - Sun, 25 Dec 2022 12:06:29 GMT
       Authorization:
-      - Uploadcare demopublickey:14eaf922015dd5ccbb791188ee7bc8df64bb3e60
+      - Uploadcare demopublickey:642d9dcfc0f5224025b6f0bfda0e4beb7c175a70
       Connection:
       - close
       Host:
@@ -27,7 +27,7 @@ http_interactions:
       message: No Content
     headers:
       Date:
-      - Thu, 22 Jul 2021 10:34:49 GMT
+      - Sun, 25 Dec 2022 12:06:30 GMT
       Content-Length:
       - '0'
       Connection:
@@ -41,11 +41,13 @@ http_interactions:
       Vary:
       - Accept
       Allow:
-      - OPTIONS, POST
+      - DELETE, OPTIONS
       X-Xss-Protection:
       - 1; mode=block
       X-Content-Type-Options:
       - nosniff
+      X-Uploadcare-Request-Id:
+      - fd270a55-41e5-49da-8870-ab5e9308a8a2
       X-Frame-Options:
       - SAMEORIGIN
       X-Robots-Tag:
@@ -53,5 +55,5 @@ http_interactions:
     body:
       encoding: ASCII-8BIT
       string: ''
-  recorded_at: Thu, 22 Jul 2021 10:34:50 GMT
-recorded_with: VCR 6.0.0
+  recorded_at: Sun, 25 Dec 2022 12:06:30 GMT
+recorded_with: VCR 6.1.0

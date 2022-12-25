@@ -2,13 +2,13 @@
 http_interactions:
 - request:
     method: get
-    uri: https://upload.uploadcare.com/group/info/?group_id=8b1362ed-b477-4a15-819a-2c6bb497d8bd~3&pub_key=demopublickey
+    uri: https://upload.uploadcare.com/group/info/?group_id=6053b054-b8d4-4f57-992d-94b8f1d6ba65~2&pub_key=demopublickey
     body:
       encoding: UTF-8
       string: ''
     headers:
       User-Agent:
-      - UploadcareRuby/3.0.5/demopublickey (Ruby/2.7.0)
+      - UploadcareRuby/4.0.0/5d5bb5639e3f2df33674 (Ruby/3.0.0)
       Connection:
       - close
       Host:
@@ -19,11 +19,11 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Thu, 22 Jul 2021 09:30:37 GMT
+      - Sun, 30 Oct 2022 20:30:29 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '340'
+      - '1732'
       Connection:
       - close
       Server:
@@ -41,12 +41,16 @@ http_interactions:
       - '1'
       Access-Control-Allow-Credentials:
       - 'true'
+      Access-Control-Expose-Headers:
+      - Warning, Retry-After
       X-Xss-Protection:
       - 1; mode=block
       X-Content-Type-Options:
       - nosniff
+      X-Uploadcare-Request-Id:
+      - 90a2fabe-2413-4f08-bd81-bc00c5ccf0e9
     body:
-      encoding: ASCII-8BIT
-      string: '{"id":"8b1362ed-b477-4a15-819a-2c6bb497d8bd~3","datetime_created":"2013-04-16T14:13:42.600051Z","datetime_stored":"2015-02-03T11:23:47.824683Z","files_count":3,"cdn_url":"https://ucarecdn.com/8b1362ed-b477-4a15-819a-2c6bb497d8bd~3/","url":"https://api.uploadcare.com/groups/8b1362ed-b477-4a15-819a-2c6bb497d8bd~3/","files":[null,null,null]}'
-  recorded_at: Thu, 22 Jul 2021 09:30:37 GMT
-recorded_with: VCR 6.0.0
+      encoding: UTF-8
+      string: '{"id":"6053b054-b8d4-4f57-992d-94b8f1d6ba65~2","datetime_created":"2022-10-29T16:53:33.220316Z","datetime_stored":null,"files_count":2,"cdn_url":"https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/","url":"https://api.uploadcare.com/groups/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/","files":[{"size":2766,"total":2766,"done":2766,"uuid":"272cbffa-4a27-4aba-98f1-a36e2e017e24","file_id":"272cbffa-4a27-4aba-98f1-a36e2e017e24","original_filename":"image.png","is_image":true,"is_stored":true,"image_info":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null},"video_info":null,"content_info":{"mime":{"mime":"image/png","type":"image","subtype":"png"},"image":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null}},"is_ready":true,"filename":"image.png","mime_type":"image/png","metadata":{},"default_effects":""},{"size":2950,"total":2950,"done":2950,"uuid":"36892dd8-ccb1-4225-bc48-96a0fde93b33","file_id":"36892dd8-ccb1-4225-bc48-96a0fde93b33","original_filename":"image.png","is_image":true,"is_stored":true,"image_info":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null},"video_info":null,"content_info":{"mime":{"mime":"image/png","type":"image","subtype":"png"},"image":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null}},"is_ready":true,"filename":"image.png","mime_type":"image/png","metadata":{},"default_effects":""}]}'
+  recorded_at: Sun, 30 Oct 2022 20:30:29 GMT
+recorded_with: VCR 6.1.0
