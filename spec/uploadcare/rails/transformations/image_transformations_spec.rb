@@ -72,36 +72,36 @@ describe Uploadcare::Rails::Transformations::ImageTransformations do
   end
   let(:expected_string) do
     "/preview/#{arguments[:preview]}/-" \
-    "/resize/#{arguments[:resize]}/-" \
-    "/smart_resize/#{arguments[:smart_resize]}/-" \
-    "/crop/#{arguments[:crop].values.join('/')}/-" \
-    "/scale_crop/#{arguments[:scale_crop].values.join('/')}/-" \
-    "/setfill/#{arguments[:setfill]}/-" \
-    "/format/#{arguments[:format]}/-" \
-    "/quality/#{arguments[:quality]}/-" \
-    "/progressive/#{arguments[:progressive]}/-" \
-    '/gif2video/-' \
-    "/brightness/#{arguments[:brightness]}/-" \
-    "/exposure/#{arguments[:exposure]}/-" \
-    "/gamma/#{arguments[:gamma]}/-" \
-    "/contrast/#{arguments[:contrast]}/-" \
-    "/saturation/#{arguments[:saturation]}/-" \
-    "/vibrance/#{arguments[:vibrance]}/-" \
-    "/warmth/#{arguments[:warmth]}/-" \
-    "/enhance/#{arguments[:enhance]}/-" \
-    '/grayscale/-' \
-    '/invert/-' \
-    "/filter/#{arguments[:filter].values.join('/')}/-" \
-    "/srgb/#{arguments[:srgb]}/-" \
-    "/max_icc_size/#{arguments[:max_icc_size]}/-" \
-    "/blur/#{arguments[:blur].values.join('/')}/-" \
-    "/blur_region/#{arguments[:blur_region].values.join('/')}/-" \
-    "/sharp/#{arguments[:sharp]}/-" \
-    "/overlay/#{arguments[:overlay].values.join('/')}/-" \
-    "/autorotate/#{arguments[:autorotate]}/-" \
-    "/rotate/#{arguments[:rotate]}/-" \
-    '/flip/-' \
-    '/mirror/'
+      "/resize/#{arguments[:resize]}/-" \
+      "/smart_resize/#{arguments[:smart_resize]}/-" \
+      "/crop/#{arguments[:crop].values.join('/')}/-" \
+      "/scale_crop/#{arguments[:scale_crop].values.join('/')}/-" \
+      "/setfill/#{arguments[:setfill]}/-" \
+      "/format/#{arguments[:format]}/-" \
+      "/quality/#{arguments[:quality]}/-" \
+      "/progressive/#{arguments[:progressive]}/-" \
+      '/gif2video/-' \
+      "/brightness/#{arguments[:brightness]}/-" \
+      "/exposure/#{arguments[:exposure]}/-" \
+      "/gamma/#{arguments[:gamma]}/-" \
+      "/contrast/#{arguments[:contrast]}/-" \
+      "/saturation/#{arguments[:saturation]}/-" \
+      "/vibrance/#{arguments[:vibrance]}/-" \
+      "/warmth/#{arguments[:warmth]}/-" \
+      "/enhance/#{arguments[:enhance]}/-" \
+      '/grayscale/-' \
+      '/invert/-' \
+      "/filter/#{arguments[:filter].values.join('/')}/-" \
+      "/srgb/#{arguments[:srgb]}/-" \
+      "/max_icc_size/#{arguments[:max_icc_size]}/-" \
+      "/blur/#{arguments[:blur].values.join('/')}/-" \
+      "/blur_region/#{arguments[:blur_region].values.join('/')}/-" \
+      "/sharp/#{arguments[:sharp]}/-" \
+      "/overlay/#{arguments[:overlay].values.join('/')}/-" \
+      "/autorotate/#{arguments[:autorotate]}/-" \
+      "/rotate/#{arguments[:rotate]}/-" \
+      '/flip/-' \
+      '/mirror/'
   end
 
   it 'builds image transformations params url' do

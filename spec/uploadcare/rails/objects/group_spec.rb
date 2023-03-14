@@ -13,7 +13,7 @@ describe Uploadcare::Rails::Group do
     )
   end
   let(:cache) { Rails.cache }
-  let(:config) { OpenStruct.new(cache_files: true) }
+  let(:config) { Struct.new(:cache_files).new(true) }
   let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
   before do

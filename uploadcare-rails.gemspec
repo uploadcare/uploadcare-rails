@@ -19,20 +19,20 @@ Gem::Specification.new do |gem|
   DESCRIPTION
   gem.metadata = {
     'github' => 'https://github.com/uploadcare/uploadcare-rails',
-    'issue_tracker' => 'https://github.com/uploadcare/uploadcare-rails/issues'
+    'issue_tracker' => 'https://github.com/uploadcare/uploadcare-rails/issues',
+    'rubygems_mfa_required' => 'true'
   }
   gem.homepage      = 'https://uploadcare.com/docs/integrations/'
   gem.license       = 'MIT'
 
   gem.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.rdoc']
-  gem.test_files = Dir['spec/**/*']
   gem.version = Uploadcare::Rails::VERSION
   gem.add_dependency 'rails', '>= 4'
   gem.add_dependency 'uploadcare-ruby', '>= 4.3'
 
   gem.add_development_dependency 'rspec', '> 3.4.4'
-  gem.add_development_dependency 'rspec-rails'
-  gem.add_development_dependency 'rubocop'
-  gem.add_development_dependency 'vcr'
-  gem.add_development_dependency 'webmock'
+  gem.add_development_dependency 'rspec-rails', '~> 6.0'
+  gem.add_development_dependency 'rubocop', '~> 1.48'
+  gem.add_development_dependency 'vcr', '~> 6.1'
+  gem.add_development_dependency 'webmock', '~> 3.18'
 end

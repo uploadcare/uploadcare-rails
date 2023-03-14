@@ -10,7 +10,7 @@ module Uploadcare
         def initialize(options = {})
           raise ArgumentError, "Options argument must be a Hash, #{options.class} is given?" unless options.is_a?(Hash)
 
-          @options = options.map { |k, v| [k.to_sym, v] }.to_h
+          @options = options.to_h { |k, v| [k.to_sym, v] }
         end
 
         def call
