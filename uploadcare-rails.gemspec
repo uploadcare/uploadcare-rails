@@ -30,8 +30,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rails', '>= 6'
   gem.add_dependency 'uploadcare-ruby', '>= 4.3'
 
-  gem.add_development_dependency 'rspec', '> 3.4.4'
-  gem.add_development_dependency 'rspec-rails', '~> 6.0'
+  gem.add_development_dependency 'rspec', '~> 3.12'
+  gem.add_development_dependency 'rspec-rails', '>= 5.1'
   gem.add_development_dependency 'rubocop', '~> 1.48'
   gem.add_development_dependency 'vcr', '~> 6.1'
   gem.add_development_dependency 'webmock', '~> 3.18'
