@@ -35,7 +35,9 @@ module Uploadcare
       end
 
       def widget
-        OpenStruct.new(WIDGET_PARAMS.map { |param| [param, public_send(param)] }.to_h)
+        Struct
+          .new(WIDGET_PARAMS)
+          .new(WIDGET_PARAMS.map { |param| public_send(param) })
       end
 
       private

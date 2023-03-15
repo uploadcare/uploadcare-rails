@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.3.0 — 2023-03-16
+
+Guarantee support of maintainable versions of Ruby and Rails
+
+### Breaking Сhanges
+
+Drop support of unmaintainable Ruby 2.4, 2.5, 2.6 and Rails before 6.0
+
+### Added
+
+Add support of Ruby 3.1 and 3.2 and Rails 7.0
+
 ## 3.0.0 — 2022-12-29
 
 This version supports latest Uploadcare REST API — [v0.7](https://uploadcare.com/api-refs/rest-api/v0.7.0/), which introduces new file management features:

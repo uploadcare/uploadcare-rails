@@ -25,7 +25,7 @@ RSpec.describe UploadcareConfigGenerator, type: :generator do
     end
 
     it 'checks that the config file contains the :configure method call' do
-      expect(File.open(config_file_path).read).to match(/Uploadcare::Rails.configure do |config|/)
+      expect(File.read(config_file_path)).to match(/Uploadcare::Rails.configure do |config|/)
     end
   end
 end

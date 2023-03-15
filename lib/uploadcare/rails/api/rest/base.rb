@@ -6,8 +6,9 @@ module Uploadcare
   module Rails
     module Api
       module Rest
-        class Base
-        end
+        # rubocop:disable Lint/EmptyClass
+        class Base; end
+        # rubocop:enable Lint/EmptyClass
       end
     end
   end

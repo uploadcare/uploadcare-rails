@@ -14,3 +14,7 @@ spec/tmp
 
 .idea
 Gemfile.lock
+
+.ruby-version
+project_files
+*.gem
