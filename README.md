@@ -11,6 +11,7 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 
 ### :heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
 
+* [Requirements](#requirements)
 * [Installation](#installation)
   * [Using Gemfile](#using-gemfile)
   * [Using command line](#using-command-line)
@@ -36,6 +37,10 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
     * [Add-Ons Api](#add-ons-api)
 * [Useful links](#useful-links)
 
+## Requirements
+* ruby 2.7+
+* Ruby on Rails 6.0+
+
 ## Installation
 
 ### Using Gemfile
@@ -52,14 +57,9 @@ And then execute:
 $ bundle install
 ```
 
-If you have Ruby version >= 3, then you probably will get error:
-```
-ArgumentError: wrong number of arguments (given 2, expected 1)
-```
-
-To fix this errors, add this line to your application's Gemfile:
+If you use `api_struct` gem in your project, replace it with `uploadcare-api_struct`:
 ```ruby
-gem 'dry-configurable', '0.13.0'
+gem 'uploadcare-api_struct'
 ```
 and run `bundle install`
 
