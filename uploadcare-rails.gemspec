@@ -10,19 +10,19 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.7.0'
 
   gem.name          = 'uploadcare-rails'
-  gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanchenko), @T0mbery (Andrey Aksenov)']
+  gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanchenko), @T0mbery (Andrey Aksenov)', 'kraft001 (Konstantin Rafalskii)']
   gem.email         = ['hello@uploadcare.com']
   gem.summary       = 'Rails gem for Uploadcare'
   gem.description   = <<~DESCRIPTION
-    Rails wrapper for Uploadcare service.
-    Based on uploadcare-ruby gem (https://github.com/uploadcare/uploadcare-ruby)
+    Rails API client (based on uploadcare-ruby) that handles uploads
+    and further operations with files by wrapping Uploadcare Upload and REST APIs.
   DESCRIPTION
   gem.metadata = {
     'github' => 'https://github.com/uploadcare/uploadcare-rails',
     'issue_tracker' => 'https://github.com/uploadcare/uploadcare-rails/issues',
     'rubygems_mfa_required' => 'true'
   }
-  gem.homepage      = 'https://uploadcare.com/docs/integrations/'
+  gem.homepage      = 'https://github.com/uploadcare/uploadcare-rails'
   gem.license       = 'MIT'
 
   gem.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.rdoc']
