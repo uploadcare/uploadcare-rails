@@ -28,7 +28,7 @@ module Uploadcare
             object_name,
             method_name,
             uploadcare_uploader_options(
-              options.merge(multiple: uploadcare_uploader_multiple?(object_name, method_name).presence)
+              options.reverse_merge(multiple: uploadcare_uploader_multiple?(object_name, method_name).presence)
             )
           )
         end

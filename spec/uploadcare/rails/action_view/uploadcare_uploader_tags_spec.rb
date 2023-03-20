@@ -19,6 +19,22 @@ describe Uploadcare::Rails::ActionView::UploadcareUploaderTags, type: :helper do
     end
   end
 
+  it 'includes a hidden field with multiple param' do
+    tag = uploadcare_uploader_field(:post, :title, multiple: true)
+
+    [
+      '<input',
+      'role="uploadcare-uploader"',
+      'type="hidden"',
+      'name="post[title]"',
+      'id="post_title"',
+      'data-multiple="true"',
+      '/>'
+    ].each do |fragment|
+      expect(tag).to include(fragment)
+    end
+  end
+
   it 'includes a hidden field tag' do
     tag = uploadcare_uploader_field_tag(:title)
 
