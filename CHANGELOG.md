@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.3.1 — 2023-03-20
+
+* Update gem description
+* Respect data-multiple in helper options (https://github.com/uploadcare/uploadcare-rails/issues/119)
+
 ## 3.3.0 — 2023-03-16
 
 Guarantee support of maintainable versions of Ruby and Rails
