@@ -20,6 +20,15 @@ module Uploadcare
 
     def configure
       yield configuration
+      overwrite_ruby_config
+    end
+
+    def overwrite_ruby_config
+      # copy Rails config to Ruby config
+      %i[public_key secret_key].each do |param_name|
+        value = configuration.public_send(param_name)
+        Uploadcare.config[param_name] = value unless value.nil?
+      end
     end
 
     def configuration
