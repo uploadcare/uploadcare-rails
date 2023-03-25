@@ -20,7 +20,8 @@ Gem::Specification.new do |gem|
   DESCRIPTION
   gem.metadata = {
     'github' => 'https://github.com/uploadcare/uploadcare-rails',
-    'issue_tracker' => 'https://github.com/uploadcare/uploadcare-rails/issues',
+    'bug_tracker_uri' => 'https://github.com/uploadcare/uploadcare-rails/issues',
+    'changelog_uri' => 'https://github.com/uploadcare/uploadcare-rails/blob/main/CHANGELOG.md',
     'rubygems_mfa_required' => 'true'
   }
   gem.homepage      = 'https://github.com/uploadcare/uploadcare-rails'
