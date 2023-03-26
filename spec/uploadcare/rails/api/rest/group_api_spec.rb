@@ -10,6 +10,13 @@ module Uploadcare
         RSpec.describe GroupApi do
           subject { Uploadcare::GroupApi }
 
+          around do |example|
+            previous_value = Uploadcare.config.public_key
+            Uploadcare.config.public_key = 'demopublickey'
+            example.run
+            Uploadcare.config.public_key = previous_value
+          end
+
           context 'when checking methods' do
             it 'responds to expected REST methods' do
               %i[get_groups get_group store_group create_group].each do |method|
