@@ -9,7 +9,9 @@
 A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
-### :heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
+:heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
+
+## Table of Contents
 
 * [Requirements](#requirements)
 * [Installation](#installation)
@@ -144,7 +146,7 @@ Full list of available options is listed in the file itself. Just uncomment an o
 The fastest way to start using file uploading is to add the Uploadcare widget to the html-page.
 There is a view helper that can do it with two strings of code:
 
-Add this string to your <head> html-tag
+Add this string to your `<head>` html-tag
 
 ```erb
 <!DOCTYPE html>
@@ -175,7 +177,7 @@ This helper uses a CDN-url for the widget bundle and supports three options:
                More info about bundles [here](https://uploadcare.com/docs/uploads/file-uploader/#bundles).
 - **min** — bool value detecting if the bundle must be minified.
 
-The <head> tag then also includes the <script> with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
+The `<head>` tag then also includes the `<script>` with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
 
 
 #### Using asset pipeline.
