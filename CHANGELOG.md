@@ -25,20 +25,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 3.3.1 — 2023-03-20
 
-* Update gem description
+### Changed
+
+* Updated gem description
 * Respect data-multiple in helper options (https://github.com/uploadcare/uploadcare-rails/issues/119)
 
 ## 3.3.0 — 2023-03-16
 
-Guarantee support of maintainable versions of Ruby and Rails
+Guarantee support of maintainable versions of Ruby and Rails.
 
 ### Breaking Сhanges
 
-Drop support of unmaintainable Ruby 2.4, 2.5, 2.6 and Rails before 6.0
+Drop support of unmaintainable Ruby 2.4, 2.5, 2.6 and Rails before 6.0.
 
 ### Added
 
-Add support of Ruby 3.1 and 3.2 and Rails 7.0
+Add support of Ruby 3.1 and 3.2 and Rails 7.0.
 
 ## 3.0.0 — 2022-12-29
 
