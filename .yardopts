@@ -2,4 +2,7 @@
 --title 'Uploadcare Rails API Documentation'
 --charset utf-8
 --markup markdown
-'lib/**/*.rb' - '*.md'
+-
+CHANGELOG.md
+LICENSE.txt
+v2.x-migrations-guide.md
