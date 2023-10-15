@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.3.5 — 2023-10-15
+
+### Fixed
+
+* Documentation issue with `uploadcare_include_tag`
+
 ## 3.3.4 — 2023-04-04
 
 ### Changed
