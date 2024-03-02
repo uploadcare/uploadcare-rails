@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 * Documentation issue with `uploadcare_include_tag`
+* Drop support for Ruby < 3.x
 
 ## 3.3.4 — 2023-04-04
 
