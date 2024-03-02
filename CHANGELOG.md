@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Documentation issue with `uploadcare_include_tag`
 
-### Breaking Сhanges
+### Breaking Changes
 
 * Drop support for Ruby < 3.x
 * Drop support for Rails < 6.1x
@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 Guarantee support of maintainable versions of Ruby and Rails.
 
-### Breaking Сhanges
+### Breaking Changes
 
 Drop support of unmaintainable Ruby 2.4, 2.5, 2.6 and Rails before 6.0.
 
@@ -68,7 +68,7 @@ This version supports latest Uploadcare REST API — [v0.7](https://uploadcare.c
   * [Virus checking](https://uploadcare.com/docs/security/malware-protection/)
   * [Object recognition](https://uploadcare.com/docs/intelligence/object-recognition/)
 
-### Breaking Сhanges
+### Breaking Changes
 
 - For `Uploadcare::FileApi#get_file`
   - File information doesn't return `image_info` and `video_info` fields anymore
