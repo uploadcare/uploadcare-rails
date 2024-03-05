@@ -1,9 +1,8 @@
-# frozen_string_literal: true
+source "https://rubygems.org"
 
-source 'https://rubygems.org'
+gemspec path: ".."
 
-# Specify your gem's dependencies in uploadcare-rails.gemspec
-gemspec
+gem "rails", '~> 7.1.0', github: 'rails/rails', branch: '7-1-stable'
 
 gem 'http-parser', '~> 1.2', '>= 1.2.3'
 gem 'rake', '~> 13.0.6'

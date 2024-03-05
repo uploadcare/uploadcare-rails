@@ -48,12 +48,12 @@ module Uploadcare
             end
 
             unless Uploadcare::Rails.configuration.do_not_store
-              after_save "uploadcare_store_#{attribute}!".to_sym, if: "will_save_change_to_#{attribute}?".to_sym
+              after_save :"uploadcare_store_#{attribute}!", if: :"will_save_change_to_#{attribute}?"
             end
 
             return unless Uploadcare::Rails.configuration.delete_files_after_destroy
 
-            after_destroy "uploadcare_delete_#{attribute}!".to_sym
+            after_destroy :"uploadcare_delete_#{attribute}!"
           end
           # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         end

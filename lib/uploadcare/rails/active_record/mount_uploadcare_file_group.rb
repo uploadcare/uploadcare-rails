@@ -46,7 +46,7 @@ module Uploadcare
               Uploadcare::GroupApi.store_group(group_id)
             end
 
-            after_save "uploadcare_store_#{attribute}!".to_sym unless Uploadcare::Rails.configuration.do_not_store
+            after_save :"uploadcare_store_#{attribute}!" unless Uploadcare::Rails.configuration.do_not_store
           end
           # rubocop:enable Metrics/MethodLength
         end

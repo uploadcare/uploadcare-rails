@@ -153,7 +153,7 @@ Add this string to your `<head>` html-tag
 <html>
 <head>
   <title>RailsApp</title>
-  <%= uploadcare_widget_tag %>
+  <%= uploadcare_include_tag %>
   <!--
     results in:
     <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
