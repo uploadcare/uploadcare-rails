@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 3.4.1 — 2024-03-24
+
+### Fixed
+
+* Fixed invalid group id error when >= 10 files are uploaded when using `mount_uploadcare_file_group`.
+
 ## 3.4.0 — 2024-03-05
 
 ### Fixed

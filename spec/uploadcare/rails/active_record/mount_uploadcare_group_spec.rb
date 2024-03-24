@@ -29,4 +29,18 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFileGroup do
       expect(Post).to respond_to(:has_uploadcare_file_group_for_gallery?)
     end
   end
+
+  describe 'GROUP_ID_REGEX' do
+    it 'properly extracts out group id from the cdn url' do
+      extracted_group_id = Uploadcare::Rails::IdExtractor.call(
+        'https://ucarecdn.com/dc140069-62b1-4ee0-b603-18e2062e26e4~11/', subject::GROUP_ID_REGEX
+      )
+      expect(extracted_group_id).to eq('dc140069-62b1-4ee0-b603-18e2062e26e4~11')
+
+      extracted_group_id = Uploadcare::Rails::IdExtractor.call(
+        'https://ucarecdn.com/dc140069-62b1-4ee0-b603-18e2062e26e4~1/', subject::GROUP_ID_REGEX
+      )
+      expect(extracted_group_id).to eq('dc140069-62b1-4ee0-b603-18e2062e26e4~1')
+    end
+  end
 end

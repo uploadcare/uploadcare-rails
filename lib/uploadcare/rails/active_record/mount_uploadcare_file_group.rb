@@ -13,7 +13,7 @@ module Uploadcare
       module MountUploadcareFileGroup
         extend ActiveSupport::Concern
 
-        GROUP_ID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b~\d/.freeze
+        GROUP_ID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b~\d+/.freeze
 
         def build_uploadcare_file_group(attribute)
           cdn_url = attributes[attribute.to_s].to_s
