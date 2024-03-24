@@ -287,7 +287,7 @@ The helper is detecting the value of the `multiple` property based on the mount 
 ### File and Group wrappers
 
 When you mount either Uploadcare File or Group to an attribute, this attribute is getting wrapped with
-a Uploadcare object. This feature adds some usefull methods to the attribute.
+a Uploadcare object. This feature adds some useful methods to the attribute.
 
 #### Uploadcare File
 
@@ -300,7 +300,7 @@ class Post < ApplicationRecord
 end
 ```
 
-And then you create a new Post object specifying a CDN-url for your prevously uploaded Uploadcare file:
+And then you create a new Post object specifying a CDN-url for your previously uploaded Uploadcare file:
 
 ```console
 $ post = Post.create(picture: "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/")
