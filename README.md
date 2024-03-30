@@ -289,22 +289,42 @@ The helper is detecting the value of the `multiple` property based on the mount 
 If you are facing issue, with multiple input elements being rendered due to turbolinks caching you can append this fix in the `app/javascript/application.js` to overcome this:
 
 ```
-import $ from 'jquery';
-$(document).on('turbolinks:before-cache', function() {
-  $('.uploadcare--dialog__close').trigger('click');
-  $('.uploadcare--dialog').remove();
-  $('.uploadcare--widget').remove();
+document.addEventListener('turbolinks:before-cache', function() {
+    const dialogClose = document.querySelector('.uploadcare--dialog__close');
+    if (dialogClose) {
+        dialogClose.dispatchEvent(new Event('click'));
+    }
+
+    const dialog = document.querySelector('.uploadcare--dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    const widgets = document.querySelectorAll('.uploadcare--widget');
+    widgets.forEach(widget => {
+        widget.remove();
+    });
 });
 ```
 
 Similarly if you are using [Hotwire](https://hotwired.dev/) then use can you use below code:
 
 ```
-import $ from 'jquery';
-$(document).on('turbo:before-cache', function() {
-  $('.uploadcare--dialog__close').trigger('click');
-  $('.uploadcare--dialog').remove();
-  $('.uploadcare--widget').remove();
+document.addEventListener('turbo:before-cache', function() {
+    const dialogClose = document.querySelector('.uploadcare--dialog__close');
+    if (dialogClose) {
+        dialogClose.dispatchEvent(new Event('click'));
+    }
+
+    const dialog = document.querySelector('.uploadcare--dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    const widgets = document.querySelectorAll('.uploadcare--widget');
+    widgets.forEach(widget => {
+        widget.remove();
+    });
 });
 ```
 
