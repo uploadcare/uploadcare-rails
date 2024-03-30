@@ -284,6 +284,50 @@ The value will be available in the controller by `params[:post][:picture]`.
 
 The helper is detecting the value of the `multiple` property based on the mount type in your model.
 
+### Caching issues with Turbolinks/Hotwire
+
+If you are facing issue, with multiple input elements being rendered due to turbolinks caching you can append this fix in the `app/javascript/application.js` to overcome this:
+
+```
+document.addEventListener('turbolinks:before-cache', function() {
+    const dialogClose = document.querySelector('.uploadcare--dialog__close');
+    if (dialogClose) {
+        dialogClose.dispatchEvent(new Event('click'));
+    }
+
+    const dialog = document.querySelector('.uploadcare--dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    const widgets = document.querySelectorAll('.uploadcare--widget');
+    widgets.forEach(widget => {
+        widget.remove();
+    });
+});
+```
+
+Similarly if you are using [Hotwire](https://hotwired.dev/) then use can you use below code:
+
+```
+document.addEventListener('turbo:before-cache', function() {
+    const dialogClose = document.querySelector('.uploadcare--dialog__close');
+    if (dialogClose) {
+        dialogClose.dispatchEvent(new Event('click'));
+    }
+
+    const dialog = document.querySelector('.uploadcare--dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    const widgets = document.querySelectorAll('.uploadcare--widget');
+    widgets.forEach(widget => {
+        widget.remove();
+    });
+});
+```
+
 ### File and Group wrappers
 
 When you mount either Uploadcare File or Group to an attribute, this attribute is getting wrapped with
