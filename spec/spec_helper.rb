@@ -7,6 +7,7 @@ require 'dry/monads/all'
 require 'api_struct'
 require 'uploadcare'
 require 'action_view'
+require 'ostruct'
 
 Dir[File.expand_path(File.join(File.dirname(__FILE__), 'support', '**', '*.rb'))].sort.each { |f| require f }
 
