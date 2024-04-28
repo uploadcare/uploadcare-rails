@@ -346,48 +346,48 @@ end
 
 And then you create a new Post object specifying a CDN-url for your previously uploaded Uploadcare file:
 
-```console
-$ post = Post.create(picture: "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/")
+```ruby
+post = Post.create(picture: "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/")
 ```
 
 Now the `post.picture` is an Uploadcare::Rails::File. Following methods are supported:
 
-```console
+```ruby
 # Store the file on an Uploadcare server permanently:
-$ post.picture.store
+post.picture.store
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/",
 #          ...other group data...
 #      }
-#   
+
 # Delete the file from an Uploadcare server permanently:
-$ post.picture.delete
+post.picture.delete
 #   => {
 #         "datetime_removed"=>"2021-07-30T09:19:30.797174Z",
 #          ...other group data...
 #      }
-#
+
 # Get CDN-url of an object attribute:
-$ post.picture.to_s
+post.picture.to_s
 #   => "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/"
-#
+
 # Load object (send a GET request to the server to get all the file's data)
 # This data will be cached if the cache_files option is set to true
 # Default data (without asking an Uploadcare server) for each file contains cdn_url and uuid only:
-$ post.picture.load
+post.picture.load
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/",
 #          ...other file data...
 #      }
-#
+
 # Check if an attribute loaded from the server.
 # Will return false unless the :load or the :store methods are called:
-$ post.picture.loaded?
+post.picture.loaded?
 #   => true
-#
+
 # More about image transformations below.
 # Transform a CDN-url to get a new transformed image's source. Works for images only:
-$ post.picture.transform_url(quality: "better")
+post.picture.transform_url(quality: "better")
 #   => "https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/-/quality/better/"
 ```
 
@@ -404,15 +404,15 @@ end
 
 Creating a new `post` with the Group mounted:
 
-```console
-$ post = Post.create(attachments: "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/")
+```ruby
+post = Post.create(attachments: "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/")
 ```
 
 Now the `post.attachments` is an Uploadcare::Rails::Group. Following methods are supported:
 
-```console
+```ruby
 # Store the file group on an Uploadcare server permanently:
-$ post.attachments.store
+post.attachments.store
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
 #          ...other group data...
@@ -421,20 +421,20 @@ $ post.attachments.store
 #            ...other file data...
 #         }]
 #      }
-#   
+
 # Delete the file group from an Uploadcare server permanently:
-$ post.attachments.delete
+post.attachments.delete
 #   => {
 #         "datetime_removed"=>"2021-07-30T09:19:30.797174Z",
 #          ...other group data...
 #      }
-#
+
 # Get CDN-url of an object attribute:
-$ post.attachments.to_s
+post.attachments.to_s
 #   => "https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/"
-#
+
 # Load object — works the same way as for the File:
-$ post.attachments.load
+post.attachments.load
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
 #          ...other group data...
@@ -443,19 +443,19 @@ $ post.attachments.load
 #            ...other file data...
 #         }]
 #      }
-#
+
 # Check if an attribute loaded from the server:
-$ post.attachments.loaded?
+post.attachments.loaded?
 #   => true
-#
+
 # As we don't want to show (on the html-page) a file group itself,
 # we can get CDN-urls for file that the group contains. No loading group or files needed.
 # This works for images only:
-$ post.attachments.transform_file_urls(quality: "better")
+post.attachments.transform_file_urls(quality: "better")
 #   => ["https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/nth/0/-/quality/better/"]
-#
+
 # If you want to get non-transformed file urls, use:
-$ post.attachments.file_urls
+post.attachments.file_urls
 #   => ["https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/nth/0/"]
 ```
 
@@ -465,15 +465,15 @@ $ post.attachments.file_urls
 Uploadcare provides a way to transform images stored on Uploadcare services specifying a list of operations.
 If an operation has just one option, you can specify it like key-value:
 
-```console
-$ post.picture.transform_url(quality: "better")
+```ruby
+post.picture.transform_url(quality: "better")
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/quality/better/"
 ```
 
 and if an operation supports several options — just set them as a Hash:
 
-```console
-$ post.picture.transform_url(crop: { dimensions: "300x500", coords: "50, 50", alignment: "center" })
+```ruby
+post.picture.transform_url(crop: { dimensions: "300x500", coords: "50, 50", alignment: "center" })
 #   => "https://ucarecdn.com/ebbb9929-eb92-4f52-a212-eecfdb19d27d/-/crop/300x500/50,50/center/"
 ```
 
@@ -489,12 +489,13 @@ Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage fil
 
 #### Upload a single file
 
-```console
+```ruby
 # Load a file
-$ file = File.open("kitten.png")
+file = File.open("kitten.png")
 #   => #<File:kitten.png>
+
 # Upload file to Uploadcare
-$ uploadcare_file = Uploadcare::UploadApi.upload_file(file)
+uploadcare_file = Uploadcare::UploadApi.upload_file(file)
 #   => {
 #         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b053",
 #          ...other file data...
@@ -503,10 +504,10 @@ $ uploadcare_file = Uploadcare::UploadApi.upload_file(file)
 
 This method supports single file uploading and uploading files from an URL (depending on the type of first argument - can be either String (i.e. URL) or File).
 
-```console
+```ruby
 # Upload file from URL
-$ url = "https://ucarecdn.com/80b807be-faad-4f01-bbbe-0bbde172b9de/1secVIDEO.mp4"
-$ uploadcare_file = Uploadcare::UploadApi.upload_file(url)
+url = "https://ucarecdn.com/80b807be-faad-4f01-bbbe-0bbde172b9de/1secVIDEO.mp4"
+uploadcare_file = Uploadcare::UploadApi.upload_file(url)
 #   => [
 #        {
 #          "size"=>22108,
@@ -523,12 +524,12 @@ $ uploadcare_file = Uploadcare::UploadApi.upload_file(url)
 
 #### Upload several files
 
-```console
+```ruby
 # Load a file
-$ file = File.open("kitten.png")
+file = File.open("kitten.png")
 #   => #<File:kitten.png>
 # Upload several files to Uploadcare
-$ uploadcare_file = Uploadcare::UploadApi.upload_files([file])
+uploadcare_file = Uploadcare::UploadApi.upload_files([file])
 #   => [
 #        {
 #          "uuid"=>"2dfc94e6-e74e-4014-9ff5-a71b8928f4fa",
@@ -544,14 +545,14 @@ FileApi provides an interface to manage single files, stored on Uploadcare Serve
 
 #### Get files
 
-```console
+```ruby
 # Valid options:
 # removed: [true|false]
 # stored: [true|false]
 # limit: (1..1000)
 # ordering: ["datetime_uploaded"|"-datetime_uploaded"]
 # from: A starting point for filtering files. The value depends on your ordering parameter value.
-$ Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
+Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
 #   => {
 #        "next"=>nil,
 #        "previous"=>nil,
@@ -569,7 +570,7 @@ $ Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
 
 #### Get a file by UUID
 
-```console
+```ruby
 $ Uploadcare::FileApi.get_file("7b2b35b4-125b-4c1e-9305-12e8da8916eb")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/7b2b35b4-125b-4c1e-9305-12e8da8916eb/",
@@ -580,10 +581,10 @@ $ Uploadcare::FileApi.get_file("7b2b35b4-125b-4c1e-9305-12e8da8916eb")
 
 #### Copy a file to default storage. Source can be UID or full CDN link
 
-```console
+```ruby
 # Valid options:
 # stored: [true|false]
-$ Uploadcare::FileApi.local_copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", store: false)
+Uploadcare::FileApi.local_copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", store: false)
 #   => {
 #         "uuid"=>"f486132c-2fa5-454e-9e70-93c5e01a7e04",
 #          ...other file data...
@@ -592,10 +593,10 @@ $ Uploadcare::FileApi.local_copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", st
 
 #### Copy a file to custom storage. Source can be UID or full CDN link
 
-```console
+```ruby
 # Valid options:
 # make_public: [true|false]
-$ Uploadcare::FileApi.remote_copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", "mytarget", make_public: false)
+Uploadcare::FileApi.remote_copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", "mytarget", make_public: false)
 #   => {
 #         "uuid"=>"f486132c-2fa5-454e-9e70-93c5e01a7e04",
 #          ...other file data...
@@ -605,8 +606,8 @@ $ Uploadcare::FileApi.remote_copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", "
 
 #### Store a file by UUID
 
-```console
-$ Uploadcare::FileApi.store_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
+```ruby
+Uploadcare::FileApi.store_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 #   => {
 #         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
 #          ...other file data...
@@ -616,8 +617,8 @@ $ Uploadcare::FileApi.store_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 
 #### Store several files by UUIDs
 
-```console
-$ Uploadcare::FileApi.store_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
+```ruby
+Uploadcare::FileApi.store_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 #   => {
 #        "result" => [
 #          {
@@ -631,8 +632,8 @@ $ Uploadcare::FileApi.store_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 
 #### Delete a file by UUID
 
-```console
-$ Uploadcare::FileApi.delete_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
+```ruby
+Uploadcare::FileApi.delete_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 #   => {
 #         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
 #          ...other file data...
@@ -642,8 +643,8 @@ $ Uploadcare::FileApi.delete_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 
 #### Delete several files by UUIDs
 
-```console
-$ Uploadcare::FileApi.delete_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
+```ruby
+Uploadcare::FileApi.delete_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 #   => {
 #        "result" => [
 #          {
@@ -661,13 +662,13 @@ GroupApi provides an interface to manage file groups stored on Uploadcare Server
 
 #### Get file groups
 
-```console
+```ruby
 # Valid options:
 # limit: (1..1000)
 # ordering: ["datetime_created"|"-datetime_created"]
 # from: A starting point for filtering group lists. MUST be a datetime value with T used as a separator.
 #   example: "2015-01-02T10:00:00"
-$ Uploadcare::GroupApi.get_groups(ordering: "datetime_uploaded", limit: 10)
+Uploadcare::GroupApi.get_groups(ordering: "datetime_uploaded", limit: 10)
 #   => {
 #        "next"=>"next"=>"https://api.uploadcare.com/groups/?ordering=datetime_uploaded&limit=10&from=2021-07-16T11%3A12%3A12.236280%2B00%3A00&offset=0",
 #        "previous"=>nil,
@@ -690,8 +691,8 @@ $ Uploadcare::GroupApi.get_groups(ordering: "datetime_uploaded", limit: 10)
 
 #### Get a single file group by a group ID
 
-```console
-$ Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
+```ruby
+Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20/",
 #          ...other group data...
@@ -705,8 +706,8 @@ $ Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 
 #### Store files of a group by a group ID
 
-```console
-$ Uploadcare::GroupApi.store_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
+```ruby
+Uploadcare::GroupApi.store_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 #   => "200 OK"
 ```
 
@@ -719,8 +720,8 @@ It is possible to specify transformed URLs with UUIDs of files OR just UUIDs.
   NOTE: Be sure to add a trailing slash "/" to the URL in case of specifying transformed URLs.
 ```
 
-```console
-$ Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/resize/300x500/"])
+```ruby
+Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/resize/300x500/"])
 #   => {
 #         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~1/",
 #          ...other group data...
@@ -734,8 +735,8 @@ $ Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/res
 
 #### Delete a file group by its ID
 
-```console
-$ Uploadcare::GroupApi.delete_group("90c93e96-965b-4dd2-b323-39d9bd5f492c~1")
+```ruby
+Uploadcare::GroupApi.delete_group("90c93e96-965b-4dd2-b323-39d9bd5f492c~1")
 #   => "200 OK"
 ```
 
@@ -744,8 +745,8 @@ $ Uploadcare::GroupApi.delete_group("90c93e96-965b-4dd2-b323-39d9bd5f492c~1")
 
 ProjectApi interface provides just one method - to get a configuration of your Uploadcare project.
 
-```console
-$ Uploadcare::ProjectApi.get_project
+```ruby
+Uploadcare::ProjectApi.get_project
 #   => {
 #        "collaborators"=>[],
 #        "name"=>"New project",
@@ -763,8 +764,8 @@ WebhookApi allows to manage Uploadcare webhooks.
 
 This method returns a non-paginated list of webhooks set in your project
 
-```console
-$ Uploadcare::WebhookApi.get_webhooks
+```ruby
+Uploadcare::WebhookApi.get_webhooks
 #   => [{
 #        "id"=>815677,
 #        "created"=>"2021-08-02T05:02:14.588794Z",
@@ -784,11 +785,11 @@ This method requires an URL that is triggered by an event, for example, a file u
 Each webhook payload can be signed with a secret (the `signing_secret` option) to ensure that the request comes from the expected sender.
 More info about secure webhooks [here](https://uploadcare.com/docs/security/secure-webhooks/).
 
-```console
+```ruby
 # Valid options:
 # event: ["file.uploaded"]
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uploaded", is_active: true, signing_secret: "some-secret")
+Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uploaded", is_active: true, signing_secret: "some-secret")
 #   => {
 #        "id"=>815671,
 #        "created"=>"2021-08-02T05:02:14.588794Z",
@@ -805,11 +806,11 @@ $ Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uplo
 
 Updating a webhook is available if webhook ID is known. The ID is returned in a response on creating or listing webhooks. Setting a signing secret is supported when updating a webhook as well.
 
-```console
+```ruby
 # Valid options:
 # event: Presently, we only support the "file.uploaded" event
 # is_active: [true|false]
-$ Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example1.com", event: "file.uploaded", is_active: false, signing_secret: "some-secret")
+Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example1.com", event: "file.uploaded", is_active: false, signing_secret: "some-secret")
 #   => {
 #        "id"=>815671,
 #        "created"=>"2021-08-02T05:02:14.588794Z",
@@ -824,8 +825,8 @@ $ Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://examp
 
 #### Delete an existing webhook by a target_url
 
-```console
-$ Uploadcare::WebhookApi.delete_webhook("https://example1.com")
+```ruby
+Uploadcare::WebhookApi.delete_webhook("https://example1.com")
 #   => Success(nil)
 ```
 
@@ -839,11 +840,11 @@ This method requires an UUID of a previously uploaded to Uploadcare file and tar
 If using an image format, you can also specify a page number that must be converted for a document containing pages.
 More info about document conversion can be found [here](https://uploadcare.com/docs/transformations/document-conversion/).
 
-```console
-$ Uploadcare::ConversionApi.convert_document(
-$   { uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6", format: "png", page: 1 },
-$   store: false
-$ )
+```ruby
+Uploadcare::ConversionApi.convert_document(
+  { uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6", format: "png", page: 1 },
+  store: false
+)
 #   => Success({
 #        :result=>[{
 #          :original_source=>"466740dd-cfad-4de4-9218-1ddc0edf7aa6/document/-/format/png/-/page/1/",
@@ -859,8 +860,8 @@ $ )
 
 This method requires a token obtained in a response to the [convert_document](#convert-a-document) method.
 
-```console
-$ Uploadcare::ConversionApi.get_document_conversion_status(21316034)
+```ruby
+Uploadcare::ConversionApi.get_document_conversion_status(21316034)
 #   => Success({
 #        :result=>{
 #          :uuid=>"db6e52b8-cc03-4174-a07a-012be43b144e"
@@ -877,17 +878,17 @@ Such as the document conversion method, this method requires an UUID of a previo
 Also you have several options to control the way a video will be converted. All of them are optional.
 Description of valid options and other info about video conversion can be found [here](https://uploadcare.com/docs/transformations/video-encoding/).
 
-```console
-$ Uploadcare::ConversionApi.convert_video(
-$   {
-$     uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6",
-$     format: "ogg",
-$     quality: "best",
-$     cut: { start_time: "0:0:0.0", length: "0:0:1.0" },
-$     thumbs: { N: 2, number: 1 }
-$   },
-$   store: false
-$ )
+```ruby
+Uploadcare::ConversionApi.convert_video(
+  {
+    uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6",
+    format: "ogg",
+    quality: "best",
+    cut: { start_time: "0:0:0.0", length: "0:0:1.0" },
+    thumbs: { N: 2, number: 1 }
+  },
+  store: false
+)
 #   => Success({
 #        :result=>[{
 #          :original_source=>"80b807be-faad-4f01-bbbe-0bbde172b9de/video/-/size/600x400/change_ratio/-/quality/best/-/format/ogg/-/cut/0:0:0.0/0:0:1.0/-/thumbs~2/1/",
@@ -904,8 +905,8 @@ $ )
 
 This method requires a token obtained in a response to the [convert_video](#convert-a-video) method.
 
-```console
-$ Uploadcare::ConversionApi.get_video_conversion_status(916090555)
+```ruby
+Uploadcare::ConversionApi.get_video_conversion_status(916090555)
 #   => Success({
 #        :result=>{
 #          :uuid=>"f0a3e66e-cd22-4397-ba0a-8a8becc925f9",
@@ -925,15 +926,15 @@ Metadata is key-value data.
 
 #### Get file's metadata keys and values
 
-```console
-$ Uploadcare::FileMetadataApi.file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
+```ruby
+Uploadcare::FileMetadataApi.file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
 #   => {:"sample-key"=>"sample-value"}
 ```
 
 #### Get the value of a single metadata key
 
-```console
-$ Uploadcare::FileMetadataApi.file_metadata_value('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key')
+```ruby
+Uploadcare::FileMetadataApi.file_metadata_value('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key')
 #   => "sample-value"
 ```
 
@@ -941,15 +942,15 @@ $ Uploadcare::FileMetadataApi.file_metadata_value('f757ea10-8b1a-4361-9a7c-56bfa
 
 If the key does not exist, it will be created.
 
-```console
-$ Uploadcare::FileMetadataApi.update_file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key', 'new-value')
+```ruby
+Uploadcare::FileMetadataApi.update_file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key', 'new-value')
 #   => "new-value"
 ```
 
 #### Delete a file's metadata key
 
-```console
-$ Uploadcare::FileMetadataApi.delete_file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key')
+```ruby
+Uploadcare::FileMetadataApi.delete_file_metadata('f757ea10-8b1a-4361-9a7c-56bfa5d45176', 'sample-key')
 #   => "200 OK"
 ```
 
@@ -964,52 +965,52 @@ An Add-On is an application implemented by Uploadcare that accepts uploaded file
   Note: Detected labels are stored in the file's appdata.
 ```
 
-```console
-$ Uploadcare::AddonsApi.rekognition_detect_labels('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
+```ruby
+Uploadcare::AddonsApi.rekognition_detect_labels('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
 #   => {"request_id"=>"dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e"}
 ```
 
 #### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
 
-```console
-$ Uploadcare::AddonsApi.rekognition_detect_labels_status('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
+```ruby
+Uploadcare::AddonsApi.rekognition_detect_labels_status('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
 #   => {"status"=>"done"}
 ```
 
 #### Execute ClamAV virus checking Add-On for a given target
 
-```console
-$ Uploadcare::AddonsApi.virus_scan('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
+```ruby
+Uploadcare::AddonsApi.virus_scan('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
 #   => {"request_id"=>"1b0126de-ace6-455b-82e2-25f4aa33fc6f"}
 ```
 
 #### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
 
-```console
-$ Uploadcare::AddonsApi.virus_scan_status('1b0126de-ace6-455b-82e2-25f4aa33fc6f')
+```ruby
+Uploadcare::AddonsApi.virus_scan_status('1b0126de-ace6-455b-82e2-25f4aa33fc6f')
 #   => {"status"=>"done"}
 ```
 
 #### Execute remove.bg background image removal Add-On for a given target
 
-```console
-$ Uploadcare::AddonsApi.remove_bg('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
+```ruby
+Uploadcare::AddonsApi.remove_bg('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
 #   => {"request_id"=>"6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c"}
 ```
 
 #### Check the status of an Add-On execution request that had been started using the Execute Add-On operation
 
-```console
-$ Uploadcare::AddonsApi.remove_bg_status('6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c')
+```ruby
+Uploadcare::AddonsApi.remove_bg_status('6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c')
 #   => {"status"=>"done", "result"=>{"file_id"=>"8f0a2a28-3ed7-481e-b415-ee3cce982aaa"}}
 ```
 
 
 ## Useful links
-* [Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)  
-* [Upload API reference](https://uploadcare.com/api-refs/upload-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)  
-* [REST API reference](https://uploadcare.com/api-refs/rest-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)  
-* [Changelog](./CHANGELOG.md)  
-* [Contributing guide](https://github.com/uploadcare/.github/blob/master/CONTRIBUTING.md)  
-* [Security policy](https://github.com/uploadcare/uploadcare-rails/security/policy)  
-* [Support](https://github.com/uploadcare/.github/blob/master/SUPPORT.md)  
+* [Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
+* [Upload API reference](https://uploadcare.com/api-refs/upload-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
+* [REST API reference](https://uploadcare.com/api-refs/rest-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
+* [Changelog](./CHANGELOG.md)
+* [Contributing guide](https://github.com/uploadcare/.github/blob/master/CONTRIBUTING.md)
+* [Security policy](https://github.com/uploadcare/uploadcare-rails/security/policy)
+* [Support](https://github.com/uploadcare/.github/blob/master/SUPPORT.md)
