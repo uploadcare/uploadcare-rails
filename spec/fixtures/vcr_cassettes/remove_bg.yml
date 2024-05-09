@@ -1,0 +1,57 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.uploadcare.com/addons/remove_bg/execute/
+    body:
+      encoding: UTF-8
+      string: '{"target":"ff4d3d37-4de0-4f6d-a7db-8cdabe7fc768","params":{"crop":true,"type_level":"2"}}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.7+json
+      User-Agent:
+      - UploadcareRuby/4.4.1/demopublickey (Ruby/3.1.3)
+      Date:
+      - Mon, 29 Apr 2024 08:24:06 GMT
+      Authorization:
+      - Uploadcare demopublickey:90c523b1b76b9befe65b0348b7ec5136778c27c7
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: ok
+    headers:
+      Date:
+      - Mon, 29 Apr 2024 08:24:07 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.7+json
+      Content-Length:
+      - '61'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Uploadcare-Request-Id:
+      - fa835f97-bf32-4abd-a351-02e4875587af
+      X-Frame-Options:
+      - SAMEORIGIN
+    body:
+      encoding: ASCII-8BIT
+      string: '{"request_id": "c3446e41-9eb0-4301-aeb4-356d0fdcf9af"}'
+  recorded_at: Mon, 29 Apr 2024 08:24:07 GMT
+recorded_with: VCR 6.2.0

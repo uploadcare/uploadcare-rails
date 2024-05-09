@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.uploadcare.com/addons/uc_clamav_virus_scan/execute/
+    body:
+      encoding: UTF-8
+      string: '{"target":"ff4d3d37-4de0-4f6d-a7db-8cdabe7fc768","params":{"purge_infected":true}}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.7+json
+      User-Agent:
+      - UploadcareRuby/4.4.1/demopublickey (Ruby/3.1.3)
+      Date:
+      - Mon, 29 Apr 2024 07:34:46 GMT
+      Authorization:
+      - Uploadcare demopublickey:29d71f9f2eda92585cca7e4bd363947c1e2f6181
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: ok
+    headers:
+      Date:
+      - Mon, 29 Apr 2024 07:34:47 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.7+json
+      Content-Length:
+      - '23'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Warning:
+      - '199 Miscellaneous warning: You are using the demo project'
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - OPTIONS, POST
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Uploadcare-Request-Id:
+      - 19d6a042-2380-44af-8c0a-9249394a8ba3
+      X-Frame-Options:
+      - SAMEORIGIN
+    body:
+      encoding: ASCII-8BIT
+      string: '{"request_id": "34abf037-5384-4e38-bad4-97dd48e79acd"}'
+  recorded_at: Mon, 29 Apr 2024 07:34:47 GMT
+recorded_with: VCR 6.2.0
