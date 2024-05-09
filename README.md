@@ -360,6 +360,7 @@ post.picture.store
 #          ...other group data...
 #      }
 
+#
 # Delete the file from an Uploadcare server permanently:
 post.picture.delete
 #   => {
@@ -422,6 +423,7 @@ post.attachments.store
 #         }]
 #      }
 
+#
 # Delete the file group from an Uploadcare server permanently:
 post.attachments.delete
 #   => {
@@ -976,6 +978,25 @@ Uploadcare::AddonsApi.rekognition_detect_labels('f757ea10-8b1a-4361-9a7c-56bfa5d
 Uploadcare::AddonsApi.rekognition_detect_labels_status('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
 #   => {"status"=>"done"}
 ```
+
+#### Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image.
+```
+  Note: Detected labels are stored in the file's appdata.
+```
+
+```ruby
+Uploadcare::AddonsApi.rekognition_detect_moderation_labels('f757ea10-8b1a-4361-9a7c-56bfa5d45176')
+#   => {"request_id"=>"dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e"}
+```
+
+# Check the status of an AWS Rekognition Moderation Add-On execution request that had been started using the Execute Add-On operation.
+
+```ruby
+Uploadcare::AddonsApi.rekognition_detect_moderation_labels_status('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
+#   => {"status"=>"done"}
+```
+
+
 
 #### Execute ClamAV virus checking Add-On for a given target
 

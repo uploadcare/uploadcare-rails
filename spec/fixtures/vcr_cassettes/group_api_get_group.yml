@@ -2,13 +2,13 @@
 http_interactions:
 - request:
     method: get
-    uri: https://upload.uploadcare.com/group/info/?group_id=6053b054-b8d4-4f57-992d-94b8f1d6ba65~2&pub_key=demopublickey
+    uri: https://upload.uploadcare.com/group/info/?group_id=6053b054-b8d4-4f57-992d-94b8f1d6ba65~2&pub_key=<uploadcare_private_key>
     body:
-      encoding: UTF-8
+      encoding: ASCII-8BIT
       string: ''
     headers:
       User-Agent:
-      - UploadcareRuby/4.0.0/5d5bb5639e3f2df33674 (Ruby/3.0.0)
+      - UploadcareRuby/4.4.1/<uploadcare_private_key> (Ruby/3.3.0)
       Connection:
       - close
       Host:
@@ -19,11 +19,11 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sun, 30 Oct 2022 20:30:29 GMT
+      - Fri, 03 May 2024 09:55:02 GMT
       Content-Type:
-      - application/json
+      - text/plain; charset=utf-8
       Content-Length:
-      - '1732'
+      - '20'
       Connection:
       - close
       Server:
@@ -36,7 +36,7 @@ http_interactions:
       Access-Control-Allow-Methods:
       - GET, HEAD, OPTIONS
       Access-Control-Allow-Headers:
-      - X-UC-User-Agent, X-PINGOTHER, DNT
+      - DNT, X-UC-User-Agent, X-PINGOTHER
       Access-Control-Max-Age:
       - '1'
       Access-Control-Allow-Credentials:
@@ -52,5 +52,5 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"id":"6053b054-b8d4-4f57-992d-94b8f1d6ba65~2","datetime_created":"2022-10-29T16:53:33.220316Z","datetime_stored":null,"files_count":2,"cdn_url":"https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/","url":"https://api.uploadcare.com/groups/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/","files":[{"size":2766,"total":2766,"done":2766,"uuid":"272cbffa-4a27-4aba-98f1-a36e2e017e24","file_id":"272cbffa-4a27-4aba-98f1-a36e2e017e24","original_filename":"image.png","is_image":true,"is_stored":true,"image_info":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null},"video_info":null,"content_info":{"mime":{"mime":"image/png","type":"image","subtype":"png"},"image":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null}},"is_ready":true,"filename":"image.png","mime_type":"image/png","metadata":{},"default_effects":""},{"size":2950,"total":2950,"done":2950,"uuid":"36892dd8-ccb1-4225-bc48-96a0fde93b33","file_id":"36892dd8-ccb1-4225-bc48-96a0fde93b33","original_filename":"image.png","is_image":true,"is_stored":true,"image_info":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null},"video_info":null,"content_info":{"mime":{"mime":"image/png","type":"image","subtype":"png"},"image":{"dpi":null,"width":50,"format":"PNG","height":42,"sequence":false,"color_mode":"RGBA","orientation":null,"geo_location":null,"datetime_original":null}},"is_ready":true,"filename":"image.png","mime_type":"image/png","metadata":{},"default_effects":""}]}'
-  recorded_at: Sun, 30 Oct 2022 20:30:29 GMT
-recorded_with: VCR 6.1.0
+  recorded_at: Fri, 03 May 2024 09:55:02 GMT
+recorded_with: VCR 6.2.0

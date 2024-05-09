@@ -44,6 +44,18 @@ module Uploadcare
             def remove_bg_status(uuid)
               Uploadcare::Addons.remove_bg_status(uuid)
             end
+
+            # Execute AWS Rekognition Moderation Add-On for a given target to detect labels in an image.
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons/operation/awsRekognitionDetectModerationLabelsExecute
+            def rekognition_detect_moderation_labels(uuid)
+              Uploadcare::Addons.ws_rekognition_detect_moderation_labels(uuid)
+            end
+
+            # Check the status of an Add-On execution request that had been started using the Execute Add-On operation.
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons/operation/awsRekognitionDetectModerationLabelsExecutionStatus
+            def rekognition_detect_moderation_labels_status(uuid)
+              Uploadcare::Addons.ws_rekognition_detect_moderation_labels_status(uuid)
+            end
           end
         end
       end
