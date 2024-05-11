@@ -44,5 +44,5 @@ Gem::Specification.new do |gem|
 
   gem.version = Uploadcare::Rails::VERSION
   gem.add_dependency 'rails', '>= 6'
-  gem.add_dependency 'uploadcare-ruby', '>= 4.3'
+  gem.add_dependency 'uploadcare-ruby', '>= 4.4.1'
 end
