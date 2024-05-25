@@ -13,8 +13,10 @@ jobs:
 
       - name: Release Gem
         if: contains(github.ref, 'refs/tags/v')
-        uses: cadwallion/publish-rubygems-action@master
+        uses: discourse/publish-rubygems-action@main
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
           RELEASE_COMMAND: rake release
+          GIT_EMAIL: hello@uploadcare.com
+          GIT_NAME: Uploadcare Developers
