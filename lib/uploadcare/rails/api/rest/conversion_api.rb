@@ -21,6 +21,12 @@ module Uploadcare
               Uploadcare::VideoConverter.status(token)
             end
 
+            # Conversion formats info
+            # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Conversion/operation/documentConvertInfo
+            def get_document_conversion_formats_info(uuid)
+              Uploadcare::DocumentConverter.info(uuid)
+            end
+
             # Converts documents
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/documentConvert
             def convert_document(document_params, options = {})
