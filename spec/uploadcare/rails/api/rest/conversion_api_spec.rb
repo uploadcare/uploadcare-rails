@@ -14,7 +14,13 @@ module Uploadcare
 
           context 'when checking methods' do
             it 'responds to expected REST methods' do
-              %i[convert_video get_video_conversion_status convert_document get_document_conversion_status].each do |m|
+              %i[
+                convert_video
+                get_video_conversion_status
+                convert_document
+                get_document_conversion_status
+                get_document_conversion_formats_info
+              ].each do |m|
                 expect(subject).to respond_to(m)
               end
             end
@@ -86,6 +92,19 @@ module Uploadcare
                     response = subject.get_document_conversion_status(token)
                     expect(response).to be_success
                     expect(response.success[:error]).to be_nil
+                  end
+                end
+
+                it 'gets document conversion formats info' do
+                  VCR.use_cassette('conversion_api_get_document_conversion_formats_info') do
+                    uuid = 'b3b32bcb-9bd8-4ee2-a4df-95bcee96b47e'
+                    response = subject.get_document_conversion_formats_info(uuid)
+                    expect(response).to be_success
+                    expect(response.success[:error]).to be_nil
+                    expect(response.success[:format][:name]).to be_a(String)
+                    conversion_formats = response.success[:format][:conversion_formats]
+                    expect(conversion_formats).to be_a(Array)
+                    expect(conversion_formats.first[:name]).to be_a(String)
                   end
                 end
               end

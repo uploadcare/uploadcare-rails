@@ -34,3 +34,7 @@ Style/OpenStructUse:
     - 'spec/uploadcare/rails/active_record/mount_uploadcare_file_spec.rb'
     - 'spec/uploadcare/rails/active_record/mount_uploadcare_group_spec.rb'
     - 'spec/uploadcare/rails/objects/file_spec.rb'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'spec/**/*'

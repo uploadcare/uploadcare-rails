@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.uploadcare.com/convert/document/b3b32bcb-9bd8-4ee2-a4df-95bcee96b47e/
+    body:
+      encoding: ASCII-8BIT
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/vnd.uploadcare-v0.7+json
+      User-Agent:
+      - UploadcareRuby/4.4.1/<uploadcare_public_key> (Ruby/3.3.0)
+      Date:
+      - Wed, 29 May 2024 14:11:11 GMT
+      Authorization:
+      - Uploadcare <uploadcare_public_key>:4cf818d83c516d3bfb55f9b95aab2feeda4028af
+      Connection:
+      - close
+      Host:
+      - api.uploadcare.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 29 May 2024 14:11:12 GMT
+      Content-Type:
+      - application/vnd.uploadcare-v0.7+json
+      Content-Length:
+      - '280'
+      Connection:
+      - close
+      Server:
+      - nginx
+      Access-Control-Allow-Origin:
+      - https://uploadcare.com
+      Vary:
+      - Accept
+      Allow:
+      - GET, HEAD, OPTIONS
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Uploadcare-Request-Id:
+      - fdba08c5-f0dc-4b91-a3e0-48ff0255c367
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - noindex, nofollow, nosnippet, noarchive
+    body:
+      encoding: ASCII-8BIT
+      string: '{"error":null,"format":{"name":"jpg","conversion_formats":[{"name":"avif"},{"name":"bmp"},{"name":"gif"},{"name":"ico"},{"name":"pcx"},{"name":"pdf"},{"name":"png"},{"name":"ps"},{"name":"svg"},{"name":"tga"},{"name":"thumbnail"},{"name":"tiff"},{"name":"wbmp"},{"name":"webp"}]}}'
+  recorded_at: Wed, 29 May 2024 14:11:12 GMT
+recorded_with: VCR 6.2.0
