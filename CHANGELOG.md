@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 3.4.3 — 2024-06-01
 
+### Added
 * For `Uploadcare::ConversionApi` added `get_document_conversion_formats_info` method to get the possible document conversion formats.
 
 ## 3.4.2 — 2024-05-11
