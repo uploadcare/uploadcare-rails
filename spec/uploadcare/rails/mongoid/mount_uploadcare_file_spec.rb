@@ -7,7 +7,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
   before do
     allow(Rails).to receive(:cache).and_return(double(read: nil, write: nil))
     allow(Uploadcare::Rails).to receive(:configuration).and_return(
-      OpenStruct.new(
+      double(
         store_files_async: false,
         delete_files_async: false,
         do_not_store: false,
@@ -69,7 +69,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
     context 'when store_files_async configuration is true' do
       before do
-        Uploadcare::Rails.configuration.store_files_async = true
+        allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(true)
       end
 
       it 'should enqueue StoreFileJob when calling uploadcare_store_cdn_url!' do
@@ -80,7 +80,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
     context 'when store_files_async configuration is false' do
       before do
-        Uploadcare::Rails.configuration.store_files_async = false
+        allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(false)
       end
 
       it 'should call Uploadcare::FileApi.store_file when calling uploadcare_store_cdn_url!' do
@@ -91,7 +91,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
     context 'when delete_files_async configuration is true' do
       before do
-        Uploadcare::Rails.configuration.delete_files_async = true
+        allow(Uploadcare::Rails.configuration).to receive(:delete_files_async).and_return(true)
       end
 
       it 'should enqueue DeleteFileJob when calling uploadcare_delete_cdn_url!' do
@@ -102,7 +102,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
     context 'when delete_files_async configuration is false' do
       before do
-        Uploadcare::Rails.configuration.delete_files_async = false
+        allow(Uploadcare::Rails.configuration).to receive(:delete_files_async).and_return(false)
       end
 
       it 'should call Uploadcare::FileApi.delete_file when calling uploadcare_delete_cdn_url!' do
@@ -113,7 +113,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
     context 'when do_not_store configuration is false' do
       before do
-        Uploadcare::Rails.configuration.do_not_store = false
+        allow(Uploadcare::Rails.configuration).to receive(:do_not_store).and_return(false)
       end
 
       it 'should set callback for saving to call uploadcare_store_cdn_url! if cdn_url attribute changed' do
@@ -125,7 +125,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
     context 'when delete_files_after_destroy configuration is true' do
       before do
-        Uploadcare::Rails.configuration.delete_files_after_destroy = true
+        allow(Uploadcare::Rails.configuration).to receive(:delete_files_after_destroy).and_return(true)
       end
 
       it 'should set callback for destroying to call uploadcare_delete_cdn_url!' do

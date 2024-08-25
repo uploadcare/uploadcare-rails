@@ -7,7 +7,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFileGroup do
   before do
     allow(Rails).to receive(:cache).and_return(double(read: nil, write: nil))
     allow(Uploadcare::Rails).to receive(:configuration).and_return(
-      OpenStruct.new(
+      double(
         store_files_async: false,
         delete_files_async: false,
         do_not_store: false,
@@ -79,13 +79,13 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFileGroup do
 
     context 'when the file group is present' do
       it 'stores the file group synchronously if not configured for async storage' do
-        Uploadcare::Rails.configuration.store_files_async = false
+        allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(false)
         expect(Uploadcare::GroupApi).to receive(:store_group).with(group_id)
         model.send("uploadcare_store_#{attribute}!")
       end
 
       it 'performs the store job asynchronously if configured' do
-        Uploadcare::Rails.configuration.store_files_async = true
+        allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(true)
         expect(Uploadcare::Rails::StoreGroupJob).to receive(:perform_later).with(group_id)
         model.send("uploadcare_store_#{attribute}!")
       end
@@ -93,7 +93,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFileGroup do
 
     context 'when do_not_store configuration is true' do
       it 'does not define the after_save callback' do
-        Uploadcare::Rails.configuration.do_not_store = true
+        allow(Uploadcare::Rails.configuration).to receive(:do_not_store).and_return(true)
         expect(TestModel).not_to receive(:after_save)
         TestModel.mount_uploadcare_file_group(:attribute)
       end
@@ -101,7 +101,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFileGroup do
 
     context 'when do_not_store configuration is false' do
       it 'defines the after_save callback' do
-        Uploadcare::Rails.configuration.do_not_store = false
+        allow(Uploadcare::Rails.configuration).to receive(:do_not_store).and_return(false)
         expect(TestModel).to receive(:set_callback).with(:save, :after, :uploadcare_store_cdn_url!)
         TestModel.mount_uploadcare_file_group(attribute)
       end
