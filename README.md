@@ -333,6 +333,8 @@ document.addEventListener('turbo:before-cache', function() {
 When you mount either Uploadcare File or Group to an attribute, this attribute is getting wrapped with
 a Uploadcare object. This feature adds some useful methods to the attribute.
 
+Note: Supports ActiveRecord, ActiveModel and Mongoid models.
+
 #### Uploadcare File
 
 Say, you have such model in your Rails app:

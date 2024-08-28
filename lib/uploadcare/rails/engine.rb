@@ -20,6 +20,13 @@ module Uploadcare
           require 'uploadcare/rails/active_record/mount_uploadcare_file'
           require 'uploadcare/rails/active_record/mount_uploadcare_file_group'
         end
+
+        # Load extensions for mongoid
+        # Extend mongoid with mount_uploadcare_file and mount_uploadcare_file_group methods
+        ActiveSupport.on_load :mongoid do
+          require 'uploadcare/rails/mongoid/mount_uploadcare_file'
+          require 'uploadcare/rails/mongoid/mount_uploadcare_file_group'
+        end
       end
     end
   end

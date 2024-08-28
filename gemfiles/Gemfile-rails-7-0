@@ -11,3 +11,4 @@ gem 'rspec-rails', '>= 5.1'
 gem 'rubocop', '~> 1.48'
 gem 'vcr', '~> 6.1'
 gem 'webmock', '~> 3.18'
+gem 'mongoid', '~> 9', require: false
