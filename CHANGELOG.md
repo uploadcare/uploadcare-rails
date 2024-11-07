@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-# Unreleased
+## 3.4.4 — 2024-11-07
 
 * Adds mongoid support for `mount_uploadcare_file` and `mount_uploadcare_file_group` methods.
 
