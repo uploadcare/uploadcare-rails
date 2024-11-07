@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Breaking Changes
 
-* Drop support for Rails 6.1x in line with currently maintained Rails version: https://rubyonrails.org/maintenance
+* Drop support for Rails 6.1x in line with the currently supported Rails versions: https://rubyonrails.org/maintenance
 
 ## 3.4.3 — 2024-06-01
 
