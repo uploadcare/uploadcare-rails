@@ -4,18 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-# Unreleased
+## 3.4.4 — 2024-11-07
 
-* Adds mongoid support for `mount_uploadcare_file` and `mount_uploadcare_file_group` methods.
+### Added
+
+* Add mongoid support for `mount_uploadcare_file` and `mount_uploadcare_file_group` methods.
+
+### Breaking Changes
+
+* Drop support for Rails 6.1x in line with the currently supported Rails versions: https://rubyonrails.org/maintenance
 
 ## 3.4.3 — 2024-06-01
 
 ### Added
+
 * For `Uploadcare::ConversionApi` added `get_document_conversion_formats_info` method to get the possible document conversion formats.
 
 ## 3.4.2 — 2024-05-11
 
 ### Added
+
 * Added API support for `AWS Rekognition Moderation` Add-On.
 
 ## 3.4.1 — 2024-03-24
