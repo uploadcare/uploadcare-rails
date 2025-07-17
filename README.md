@@ -136,6 +136,7 @@ config.manual_start = false
 Then you can configure all global variables such as files storing/caching, deleting files, etc.
 Full list of available options is listed in the file itself. Just uncomment an option and set the value.
 
+In examples we’re going to use `ucarecdn.com` domain. Check your project's subdomain in the [Dashboard](https://app.uploadcare.com/projects/-/settings/#delivery).
 
 ### Uploadcare File Uploader
 
@@ -180,7 +181,7 @@ This helper uses a CDN-url for the widget bundle and supports three options:
 The `<head>` tag then also includes the `<script>` with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
 
 
-#### Using asset pipeline.
+#### Using asset pipeline
 
 Download and append widget manually to your asset pipeline. You may download (e.g. https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
 
@@ -716,7 +717,7 @@ Uploadcare::GroupApi.store_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 ```
 
 
-#### Create a new group by file's uuids.
+#### Create a new group by file's uuids
 
 It is possible to specify transformed URLs with UUIDs of files OR just UUIDs.
 
@@ -981,7 +982,7 @@ Uploadcare::AddonsApi.rekognition_detect_labels_status('dfeaf81c-5c0d-49d5-8ed4-
 #   => {"status"=>"done"}
 ```
 
-#### Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image.
+#### Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image
 ```
   Note: Detected labels are stored in the file's appdata.
 ```
@@ -991,7 +992,7 @@ Uploadcare::AddonsApi.rekognition_detect_moderation_labels('f757ea10-8b1a-4361-9
 #   => {"request_id"=>"dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e"}
 ```
 
-# Check the status of an AWS Rekognition Moderation Add-On execution request that had been started using the Execute Add-On operation.
+# Check the status of an AWS Rekognition Moderation Add-On execution request that had been started using the Execute Add-On operation
 
 ```ruby
 Uploadcare::AddonsApi.rekognition_detect_moderation_labels_status('dfeaf81c-5c0d-49d5-8ed4-ac09bac7998e')
