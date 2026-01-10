@@ -60,7 +60,7 @@ module Uploadcare
               context 'and when uploading is successful' do
                 it 'uploads a file' do
                   VCR.use_cassette('upload_upload_many_files') do
-                    upload = subject.upload_files([file])
+                    upload = subject.upload_files([ file ])
                     expect(upload).to be_kind_of(Array)
                   end
                 end

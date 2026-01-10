@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_model'
+require "active_model"
 
 module Uploadcare
   module Rails
@@ -12,7 +12,7 @@ module Uploadcare
 
         class_methods do
           def build_cache_key(key)
-            [uploadcare_configuration.cache_namespace, key].flatten.reject(&:blank?)
+            [ uploadcare_configuration.cache_namespace, key ].flatten.reject(&:blank?)
           end
 
           def uploadcare_configuration

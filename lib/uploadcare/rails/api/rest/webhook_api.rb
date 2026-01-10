@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/api/rest/base'
+require "uploadcare/rails/api/rest/base"
 
 module Uploadcare
   module Rails
@@ -19,7 +19,7 @@ module Uploadcare
 
             # Create a webhook
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookCreate
-            def create_webhook(target_url, event: 'file.uploaded', is_active: true, signing_secret: nil)
+            def create_webhook(target_url, event: "file.uploaded", is_active: true, signing_secret: nil)
               options = { target_url: target_url, event: event, is_active: is_active, signing_secret: signing_secret }
               Uploadcare::Webhook.create(**options.compact)
             end

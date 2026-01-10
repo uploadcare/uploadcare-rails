@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_job'
+require "active_job"
 
 module Uploadcare
   module Rails

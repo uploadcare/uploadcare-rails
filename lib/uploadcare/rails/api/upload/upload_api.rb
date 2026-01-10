@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/api/upload/base'
+require "uploadcare/rails/api/upload/base"
 
 module Uploadcare
   module Rails
@@ -27,7 +27,7 @@ module Uploadcare
             def upload_files(files, options = {})
               return upload(files, options) if array_of_files?(files)
 
-              raise TypeError, 'The first argument must be an Array of File objects'
+              raise TypeError, "The first argument must be an Array of File objects"
             end
 
             private

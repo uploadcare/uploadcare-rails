@@ -1,48 +1,84 @@
 # frozen_string_literal: true
 
-require 'action_view'
-require 'uploadcare/rails/configuration'
+require "action_view"
+require "uploadcare/rails/configuration"
 
 module Uploadcare
   module Rails
     module ActionView
-      # A module containing a view include tags helper
-      module UploadcareWidgetTags
-        # A view helper to add a js script tag from CDN with just one string of code.
-        # See https://uploadcare.com/docs/uploads/file-uploader/#cdn for more info.
+      # A module containing view helpers for including the Uploadcare File Uploader assets (CSS/JS)
+      module UploadcareIncludeTags
+        CDN_HOST = "cdn.jsdelivr.net"
+        FILE_UPLOADER_PATH = "/npm/@uploadcare/file-uploader@v1/web"
+
+        # A view helper to include the Uploadcare File Uploader JS and CSS from CDN.
+        # See https://uploadcare.com/docs/file-uploader/ for more info.
         #
-        # Example:
+        # Example (CDN mode - default):
         #   <%= uploadcare_include_tag %>
-        #   => <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
-        #      <script>
-        #        UPLOADCARE_PUBLIC_KEY = 'demopublickey';
-        #        UPLOADCARE_LOCALE = 'en';
+        #   => <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/uc-file-uploader-regular.min.css">
+        #      <script type="module">
+        #        import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/file-uploader.min.js';
+        #        UC.defineComponents(UC);
         #      </script>
         #
+        # Example (importmap mode - for Rails 7+ with importmaps):
+        #   <%= uploadcare_include_tag(importmap: true) %>
+        #   => <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/uc-file-uploader-regular.min.css">
+        #   (JS is loaded via importmap, so only CSS is included)
+        #
         # Arguments:
-        #   version: (String, default: '3.x') - version of the widget
-        #   bundle: (String, default: 'full') - https://uploadcare.com/docs/uploads/file-uploader/#bundles
-        #     valid options: 'full', 'default', 'ie8', 'api', 'lang.en'
+        #   version: (String, default: 'v1') - version of the File Uploader
+        #   solution: (String, default: 'regular') - File Uploader solution type
+        #     valid options: 'regular', 'inline', 'minimal'
         #   min: (true/false, default: true) - sets which version to get, minified or not
+        #   importmap: (true/false, default: false) - if true, only includes CSS (JS loaded via importmap)
 
-        def uploadcare_include_tag(version: '3.x', bundle: 'full', min: true)
-          min = min == true ? '.min' : ''
-          bundle = bundle == 'default' ? '' : ".#{bundle}"
-          path = "/libs/widget/#{version}/uploadcare#{bundle}#{min}.js"
-          uri = URI::HTTPS.build(host: Uploadcare::Rails.configuration.cdn_hostname, path: path)
+        def uploadcare_include_tag(version: "v1", solution: "regular", min: true, importmap: false)
+          min_suffix = min ? ".min" : ""
+          base_path = FILE_UPLOADER_PATH.sub("@v1", "@#{version}")
 
-          config_tag = javascript_tag(uploader_settings) if uploader_settings.present?
-          include_tag = javascript_include_tag(uri.to_s.squeeze('.'))
+          css_path = "#{base_path}/uc-file-uploader-#{solution}#{min_suffix}.css"
+          css_uri = URI::HTTPS.build(host: CDN_HOST, path: css_path)
+          css_tag = stylesheet_link_tag(css_uri.to_s)
 
-          include_tag.concat(config_tag)
+          # In importmap mode, JS is loaded via importmap configuration
+          # so we only need to include the CSS
+          return css_tag if importmap
+
+          js_path = "#{base_path}/file-uploader#{min_suffix}.js"
+          js_uri = URI::HTTPS.build(host: CDN_HOST, path: js_path)
+          js_tag = javascript_tag(<<~JS, type: "module")
+            import * as UC from '#{js_uri}';
+            UC.defineComponents(UC);
+          JS
+
+          safe_join([ css_tag, js_tag ])
         end
 
-        def uploader_settings
-          @uploader_settings ||= Uploadcare::Rails.configuration.uploader_parameters
+        # A view helper to include only the Uploadcare File Uploader CSS.
+        # Useful when using importmaps or custom JS setup.
+        #
+        # Example:
+        #   <%= uploadcare_stylesheet_tag %>
+        #   => <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/uc-file-uploader-regular.min.css">
+        #
+        # Arguments:
+        #   version: (String, default: 'v1') - version of the File Uploader
+        #   solution: (String, default: 'regular') - File Uploader solution type
+        #   min: (true/false, default: true) - sets which version to get, minified or not
+
+        def uploadcare_stylesheet_tag(version: "v1", solution: "regular", min: true)
+          min_suffix = min ? ".min" : ""
+          base_path = FILE_UPLOADER_PATH.sub("@v1", "@#{version}")
+          css_path = "#{base_path}/uc-file-uploader-#{solution}#{min_suffix}.css"
+          css_uri = URI::HTTPS.build(host: CDN_HOST, path: css_path)
+
+          stylesheet_link_tag(css_uri.to_s)
         end
       end
     end
   end
 end
 
-ActionView::Base.include Uploadcare::Rails::ActionView::UploadcareWidgetTags
+ActionView::Base.include Uploadcare::Rails::ActionView::UploadcareIncludeTags

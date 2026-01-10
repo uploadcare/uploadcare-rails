@@ -1,138 +1,162 @@
 # frozen_string_literal: true
 
-# Uncomment this string in case of using locales for locale_translations parameter
-# I18n.load_path += Dir[Rails.root.join('config', 'locales', '*.{rb,yml}').to_s]
-
 Uploadcare::Rails.configure do |config|
-  # Sets your Uploadcare public key.
+  # =============================================================================
+  # API Keys
+  # =============================================================================
+
+  # Sets your Uploadcare public key (required for File Uploader)
   config.public_key = ENV.fetch('UPLOADCARE_PUBLIC_KEY', 'demopublickey')
+
+  # Sets your Uploadcare secret key (required for REST API operations)
   # config.secret_key = ENV.fetch('UPLOADCARE_SECRET_KEY', 'demosecretkey')
 
-  # Stores files to Uploadcare servers after object save.
+  # =============================================================================
+  # File Storage Options
+  # =============================================================================
+
+  # Stores files to Uploadcare servers after object save
   config.store_files_after_save = true
 
-  # Deletes files from Uploadcare servers after object destroy.
+  # Deletes files from Uploadcare servers after object destroy
   config.delete_files_after_destroy = true
+
+  # These options enable ActiveJob background jobs to perform operations in background.
+  # Options work only if 'store_files_after_save' is enabled and
+  # 'delete_files_after_destroy' is enabled.
+  config.store_files_async = true
+  config.delete_files_async = true
+
+  # =============================================================================
+  # Caching Options
+  # =============================================================================
 
   # Sets caching for Uploadcare files
   config.cache_namespace = 'uploadcare'
   config.cache_files = true
   config.cache_expires_in = 1.day
 
-  # These options enables ActiveJob background jobs to perform operations in background.
-  # Options work if only the option 'do_not_store' is disabled (false) and
-  # the option 'delete_files_after_destroy' is enabled (true).
-  config.store_files_async = true
-  config.delete_files_async = true
+  # =============================================================================
+  # File Uploader Configuration
+  # See https://uploadcare.com/docs/file-uploader/configuration/ for details
+  # =============================================================================
 
   # If true, only image files are allowed to be uploaded.
-  # config.images_only = false
+  # config.img_only = false
 
-  # If true, the preview step is present after selecting files.
-  # Otherwise, the file uploader dialog closes when the selection is complete.
-  # config.preview_step = false
+  # Allow multiple file uploads
+  # config.multiple = false
 
-  # Defines the file uploader manual crop behavior (see https://uploadcare.com/docs/uploads/file-uploader/#crop-option).
-  # When uploading images, your users can select a crop area.
-  # This option does not force your file uploader to accept images only.
-  # The option also works in the multi-file mode since version 2.3.0.
-  # config.crop = 'disabled'
+  # Sets the list of file types that can be uploaded.
+  # Example: 'image/*,video/*,.pdf'
+  # config.accept = nil
 
-  # Saves traffic and storage space by resizing images on a client before uploading.
-  # See the detailed option description for details. Using the client-side resize does not force the images only option.
-  # config.image_shrink = '800x600'
+  # Sets the list of preferred MIME types for external sources.
+  # Example: 'image/*,video/*'
+  # config.external_sources_preferred_types = nil
 
-  # Allows user to remove uploaded files from the file uploader.
-  # Please note that those files are not deleted from your account.
-  # config.clearable = true
+  # Defines if files should be stored permanently after upload.
+  # 'auto' - respect project settings
+  # 'true' - always store
+  # 'false' - never store
+  # config.store = 'auto'
 
-  # Allows you to define which upload sources you want to use with the file uploader.
-  # The value is represented by a space-separated ordered list of upload source names.
-  # See https://uploadcare.com/docs/uploads/file-uploader/#upload-sources for details.
-  # config.tabs = %w[url file facebook]
+  # Mirrors the camera preview horizontally
+  # config.camera_mirror = false
 
-  # Sets the accept attribute for the file uploader dialog.
-  # If the images only option is disabled, the value is empty.
-  # Otherwise, the default value is image/*.
-  # null means accept should be kept empty regardless of the images only value.
-  # For other possible values, see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#attr-accept
-  # Note, this is not a replacement for
-  # our file validation (see https://uploadcare.com/docs/file-uploader-api/file-validation/)
-  # because your users will still be able to choose any file via drag&drop or from URL.
-  # config.input_accept_types = %w[image/*]
+  # Sets upload sources available in the File Uploader.
+  # Example: 'local,url,camera,dropbox,gdrive'
+  # config.source_list = 'local,url,camera,dropbox,gdrive'
 
-  # Defines the list of preferred MIME types.
-  # The list should be ordered and contain space-separated MIME types.
-  # Common parts can be marked with asterisks: image/* application/vnd.openxmlformats-officedocument.*.
-  # If no MIME types match the criteria or preferred types are not set, default formats are used.
-  # Keep in mind that some cloud services can export data in different formats.
-  # For example, Google document can be exported as Word document, PDF or plain text.
-  # config.preferred_types = %w[image/* application/vnd.openxmlformats-officedocument.*]
+  # Maximum file size in bytes for local uploads
+  # config.max_local_file_size_bytes = nil
 
-  # Forces a system-native file picking dialog to show up instead of our file uploader.
-  # That makes the file uploader behavior as close as possible to the generic <input type="file">.
-  # Native behavior is achieved at the expense of support for uploading content
-  # from social media and cloud storage, manual crop, and preview step.
-  # Multi-file selection would still work.
-  # The option does not work in old browser versions: the dialog falls back to the file uploader.
-  # config.system_dialog = false
+  # Sets your custom CDN CNAME
+  # config.cdn_cname = nil
 
-  # This option sets the file size threshold for multipart uploading.
-  # The value ranges from 10485760 (10 MB), which is default, up to 104857600 (100 MB).
-  # If a file size hits the threshold, it gets uploaded in four parallel chunks by 5 MB.
-  # Multipart upload makes large file uploading faster.
-  # Files go directly to a storage, bypassing our upload servers,
-  # and they're quickly available for further use. All files below the threshold get uploaded in one piece.
-  # Note: Multipart upload works with local sources only (files and camera).
-  # config.multipart_min_size = 10485760
+  # Sets custom Upload API base URL
+  # config.base_url = 'https://upload.uploadcare.com'
 
-  # Available locales currently are:
-  # ar az ca cs da de el en es et fr he it ja ko lv nb nl pl pt ro ru sk sr sv tr uk vi zhTW zh
+  # Sets custom social sources base URL
+  # config.social_base_url = 'https://social.uploadcare.com'
+
+  # =============================================================================
+  # Security Options
+  # =============================================================================
+
+  # Secure signature for signed uploads (requires secret key on server)
+  # config.secure_signature = nil
+
+  # Signature expiration time
+  # config.secure_expire = nil
+
+  # Proxy URL for secure delivery
+  # config.secure_delivery_proxy = nil
+
+  # =============================================================================
+  # Upload Performance Options
+  # =============================================================================
+
+  # Maximum number of retries for throttled requests
+  # config.retry_throttled_request_max_count = 1
+
+  # Minimum file size for multipart uploads (in bytes)
+  # config.multipart_min_file_size = 26_214_400
+
+  # Chunk size for multipart uploads (in bytes)
+  # config.multipart_chunk_size = 5_242_880
+
+  # Maximum concurrent upload requests
+  # config.max_concurrent_requests = 10
+
+  # Maximum attempts for multipart upload
+  # config.multipart_max_attempts = 3
+
+  # =============================================================================
+  # URL Upload Options
+  # =============================================================================
+
+  # Check for URL duplicates before uploading
+  # config.check_for_url_duplicates = false
+
+  # Save URLs for recurrent uploads
+  # config.save_url_for_recurrent_uploads = false
+
+  # =============================================================================
+  # Output Options
+  # =============================================================================
+
+  # Output file group instead of individual files when multiple is enabled
+  # config.group_output = true
+
+  # =============================================================================
+  # Localization
+  # =============================================================================
+
+  # Available locales: ar, ca, cs, da, de, el, en, es, et, fr, he, hr, hu, id,
+  # it, ja, ko, nb, nl, pl, pt, ro, ru, sk, sr, sv, tr, uk, vi, zh-CN, zh-TW
   config.locale = 'en'
 
-  # Sets custom localization options. See https://uploadcare.com/docs/uploads/file-uploader/#localization
-  # config.locale_translations = {}
+  # Custom metadata to attach to uploaded files
+  # config.metadata = {}
 
-  # Defines pluralization options. See https://uploadcare.com/docs/uploads/file-uploader/#pluralization
-  # config.locale_pluralize = {}
+  # =============================================================================
+  # Image Options
+  # =============================================================================
 
-  # The option can be used with Authenticated URLs. Defines your proxy backend URL.
-  # See https://uploadcare.com/docs/security/secure-delivery/#proxy-backend.
-  # config.preview_proxy = 'https://domain.com/preview?'
+  # Remove Uploadcare copyright from the image editor
+  # config.remove_copyright = false
 
-  # If true, inputs on your page are initialized automatically, see the article for details -
-  # https://uploadcare.com/docs/file-uploader-api/widget-initialization/
-  config.live = true
+  # Preset for image cropping. Example: '4:3', '1:1', 'free'
+  # config.crop_preset = nil
 
-  # If true, input initialization is invoked manually.
-  # See https://uploadcare.com/docs/file-uploader-api/widget-initialization/).
-  config.manual_start = false
+  # Shrink images on client before uploading. Example: '800x600'
+  # config.image_shrink = nil
 
-  # Defines your schema and CDN domain.
-  # Can be changed to one of the predefined values (https://uploadcare.com/docs/delivery/cdn/) or your custom CNAME.
-  # config.cdn_base = 'https://ucarecdn.com/'
+  # =============================================================================
+  # CDN Configuration
+  # =============================================================================
+
+  # Defines your CDN hostname for serving files
   config.cdn_hostname = 'ucarecdn.com'
-
-  # Forces files uploaded with a file uploader not to be stored.
-  # See https://uploadcare.com/docs/uploads/storage/#storing-uploaded-files.
-  # For instance, you might want to turn this on when automatic file storing is enabled in your project,
-  # but you do not want to store files uploaded with a particular file uploader.
-  # config.do_not_store = false
-
-  # Allows you to adjust the quality of an audio recorded via the file uploader Camera Tab.
-  # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
-  # config.audio_bits_per_second = 1
-
-  # Allows you to specify the MIME types.
-  # The first supported by the browser will be used as an option of
-  # video stream captured via the file uploader Camera Tab.
-  # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
-  # config.video_preferred_mime_types = []
-
-  # Allows you to adjust the quality of a video stream captured via the file uploader Camera Tab.
-  # Refer the link to learn more - https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder.
-  # config.video_bits_per_second = 1
-
-  # Allows you to set the default state of image/video mirorring in the camera tab.
-  # config.camera_mirror_default = true
 end
