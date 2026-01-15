@@ -21,11 +21,14 @@ Uploadcare::Rails.configure do |config|
   # Deletes files from Uploadcare servers after object destroy
   config.delete_files_after_destroy = true
 
-  # These options enable ActiveJob background jobs to perform operations in background.
-  # Options work only if 'store_files_after_save' is enabled and
-  # 'delete_files_after_destroy' is enabled.
-  config.store_files_async = true
-  config.delete_files_async = true
+  # These options enable ActiveJob background jobs to perform file operations asynchronously.
+  # IMPORTANT: Enabling these options requires a configured ActiveJob adapter (e.g., Sidekiq,
+  # Resque, or Delayed Job) and a working queueing system. Without a proper ActiveJob backend,
+  # enabling these options will cause runtime failures.
+  # Note: store_files_async only takes effect when store_files_after_save is true.
+  # Note: delete_files_async only takes effect when delete_files_after_destroy is true.
+  config.store_files_async = false
+  config.delete_files_async = false
 
   # =============================================================================
   # Caching Options
