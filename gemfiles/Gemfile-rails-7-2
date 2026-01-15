@@ -12,3 +12,4 @@ gem "rubocop-rails-omakase", require: false
 gem "vcr", "~> 6.1"
 gem "webmock", "~> 3.18"
 gem "mongoid", "~> 9", require: false
+gem "ostruct"
