@@ -20,6 +20,24 @@ module Uploadcare
             end
           end
 
+          context 'when passing custom config' do
+            let(:custom_config) { Uploadcare::Configuration.new(public_key: 'pk', secret_key: 'sk') }
+
+            it 'forwards config for upload_file' do
+              file = ::File.open('spec/fixtures/kitten.jpeg')
+              expect(Uploadcare::Uploader).to receive(:upload).with(object: file, config: custom_config, store: true)
+
+              subject.upload_file(file, { store: true }, config: custom_config)
+            end
+
+            it 'forwards config for upload_files' do
+              file = ::File.open('spec/fixtures/kitten.jpeg')
+              expect(Uploadcare::Uploader).to receive(:upload).with(object: [file], config: custom_config, store: true)
+
+              subject.upload_files([file], { store: true }, config: custom_config)
+            end
+          end
+
           context 'when sending requests' do
             context 'and when uploading a single file' do
               context 'and when uploading is successful' do

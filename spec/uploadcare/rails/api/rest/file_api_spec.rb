@@ -12,9 +12,38 @@ module Uploadcare
 
           context 'when checking methods' do
             it 'responds to expected REST methods' do
-              %i[get_files get_file delete_file store_file].each do |method|
+              %i[get_files get_file delete_file store_file local_copy_file remote_copy_file store_files delete_files].each do |method|
                 expect(subject).to respond_to(method)
               end
+            end
+          end
+
+          context 'when passing custom config' do
+            let(:custom_config) { Uploadcare::Configuration.new(public_key: 'pk', secret_key: 'sk') }
+
+            it 'forwards config to get_file' do
+              expect(Uploadcare::File).to receive(:info).with(uuid: 'uuid', config: custom_config)
+
+              subject.get_file('uuid', config: custom_config)
+            end
+
+            it 'forwards config to get_files' do
+              expect(Uploadcare::File).to receive(:list).with(options: { limit: 10 }, config: custom_config)
+
+              subject.get_files({ limit: 10 }, config: custom_config)
+            end
+
+            it 'forwards config to local_copy_file' do
+              expect(Uploadcare::File).to receive(:local_copy).with(source: 'source', options: { store: true }, config: custom_config)
+
+              subject.local_copy_file('source', { store: true }, config: custom_config)
+            end
+
+            it 'forwards config to remote_copy_file' do
+              expect(Uploadcare::File).to receive(:remote_copy)
+                .with(source: 'source', target: 'target', options: { make_public: true }, config: custom_config)
+
+              subject.remote_copy_file('source', 'target', { make_public: true }, config: custom_config)
             end
           end
 
