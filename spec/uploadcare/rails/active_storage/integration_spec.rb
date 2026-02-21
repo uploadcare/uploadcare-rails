@@ -22,11 +22,16 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::Integration do
   describe '.install_variant_remote_processing' do
     it 'prepends remote processing module once' do
       stub_const('ActiveStorage::Variant', Class.new)
+      stub_const('ActiveStorage::VariantWithRecord', Class.new)
 
       described_class.install_variant_remote_processing
       described_class.install_variant_remote_processing
 
       expect(ActiveStorage::Variant.ancestors.count(Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing)).to eq(1)
+      variant_with_record_count = ActiveStorage::VariantWithRecord.ancestors.count(
+        Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing
+      )
+      expect(variant_with_record_count).to eq(1)
     end
   end
 end
