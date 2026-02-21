@@ -6,7 +6,12 @@ require 'active_storage/service/uploadcare_service'
 require 'uploadcare/rails/active_storage/uploadcare_previewer'
 
 RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
-  let(:service) { ActiveStorage::Service::UploadcareService.new(public_key: 'demopublickey', secret_key: 'demosecretkey') }
+  let(:service) do
+    ActiveStorage::Service::UploadcareService.new(
+      public_key: 'demopublickey',
+      secret_key: 'demosecretkey'
+    )
+  end
   let(:uuid) { '2d33999d-c74a-4ff9-99ea-abc23496b052' }
   let(:filename) { double(base: 'report') }
   let(:blob) do

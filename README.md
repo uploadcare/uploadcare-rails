@@ -526,6 +526,7 @@ url_for(record.file.preview(resize_to_limit: [320, 320]))
 ```ruby
 image_tag(record.image.variant(resize_to_limit: [320, 320], quality: "smart"))
 image_tag(record.image.variant(resize_to_fill: [200, 120]))
+image_tag(record.image.variant(resize_to_fit: [640, 480]))
 ```
 
 ### Uploadcare API interfaces

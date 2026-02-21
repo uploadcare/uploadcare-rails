@@ -6,6 +6,7 @@ require 'uploadcare/rails/active_storage/variant_remote_processing'
 module Uploadcare
   module Rails
     module ActiveStorage
+      # :nodoc:
       module Integration
         module_function
 

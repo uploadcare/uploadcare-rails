@@ -6,6 +6,7 @@ require 'tempfile'
 module Uploadcare
   module Rails
     module ActiveStorage
+      # :nodoc:
       module VariantRemoteProcessing
         private
 
@@ -28,13 +29,13 @@ module Uploadcare
           tempfile.binmode
 
           response = http_get(variant_source_url)
-          raise ::ActiveStorage::IntegrityError, "Uploadcare variant fetch failed: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+          raise_integrity_error(response) unless response.is_a?(Net::HTTPSuccess)
 
           tempfile.write(response.body)
           tempfile.rewind
           yield tempfile
         ensure
-          tempfile.close! if tempfile
+          tempfile&.close!
         end
 
         def variant_source_url
@@ -48,23 +49,32 @@ module Uploadcare
 
         def uploadcare_transformations
           mapped = variation.transformations.deep_symbolize_keys.except(:format)
-          resize_to_limit = mapped.delete(:resize_to_limit)
-          resize_to_fill = mapped.delete(:resize_to_fill)
-
-          if resize_to_limit.present?
-            width, height = resize_to_limit
-            mapped[:resize] = [width, height].compact.join('x')
-          end
-
-          if resize_to_fill.present?
-            width, height = resize_to_fill
-            mapped[:scale_crop] = {
-              dimensions: [width, height].compact.join('x'),
-              offsets: '50%,50%'
-            }
-          end
+          map_resize!(mapped, mapped.delete(:resize_to_fit))
+          map_resize!(mapped, mapped.delete(:resize_to_limit))
+          map_scale_crop!(mapped, mapped.delete(:resize_to_fill))
 
           mapped
+        end
+
+        def map_resize!(mapped, dimensions)
+          return if dimensions.blank?
+
+          width, height = dimensions
+          mapped[:resize] = [width, height].compact.join('x')
+        end
+
+        def map_scale_crop!(mapped, dimensions)
+          return if dimensions.blank?
+
+          width, height = dimensions
+          mapped[:scale_crop] = {
+            dimensions: [width, height].compact.join('x'),
+            offsets: '50%,50%'
+          }
+        end
+
+        def raise_integrity_error(response)
+          raise ::ActiveStorage::IntegrityError, "Uploadcare variant fetch failed: #{response.code}"
         end
 
         def http_get(url, limit = 5)

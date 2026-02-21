@@ -6,7 +6,12 @@ require 'active_storage/service/uploadcare_service'
 require 'uploadcare/rails/active_storage/variant_remote_processing'
 
 RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
-  let(:service) { ActiveStorage::Service::UploadcareService.new(public_key: 'demopublickey', secret_key: 'demosecretkey') }
+  let(:service) do
+    ActiveStorage::Service::UploadcareService.new(
+      public_key: 'demopublickey',
+      secret_key: 'demosecretkey'
+    )
+  end
   let(:uuid) { '2d33999d-c74a-4ff9-99ea-abc23496b052' }
 
   let(:variant_host_class) do
@@ -63,6 +68,15 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     mapped = host.send(:uploadcare_transformations)
 
     expect(mapped[:scale_crop]).to eq({ dimensions: '200x100', offsets: '50%,50%' })
+  end
+
+  it 'maps resize_to_fit into uploadcare resize operation' do
+    fit_variation = double(format: 'png', transformations: { resize_to_fit: [640, 480] })
+    host = variant_host_class.new(service: service, blob: blob, variation: fit_variation)
+
+    mapped = host.send(:uploadcare_transformations)
+
+    expect(mapped[:resize]).to eq('640x480')
   end
 
   it 'falls back to base process when service is not uploadcare service' do

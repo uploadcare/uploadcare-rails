@@ -8,6 +8,7 @@ require 'tempfile'
 module Uploadcare
   module Rails
     module ActiveStorage
+      # :nodoc:
       class UploadcarePreviewer < ::ActiveStorage::Previewer
         class << self
           def accept?(blob)
@@ -47,13 +48,17 @@ module Uploadcare
           tempfile.binmode
 
           response = http_get(url)
-          raise ::ActiveStorage::PreviewError, "Uploadcare preview fetch failed: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+          raise_preview_error(response) unless response.is_a?(Net::HTTPSuccess)
 
           tempfile.write(response.body)
           tempfile.rewind
           yield tempfile
         ensure
-          tempfile.close! if tempfile
+          tempfile&.close!
+        end
+
+        def raise_preview_error(response)
+          raise ::ActiveStorage::PreviewError, "Uploadcare preview fetch failed: #{response.code}"
         end
 
         def http_get(url, limit = 5)
