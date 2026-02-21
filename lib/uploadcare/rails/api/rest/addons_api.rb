@@ -63,4 +63,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for add-ons REST API client.
 Uploadcare::AddonsApi = Uploadcare::Rails::Api::Rest::AddonsApi

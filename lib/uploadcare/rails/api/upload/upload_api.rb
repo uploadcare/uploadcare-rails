@@ -50,4 +50,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for upload API client.
 Uploadcare::UploadApi = Uploadcare::Rails::Api::Upload::UploadApi

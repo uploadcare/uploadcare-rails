@@ -49,7 +49,8 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration))
-      .and_return(double(original_file_url: 'https://ucarecdn.com/file.bin', cdn_url: nil))
+                                             .and_return(double(original_file_url: 'https://ucarecdn.com/file.bin',
+                                                                cdn_url: nil))
     allow(service).to receive(:request).with('https://ucarecdn.com/file.bin').and_return('file-body')
 
     expect(service.download('blob-key')).to eq('file-body')
@@ -59,7 +60,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration))
-      .and_return(double(original_file_url: nil, cdn_url: 'https://ucarecdn.com/file.bin'))
+                                             .and_return(double(original_file_url: nil, cdn_url: 'https://ucarecdn.com/file.bin'))
     response = double
     allow(response).to receive(:read_body).and_yield('ab').and_yield('cd')
     allow(service).to receive(:request).with('https://ucarecdn.com/file.bin').and_yield(response)
@@ -78,7 +79,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration))
-      .and_raise(Uploadcare::Exception::NotFoundError)
+                                             .and_raise(Uploadcare::Exception::NotFoundError)
 
     expect { service.download('blob-key') }.to raise_error(ActiveStorage::FileNotFoundError)
   end
@@ -87,7 +88,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration))
-      .and_return(double(original_file_url: nil, cdn_url: 'https://ucarecdn.com/file.bin'))
+                                             .and_return(double(original_file_url: nil, cdn_url: 'https://ucarecdn.com/file.bin'))
     allow(service).to receive(:request).with('https://ucarecdn.com/file.bin', range: 0..3).and_return('data')
 
     expect(service.download_chunk('blob-key', 0..3)).to eq('data')
@@ -97,7 +98,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration))
-      .and_raise(Uploadcare::Exception::NotFoundError)
+                                             .and_raise(Uploadcare::Exception::NotFoundError)
 
     expect { service.download_chunk('blob-key', 0..3) }.to raise_error(ActiveStorage::FileNotFoundError)
   end
@@ -106,7 +107,8 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     uploadcare_file = double(delete: true)
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    expect(Uploadcare::File).to receive(:new).with({ uuid: uuid }, kind_of(Uploadcare::Configuration)).and_return(uploadcare_file)
+    expect(Uploadcare::File).to receive(:new).with({ uuid: uuid },
+                                                   kind_of(Uploadcare::Configuration)).and_return(uploadcare_file)
 
     service.delete('blob-key')
   end
@@ -121,14 +123,16 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     uploadcare_file = double
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    allow(Uploadcare::File).to receive(:new).with({ uuid: uuid }, kind_of(Uploadcare::Configuration)).and_return(uploadcare_file)
+    allow(Uploadcare::File).to receive(:new).with({ uuid: uuid },
+                                                  kind_of(Uploadcare::Configuration)).and_return(uploadcare_file)
     allow(uploadcare_file).to receive(:delete).and_raise(Uploadcare::Exception::NotFoundError)
 
     expect(service.delete('blob-key')).to be_nil
   end
 
   it 'deletes all keys with prefix' do
-    allow(ActiveStorage::Blob).to receive(:where).with('key LIKE ?', 'prefix%').and_return(double(pluck: %w[prefix-1 prefix-2]))
+    allow(ActiveStorage::Blob).to receive(:where).with('key LIKE ?',
+                                                       'prefix%').and_return(double(pluck: %w[prefix-1 prefix-2]))
     allow(service).to receive(:delete)
 
     service.delete_prefixed('prefix')
@@ -140,7 +144,8 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   it 'supports existence check using mapped uuid' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid }, update!: true)
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration)).and_return(double)
+    allow(Uploadcare::File).to receive(:info).with(uuid: uuid,
+                                                   config: kind_of(Uploadcare::Configuration)).and_return(double)
 
     expect(service.exist?('blob-key')).to eq(true)
   end
@@ -149,7 +154,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid }, update!: true)
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration))
-      .and_raise(Uploadcare::Exception::NotFoundError)
+                                             .and_raise(Uploadcare::Exception::NotFoundError)
 
     expect(service.exist?('blob-key')).to eq(false)
   end
@@ -161,7 +166,8 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   it 'uses instrumentation payload for exist? true path' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid }, update!: true)
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration)).and_return(double)
+    allow(Uploadcare::File).to receive(:info).with(uuid: uuid,
+                                                   config: kind_of(Uploadcare::Configuration)).and_return(double)
 
     payload = {}
     expect(service).to receive(:instrument).with(:exist, key: 'blob-key').and_yield(payload)
@@ -179,7 +185,8 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   end
 
   it 'uses uuid key directly when key is a uuid' do
-    allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration)).and_return(double)
+    allow(Uploadcare::File).to receive(:info).with(uuid: uuid,
+                                                   config: kind_of(Uploadcare::Configuration)).and_return(double)
 
     expect(service.exist?(uuid)).to eq(true)
   end
@@ -189,7 +196,9 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   end
 
   it 'raises for direct upload support' do
-    expect { service.url_for_direct_upload('key', expires_in: 10, content_type: 'text/plain', content_length: 1, checksum: 'x') }
+    expect do
+      service.url_for_direct_upload('key', expires_in: 10, content_type: 'text/plain', content_length: 1, checksum: 'x')
+    end
       .to raise_error(NotImplementedError)
   end
 
@@ -209,7 +218,8 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:new).with({ uuid: uuid }, kind_of(Uploadcare::Configuration)).and_return(file)
 
-    expect(public_service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain'))
+    expect(public_service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline,
+                                          content_type: 'text/plain'))
       .to eq('https://ucarecdn.com/public')
   end
 
@@ -217,7 +227,8 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid }, update!: true)
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(Uploadcare::File).to receive(:info).with(uuid: uuid, config: kind_of(Uploadcare::Configuration))
-      .and_return(double(original_file_url: 'https://ucarecdn.com/file.bin', cdn_url: nil))
+                                             .and_return(double(original_file_url: 'https://ucarecdn.com/file.bin',
+                                                                cdn_url: nil))
     allow(service).to receive(:request).with('https://ucarecdn.com/file.bin').and_return('file-body')
 
     expect(service.download('blob-key')).to eq('file-body')

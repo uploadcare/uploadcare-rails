@@ -4,7 +4,7 @@ require 'uploadcare/rails/version'
 
 module Uploadcare
   module Rails
+    # Base error class for uploadcare-rails runtime failures.
     class Error < StandardError; end
-    # Your code goes here...
   end
 end

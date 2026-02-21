@@ -59,4 +59,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for group REST API client.
 Uploadcare::GroupApi = Uploadcare::Rails::Api::Rest::GroupApi

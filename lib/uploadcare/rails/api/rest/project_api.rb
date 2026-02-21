@@ -12,11 +12,9 @@ module Uploadcare
             # Get information about the current project.
             # Current project is determined by public and secret keys combination.
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Project
-            # rubocop:disable Naming/AccessorMethodName
             def get_project(config: Uploadcare.configuration)
               Uploadcare::Project.show(config: config)
             end
-            # rubocop:enable Naming/AccessorMethodName
           end
         end
       end
@@ -24,4 +22,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for project REST API client.
 Uploadcare::ProjectApi = Uploadcare::Rails::Api::Rest::ProjectApi

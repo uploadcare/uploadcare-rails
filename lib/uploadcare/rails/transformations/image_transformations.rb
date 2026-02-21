@@ -4,6 +4,7 @@ require 'uploadcare/errors/type_error'
 
 module Uploadcare
   module Rails
+    # Namespace for URL transformation builders.
     module Transformations
       # A class for building image urls after image transformations.
       class ImageTransformations
@@ -13,6 +14,8 @@ module Uploadcare
           @options = options.to_h { |k, v| [k.to_sym, v] }
         end
 
+        # Builds Uploadcare transformation path.
+        # @return [String, nil]
         def call
           options_to_a.compact.join('-').squeeze('/').gsub(/\s/, '').presence
         end

@@ -6,6 +6,10 @@ module Uploadcare
   module Rails
     # A job storing group files to Uploadcare
     class StoreGroupJob < ActiveJob::Base
+      # Stores an Uploadcare group by group id.
+      # @param group_id [String, nil]
+      # @param config_options [Hash]
+      # @return [void]
       def perform(group_id, config_options = {})
         return unless group_id
 

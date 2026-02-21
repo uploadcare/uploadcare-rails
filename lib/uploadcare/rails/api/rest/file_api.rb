@@ -77,4 +77,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for file REST API client.
 Uploadcare::FileApi = Uploadcare::Rails::Api::Rest::FileApi

@@ -23,6 +23,11 @@ module Uploadcare
 
         DEFAULT_FIELD_OPTIONS = { role: 'uploadcare-uploader' }.freeze
 
+        # Renders hidden uploadcare field tag for model attribute.
+        # @param object_name [String, Symbol]
+        # @param method_name [String, Symbol]
+        # @param options [Hash]
+        # @return [String]
         def uploadcare_uploader_field(object_name, method_name, options = {})
           hidden_field(
             object_name,
@@ -33,10 +38,17 @@ module Uploadcare
           )
         end
 
+        # Renders hidden uploadcare field tag by explicit name.
+        # @param object_name [String, Symbol]
+        # @param options [Hash]
+        # @return [String]
         def uploadcare_uploader_field_tag(object_name, options = {})
           hidden_field_tag(object_name, options[:value], uploadcare_uploader_options(options))
         end
 
+        # Converts uploader options into HTML data attributes.
+        # @param options [Hash]
+        # @return [Hash]
         def uploadcare_uploader_options(options = {})
           data_options = options.transform_keys { |key| "data-#{key.to_s.underscore.dasherize}" }
           DEFAULT_FIELD_OPTIONS.merge(data_options)

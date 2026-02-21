@@ -11,11 +11,9 @@ module Uploadcare
           class << self
             # Returns a list (not paginated) of webhooks
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhooksList
-            # rubocop:disable Naming/AccessorMethodName
             def get_webhooks(config: Uploadcare.configuration)
               Uploadcare::Webhook.list(config: config)
             end
-            # rubocop:enable Naming/AccessorMethodName
 
             # Create a webhook
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookCreate
@@ -48,4 +46,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for webhook REST API client.
 Uploadcare::WebhookApi = Uploadcare::Rails::Api::Rest::WebhookApi

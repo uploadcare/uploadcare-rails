@@ -12,7 +12,8 @@ module Uploadcare
 
           context 'when checking methods' do
             it 'responds to expected REST methods' do
-              %i[get_files get_file delete_file store_file local_copy_file remote_copy_file store_files delete_files].each do |method|
+              %i[get_files get_file delete_file store_file local_copy_file remote_copy_file store_files
+                 delete_files].each do |method|
                 expect(subject).to respond_to(method)
               end
             end
@@ -34,7 +35,8 @@ module Uploadcare
             end
 
             it 'forwards config to local_copy_file' do
-              expect(Uploadcare::File).to receive(:local_copy).with(source: 'source', options: { store: true }, config: custom_config)
+              expect(Uploadcare::File).to receive(:local_copy).with(source: 'source', options: { store: true },
+                                                                    config: custom_config)
 
               subject.local_copy_file('source', { store: true }, config: custom_config)
             end

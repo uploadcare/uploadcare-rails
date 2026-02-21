@@ -6,6 +6,10 @@ module Uploadcare
   module Rails
     # A job deleting files from Uploadcare
     class DeleteFileJob < ActiveJob::Base
+      # Deletes an Uploadcare file by UUID.
+      # @param file_uuid [String, nil]
+      # @param config_options [Hash]
+      # @return [void]
       def perform(file_uuid, config_options = {})
         return unless file_uuid
 

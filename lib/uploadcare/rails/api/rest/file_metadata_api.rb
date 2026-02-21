@@ -39,4 +39,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for file metadata REST API client.
 Uploadcare::FileMetadataApi = Uploadcare::Rails::Api::Rest::FileMetadataApi

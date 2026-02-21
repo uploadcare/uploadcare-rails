@@ -4,7 +4,9 @@ require 'uploadcare'
 
 module Uploadcare
   module Rails
+    # Namespace for API clients.
     module Api
+      # Namespace for Upload API clients.
       module Upload
         # rubocop:disable Lint/EmptyClass
         class Base; end

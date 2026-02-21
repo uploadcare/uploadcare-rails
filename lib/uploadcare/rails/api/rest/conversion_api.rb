@@ -51,4 +51,5 @@ module Uploadcare
   end
 end
 
+# Backward-compatible alias for conversion REST API client.
 Uploadcare::ConversionApi = Uploadcare::Rails::Api::Rest::ConversionApi

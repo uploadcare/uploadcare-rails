@@ -6,9 +6,14 @@ require 'uploadcare/rails/objects/concerns/loadable'
 
 module Uploadcare
   module Rails
+    # Uploadcare group wrapper with Rails-specific helpers.
     class Group < Uploadcare::Group
       include Objects::Loadable
 
+      # Builds transformed URLs for every file in group.
+      # @param transformations [Hash]
+      # @param transformator_class [Class]
+      # @return [Array<String>, nil]
       def transform_file_urls(
         transformations,
         transformator_class = Uploadcare::Rails::Transformations::ImageTransformations
@@ -21,20 +26,28 @@ module Uploadcare
         end
       end
 
+      # Returns raw file URLs for all files in group.
+      # @return [Array<String>]
       def file_urls
         map_file_urls do |index|
           group_file_url(index)
         end
       end
 
+      # Stores group on Uploadcare.
+      # @return [Object]
       def store
         Uploadcare::GroupApi.store_group(id, config: config)
       end
 
+      # String representation as CDN URL.
+      # @return [String]
       def to_s
         cdn_url
       end
 
+      # Loads group metadata from API or cache.
+      # @return [self]
       def load
         group_info = if caching_enabled?
                        ::Rails.cache.fetch(cache_key, expires_in: cache_expires_in) do

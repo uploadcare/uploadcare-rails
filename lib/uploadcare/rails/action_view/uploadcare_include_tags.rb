@@ -5,6 +5,7 @@ require 'uploadcare/rails/configuration'
 
 module Uploadcare
   module Rails
+    # ActionView helpers for Uploadcare.
     module ActionView
       # A module containing a view include tags helper
       module UploadcareWidgetTags
@@ -37,6 +38,8 @@ module Uploadcare
           include_tag.concat(config_tag)
         end
 
+        # Returns script settings string used by widget initialization.
+        # @return [String]
         def uploader_settings
           @uploader_settings ||= Uploadcare::Rails.configuration.uploader_parameters
         end

@@ -8,11 +8,15 @@ require 'uploadcare/rails/jobs/store_file_job'
 
 module Uploadcare
   module Rails
+    # ActiveRecord integration for Uploadcare.
     module ActiveRecord
       # A module containing ActiveRecord extension. Allows to use uploadcare file methods in Rails models
       module MountUploadcareFile
         extend ActiveSupport::Concern
 
+        # Builds Uploadcare file object from model attribute value.
+        # @param attribute [Symbol, String]
+        # @return [Uploadcare::Rails::File, nil]
         def build_uploadcare_file(attribute)
           cdn_url = attributes[attribute.to_s].to_s
           return if cdn_url.empty?
@@ -40,6 +44,7 @@ module Uploadcare
             define_method "uploadcare_store_#{attribute}!" do |store_job = StoreFileJob|
               file_uuid = public_send(attribute)&.uuid
               return unless file_uuid
+
               config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
               if Uploadcare::Rails.configuration.store_files_async
                 if use_custom_config
@@ -57,6 +62,7 @@ module Uploadcare
             define_method "uploadcare_delete_#{attribute}!" do |delete_job = DeleteFileJob|
               file_uuid = public_send(attribute)&.uuid
               return unless file_uuid
+
               config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
               if Uploadcare::Rails.configuration.delete_files_async
                 if use_custom_config
