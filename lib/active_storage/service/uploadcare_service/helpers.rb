@@ -27,17 +27,38 @@ module ActiveStorage
           true
         end
 
-        def request(url, range: nil)
+        def request(url, range: nil, &block)
           uri = URI.parse(url)
-          request = Net::HTTP::Get.new(uri)
-          request['Range'] = "bytes=#{range.begin}-#{range.end}" if range
+          request = build_request(uri, range)
 
           Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
-            response = http.request(request)
-            raise ActiveStorage::FileNotFoundError if response.is_a?(Net::HTTPNotFound)
+            return request_streaming(http, request, &block) if block
 
-            yield response
+            request_once(http, request)
           end
+        end
+
+        def build_request(uri, range)
+          request = Net::HTTP::Get.new(uri)
+          request['Range'] = "bytes=#{range.begin}-#{range.end}" if range
+          request
+        end
+
+        def request_streaming(http, request, &block)
+          http.request(request) do |response|
+            raise_not_found!(response)
+            block.call(response)
+          end
+        end
+
+        def request_once(http, request)
+          response = http.request(request)
+          raise_not_found!(response)
+          response
+        end
+
+        def raise_not_found!(response)
+          raise ActiveStorage::FileNotFoundError if response.is_a?(Net::HTTPNotFound)
         end
 
         def ensure_integrity(io, checksum)
