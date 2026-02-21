@@ -42,8 +42,8 @@ module Uploadcare
                       thumbs: { N: 2, number: 1 }
                     }
                     response = subject.convert_video(params, store: false)
-                    expect(response).to be_success
-                    expect(response.success[:problems]).to be_empty
+                    expect(response).to be_a(Uploadcare::VideoConverter)
+                    expect(response.problems).to eq({})
                   end
                 end
 
@@ -51,8 +51,8 @@ module Uploadcare
                   VCR.use_cassette('conversion_api_get_video_conversion_status') do
                     token = '913632082'
                     response = subject.get_video_conversion_status(token)
-                    expect(response).to be_success
-                    expect(response.success[:error]).to be_nil
+                    expect(response).to be_a(Uploadcare::VideoConverter)
+                    expect(response.error).to be_nil
                   end
                 end
               end
@@ -64,7 +64,7 @@ module Uploadcare
                       uuid: uuid,
                       size: { resize_mode: 'change_ratio' }
                     }
-                    expect(subject.convert_video(params, store: false)).to be_failure
+                    expect { subject.convert_video(params, store: false) }.to raise_error(ArgumentError)
                   end
                 end
               end
@@ -81,8 +81,8 @@ module Uploadcare
                       format: 'pdf'
                     }
                     response = subject.convert_document(params, store: false)
-                    expect(response).to be_success
-                    expect(response.success[:problems]).to be_empty
+                    expect(response).to be_a(Hash)
+                    expect(response['problems']).to eq({})
                   end
                 end
 
@@ -90,8 +90,8 @@ module Uploadcare
                   VCR.use_cassette('conversion_api_get_document_conversion_status') do
                     token = '21201727'
                     response = subject.get_document_conversion_status(token)
-                    expect(response).to be_success
-                    expect(response.success[:error]).to be_nil
+                    expect(response).to be_a(Uploadcare::DocumentConverter)
+                    expect(response.error).to be_nil
                   end
                 end
 
@@ -99,12 +99,12 @@ module Uploadcare
                   VCR.use_cassette('conversion_api_get_document_conversion_formats_info') do
                     uuid = 'b3b32bcb-9bd8-4ee2-a4df-95bcee96b47e'
                     response = subject.get_document_conversion_formats_info(uuid)
-                    expect(response).to be_success
-                    expect(response.success[:error]).to be_nil
-                    expect(response.success[:format][:name]).to be_a(String)
-                    conversion_formats = response.success[:format][:conversion_formats]
+                    expect(response).to be_a(Uploadcare::DocumentConverter)
+                    expect(response.error).to be_nil
+                    expect(response.format['name']).to be_a(String)
+                    conversion_formats = response.format['conversion_formats']
                     expect(conversion_formats).to be_a(Array)
-                    expect(conversion_formats.first[:name]).to be_a(String)
+                    expect(conversion_formats.first['name']).to be_a(String)
                   end
                 end
               end
@@ -116,7 +116,9 @@ module Uploadcare
                       uuid: uuid,
                       format: 'jpg'
                     }
-                    expect(subject.convert_document(params, store: false)).to be_failure
+                    response = subject.convert_document(params, store: false)
+                    expect(response).to be_a(Hash)
+                    expect(response['problems']).not_to be_empty
                   end
                 end
               end

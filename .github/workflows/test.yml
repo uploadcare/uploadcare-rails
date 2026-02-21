@@ -3,18 +3,31 @@ on: [push, pull_request]
 jobs:
   test:
     needs: code-analysis
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        gemfile:
-          - Gemfile
-          - gemfiles/Gemfile-rails-7-2
-          - gemfiles/Gemfile-rails-7-1
-          - gemfiles/Gemfile-rails-7-0
-        ruby:
-          - 3.0
-          - 3.1
-          - 3.2
-          - 3.3
+        include:
+          - gemfile: Gemfile
+            ruby: "3.3"
+            experimental: false
+          - gemfile: Gemfile
+            ruby: "3.4"
+            experimental: false
+          - gemfile: gemfiles/Gemfile-rails-8-0
+            ruby: "3.4"
+            experimental: false
+          - gemfile: gemfiles/Gemfile-rails-7-2
+            ruby: "3.4"
+            experimental: false
+          - gemfile: gemfiles/Gemfile-rails-7-1
+            ruby: "3.3"
+            experimental: false
+          - gemfile: gemfiles/Gemfile-rails-7-0
+            ruby: "3.3"
+            experimental: false
+          - gemfile: gemfiles/Gemfile-rails-main
+            ruby: "3.4"
+            experimental: true
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
@@ -33,7 +46,7 @@ jobs:
     strategy:
       matrix:
         ruby-version:
-          - 3.3
+          - "3.4"
     steps:
     - uses: actions/checkout@v4
     - name: Set up Ruby

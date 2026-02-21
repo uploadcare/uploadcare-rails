@@ -15,8 +15,8 @@ module Uploadcare
             #
             # @see https://uploadcare.com/api-refs/upload-api/#operation/baseUpload
             # @see https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart
-            def upload_file(file, options = {})
-              return upload(file, options) if file?(file) || file.is_a?(String)
+            def upload_file(file, options = {}, config: Uploadcare.configuration)
+              return upload(file, options, config: config) if file?(file) || file.is_a?(String)
 
               raise TypeError, "The first argument must be a File or String (URL), #{file.class} given"
             end
@@ -24,8 +24,8 @@ module Uploadcare
             # Uploads several files smaller than 100MB.
             #
             # https://uploadcare.com/api-refs/upload-api/#operation/multipartFileUploadStart
-            def upload_files(files, options = {})
-              return upload(files, options) if array_of_files?(files)
+            def upload_files(files, options = {}, config: Uploadcare.configuration)
+              return upload(files, options, config: config) if array_of_files?(files)
 
               raise TypeError, 'The first argument must be an Array of File objects'
             end
@@ -40,8 +40,8 @@ module Uploadcare
               object.respond_to?(:path) && ::File.exist?(object.path)
             end
 
-            def upload(files, options = {})
-              Uploadcare::Uploader.upload(files, options)
+            def upload(files, options = {}, config: Uploadcare.configuration)
+              Uploadcare::Uploader.upload(object: files, config: config, **options)
             end
           end
         end

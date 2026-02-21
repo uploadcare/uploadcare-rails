@@ -6,12 +6,8 @@ require 'uploadcare/rails/objects/concerns/loadable'
 
 module Uploadcare
   module Rails
-    # A wrapper class that for Uploadcare::Group object.
-    # Allows caching loaded groups and has methods for Rails model attributes
-    class Group < Uploadcare::Entity::Group
+    class Group < Uploadcare::Group
       include Objects::Loadable
-
-      attr_entity(*superclass.entity_attributes)
 
       def transform_file_urls(
         transformations,
@@ -32,7 +28,7 @@ module Uploadcare
       end
 
       def store
-        Uploadcare::GroupApi.store_group(id)
+        Uploadcare::GroupApi.store_group(id, config: config)
       end
 
       def to_s
@@ -57,7 +53,10 @@ module Uploadcare
       private
 
       def request_group_info_from_api
-        Uploadcare::GroupApi.get_group(id).merge(self).to_h
+        group = Uploadcare::GroupApi.get_group(id, config: config)
+        group.class::ATTRIBUTES.each_with_object({}) do |attribute, result|
+          result[attribute.to_s] = group.public_send(attribute)
+        end
       end
 
       def group_file_url(index)

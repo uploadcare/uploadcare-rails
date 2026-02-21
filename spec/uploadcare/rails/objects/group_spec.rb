@@ -26,7 +26,8 @@ describe Uploadcare::Rails::Group do
     it 'stores a group', :aggregate_failures do
       VCR.use_cassette 'group_api_store_group' do
         response = group.store
-        expect(response).to eq('200 OK')
+        expect(response).to be_a(Uploadcare::Group)
+        expect(response.id).to eq(group.id)
       end
     end
   end

@@ -27,15 +27,30 @@ module Uploadcare
 
         class_methods do
           # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-          def mount_uploadcare_file(attribute)
+          def mount_uploadcare_file(attribute, uploadcare_config: nil)
+            use_custom_config = !uploadcare_config.nil?
+
             define_method attribute do
-              build_uploadcare_file(attribute)
+              build_uploadcare_file(attribute).tap do |file|
+                next unless file
+
+                file.config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
+              end
             end
 
             define_method "uploadcare_store_#{attribute}!" do |store_job = StoreFileJob|
               file_uuid = public_send(attribute)&.uuid
               return unless file_uuid
-              return store_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.store_files_async
+              config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
+              if Uploadcare::Rails.configuration.store_files_async
+                if use_custom_config
+                  config_options = Uploadcare::Rails.serialize_client_config(config)
+                  return store_job.perform_later(file_uuid, config_options)
+                end
+                return store_job.perform_later(file_uuid)
+              end
+
+              return Uploadcare::FileApi.store_file(file_uuid, config: config) if use_custom_config
 
               Uploadcare::FileApi.store_file(file_uuid)
             end
@@ -43,7 +58,16 @@ module Uploadcare
             define_method "uploadcare_delete_#{attribute}!" do |delete_job = DeleteFileJob|
               file_uuid = public_send(attribute)&.uuid
               return unless file_uuid
-              return delete_job.perform_later(file_uuid) if Uploadcare::Rails.configuration.delete_files_async
+              config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
+              if Uploadcare::Rails.configuration.delete_files_async
+                if use_custom_config
+                  config_options = Uploadcare::Rails.serialize_client_config(config)
+                  return delete_job.perform_later(file_uuid, config_options)
+                end
+                return delete_job.perform_later(file_uuid)
+              end
+
+              return Uploadcare::FileApi.delete_file(file_uuid, config: config) if use_custom_config
 
               Uploadcare::FileApi.delete_file(file_uuid)
             end
@@ -57,6 +81,15 @@ module Uploadcare
             set_callback(:destroy, :after, :"uploadcare_delete_#{attribute}!")
           end
           # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        end
+
+        private
+
+        def resolve_uploadcare_config(config_source)
+          return Uploadcare.configuration if config_source.nil?
+          return instance_exec(&config_source) if config_source.respond_to?(:call)
+
+          config_source
         end
       end
     end

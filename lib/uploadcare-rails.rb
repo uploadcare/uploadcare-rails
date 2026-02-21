@@ -18,17 +18,42 @@ module Uploadcare
   module Rails
     module_function
 
+    CLIENT_CONFIG_ATTRIBUTES = %i[
+      public_key secret_key auth_type multipart_size_threshold rest_api_root upload_api_root
+      max_request_tries base_request_sleep max_request_sleep sign_uploads upload_signature_lifetime
+      max_throttle_attempts upload_threads framework_data file_chunk_size use_subdomains cdn_base_postfix
+      default_cdn_base multipart_chunk_size upload_timeout max_upload_retries
+    ].freeze
+
     def configure
       yield configuration
-      overwrite_ruby_config
+      overwrite_ruby_config(configuration)
     end
 
-    def overwrite_ruby_config
+    def overwrite_ruby_config(target_configuration)
       # copy Rails config to Ruby config
       %i[public_key secret_key].each do |param_name|
-        value = configuration.public_send(param_name)
-        Uploadcare.config[param_name] = value unless value.nil?
+        value = target_configuration.public_send(param_name)
+        Uploadcare.configuration.public_send("#{param_name}=", value) unless value.nil?
       end
+    end
+
+    def client_config(public_key:, secret_key:, **options)
+      Uploadcare::Configuration.new(public_key: public_key, secret_key: secret_key, **options)
+    end
+
+    def serialize_client_config(config)
+      return {} unless config
+
+      CLIENT_CONFIG_ATTRIBUTES.each_with_object({}) do |attribute, result|
+        result[attribute] = config.public_send(attribute) if config.respond_to?(attribute)
+      end.compact
+    end
+
+    def build_client_config(config_options = {})
+      return Uploadcare.configuration if config_options.blank?
+
+      Uploadcare::Configuration.new(**config_options.symbolize_keys)
     end
 
     def configuration

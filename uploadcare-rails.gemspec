@@ -7,7 +7,7 @@ require 'uploadcare/rails/version'
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |gem|
-  gem.required_ruby_version = '>= 2.7.0'
+  gem.required_ruby_version = '>= 3.3.0'
 
   gem.name          = 'uploadcare-rails'
   gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanchenko), @T0mbery (Andrey Aksenov)',
@@ -43,6 +43,6 @@ Gem::Specification.new do |gem|
   gem.rdoc_options      = %w[--line-numbers --title Uploadcare --main README.rdoc --encoding=UTF-8]
 
   gem.version = Uploadcare::Rails::VERSION
-  gem.add_dependency 'rails', '>= 6'
-  gem.add_dependency 'uploadcare-ruby', '>= 4.4.2'
+  gem.add_dependency 'rails', '>= 7.0'
+  gem.add_dependency 'uploadcare-ruby', '>= 5.0.0'
 end

@@ -13,7 +13,7 @@ RSpec.describe Uploadcare::Rails do
       config.secret_key = 'rails_secret_key'
     end
 
-    expect(Uploadcare.config.public_key).to eq 'rails_public_key'
-    expect(Uploadcare.config.secret_key).to eq 'rails_secret_key'
+    expect(Uploadcare.configuration.public_key).to eq 'rails_public_key'
+    expect(Uploadcare.configuration.secret_key).to eq 'rails_secret_key'
   end
 end

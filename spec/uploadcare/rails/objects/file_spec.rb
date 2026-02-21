@@ -25,7 +25,8 @@ describe Uploadcare::Rails::File do
     it 'stores a file', :aggregate_failures do
       VCR.use_cassette 'file_api_store_file' do
         response = file.store
-        expect(response[:uuid]).to eq file.uuid
+        expect(response).to be_a(described_class)
+        expect(response.uuid).to eq(file.uuid)
         expect(file.loaded?).to be_truthy
       end
     end
@@ -35,7 +36,7 @@ describe Uploadcare::Rails::File do
     it 'deletes a file' do
       VCR.use_cassette 'file_api_delete_file' do
         response = file.delete
-        expect(response[:uuid]).to eq file.uuid
+        expect(response.uuid).to eq(file.uuid)
       end
     end
   end

@@ -20,9 +20,10 @@ module Uploadcare
             it 'gets project info' do
               VCR.use_cassette('project_api_get_project') do
                 response = subject.get_project
-                %w[collaborators name pub_key autostore_enabled].each do |key|
-                  expect(response).to have_key(key)
-                end
+                expect(response).to be_a(Uploadcare::Project)
+                expect(response.collaborators).to be_a(Array)
+                expect(response.name).to be_a(String)
+                expect(response.pub_key).to be_a(String)
               end
             end
           end

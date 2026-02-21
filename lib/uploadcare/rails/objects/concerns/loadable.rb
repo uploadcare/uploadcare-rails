@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-require 'active_model'
-
 module Uploadcare
   module Rails
     module Objects
       # A module that contains methods for attribute assignation and caching
       module Loadable
         extend ActiveSupport::Concern
-        include ActiveModel::AttributeAssignment
 
         class_methods do
           def build_cache_key(key)
@@ -21,7 +18,10 @@ module Uploadcare
         end
 
         def update_attrs(new_attrs)
-          assign_attributes(new_attrs)
+          new_attrs.each do |key, value|
+            setter = "#{key}="
+            public_send(setter, value) if respond_to?(setter)
+          end
           self
         end
 

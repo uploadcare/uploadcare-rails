@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 5.0.0 — 2026-02-21
+
+### Breaking Changes
+
+* Align wrapper APIs with `uploadcare-ruby` 5.x classes and method signatures.
+* Raise minimum Ruby version to `3.3+`.
+* Change wrapper return contracts to use native SDK objects/results instead of legacy hash/monad expectations.
+* Update configuration bridge from `Uploadcare.config` to `Uploadcare.configuration`.
+
+### Changed
+
+* Modernized REST/Upload API wrappers to use v5 keyword argument signatures.
+* Updated Add-Ons method wiring to v5 method names and request argument format.
+* Updated object wrappers (`Uploadcare::Rails::File`, `Uploadcare::Rails::Group`) for v5 resource base classes.
+* Updated specs to assert v5-native behavior.
+* Added optional per-call `config:` support across API wrappers for multi-config usage in one process.
+* Added initial `ActiveStorage::Service::UploadcareService` adapter.
+
 ## 3.4.4 — 2024-11-07
 
 ### Added

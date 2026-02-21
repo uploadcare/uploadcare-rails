@@ -32,9 +32,8 @@ module Uploadcare
                   'https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png',
                   signing_secret: '1234'
                 )
-                %w[id created updated event target_url project is_active].each do |key|
-                  expect(response).to have_key(key)
-                end
+                expect(response).to be_a(Uploadcare::Webhook)
+                expect(response.id).not_to be_nil
               end
             end
 
@@ -47,8 +46,8 @@ module Uploadcare
                   is_active: false,
                   signing_secret: '1234'
                 )
-                expect(response['target_url']).to eq(new_target_url)
-                expect(response['is_active']).to eq(false)
+                expect(response.target_url).to eq(new_target_url)
+                expect(response.is_active).to eq(false)
               end
             end
 
@@ -56,7 +55,7 @@ module Uploadcare
               VCR.use_cassette('webhook_api_delete_webhook') do
                 target_url = 'https://ucarecdn.com/3542c513-5cf4-4adb-97b0-bfa7fbd31fb5/11.png'
                 response = subject.delete_webhook(target_url)
-                expect(response).to be_success
+                expect(response).to eq('')
               end
             end
           end

@@ -35,13 +35,13 @@ module Uploadcare
                 it_behaves_like 'uploads a single file' do
                   let(:cassete) { 'upload_upload_one_file_from_cdn' }
                   let(:file) { ::File.open('spec/fixtures/kitten.jpeg') }
-                  let(:file_type_in_response) { Uploadcare::Entity::File }
+                  let(:file_type_in_response) { Uploadcare::File }
                 end
 
                 it_behaves_like 'uploads a single file' do
                   let(:cassete) { 'upload_upload_one_file' }
                   let(:file) { 'https://ucarecdn.com/c3328b8f-1b27-48ca-aebe-591924011efc/thumbnail_0.jpg' }
-                  let(:file_type_in_response) { Array }
+                  let(:file_type_in_response) { Uploadcare::File }
                 end
               end
 

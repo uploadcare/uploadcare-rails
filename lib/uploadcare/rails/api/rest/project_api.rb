@@ -13,8 +13,8 @@ module Uploadcare
             # Current project is determined by public and secret keys combination.
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Project
             # rubocop:disable Naming/AccessorMethodName
-            def get_project
-              Uploadcare::Project.show
+            def get_project(config: Uploadcare.configuration)
+              Uploadcare::Project.show(config: config)
             end
             # rubocop:enable Naming/AccessorMethodName
           end
