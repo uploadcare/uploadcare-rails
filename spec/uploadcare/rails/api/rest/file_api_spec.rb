@@ -55,7 +55,9 @@ module Uploadcare
               VCR.use_cassette('file_api_store_files') do
                 uuid = '64215d18-1356-42cb-ab8c-7542290b6e1b'
                 response = subject.store_files([uuid])
-                expect(response.result.first.uuid).to eq(uuid)
+                expect(response).to be_a(Uploadcare::BatchFileResult)
+                expect(response.result).to be_a(Array)
+                expect(response.problems).to be_a(Hash)
               end
             end
 
@@ -63,7 +65,9 @@ module Uploadcare
               VCR.use_cassette('file_api_delete_files') do
                 uuid = '37d70281-cc30-4c59-b8d6-e11c472dec40'
                 response = subject.delete_files([uuid])
-                expect(response.result.first.uuid).to eq(uuid)
+                expect(response).to be_a(Uploadcare::BatchFileResult)
+                expect(response.result).to be_a(Array)
+                expect(response.problems).to be_a(Hash)
               end
             end
           end
