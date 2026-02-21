@@ -49,6 +49,14 @@ describe Uploadcare::Rails::ActionView::UploadcareUploaderTags, type: :helper do
       expect(tag).to include(fragment)
     end
   end
+
+  it 'does not duplicate value as a data attribute' do
+    tag = uploadcare_uploader_field_tag(:title, value: 'https://ucarecdn.com/file/', multiple: true)
+
+    expect(tag).to include('value="https://ucarecdn.com/file/"')
+    expect(tag).to include('data-multiple="true"')
+    expect(tag).not_to include('data-value=')
+  end
 end
 
 RSpec.configure do |c|

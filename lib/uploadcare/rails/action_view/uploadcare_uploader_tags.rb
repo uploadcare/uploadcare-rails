@@ -43,7 +43,9 @@ module Uploadcare
         # @param options [Hash]
         # @return [String]
         def uploadcare_uploader_field_tag(object_name, options = {})
-          hidden_field_tag(object_name, options[:value], uploadcare_uploader_options(options))
+          options = options.dup
+          value = options.delete(:value)
+          hidden_field_tag(object_name, value, uploadcare_uploader_options(options))
         end
 
         # Converts uploader options into HTML data attributes.

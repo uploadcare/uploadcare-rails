@@ -27,6 +27,9 @@ module Uploadcare
         # @param new_attrs [Hash]
         # @return [Object]
         def update_attrs(new_attrs)
+          return self if new_attrs.nil?
+          raise ArgumentError, 'new_attrs must be a Hash' unless new_attrs.is_a?(Hash)
+
           new_attrs.each do |key, value|
             setter = "#{key}="
             public_send(setter, value) if respond_to?(setter)

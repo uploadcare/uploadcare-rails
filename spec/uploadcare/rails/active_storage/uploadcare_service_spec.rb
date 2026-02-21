@@ -141,6 +141,14 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     expect(service).to have_received(:delete).with('prefix-2')
   end
 
+  it 'escapes SQL wildcard characters in prefix when deleting prefixed keys' do
+    relation = double(pluck: [])
+    allow(ActiveStorage::Blob).to receive(:where).with('key LIKE ?',
+                                                       'pre\%fix\_%').and_return(relation)
+
+    service.delete_prefixed('pre%fix_')
+  end
+
   it 'supports existence check using mapped uuid' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid }, update!: true)
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)

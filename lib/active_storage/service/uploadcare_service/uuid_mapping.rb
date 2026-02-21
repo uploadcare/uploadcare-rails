@@ -41,9 +41,20 @@ module ActiveStorage
         end
 
         def keys_for_prefix(prefix)
-          return ActiveStorage::Blob.where('key LIKE ?', "#{prefix}%").pluck(:key) if defined?(ActiveStorage::Blob)
+          if defined?(ActiveStorage::Blob)
+            sanitized_prefix = sanitize_sql_like_prefix(prefix)
+            return ActiveStorage::Blob.where('key LIKE ?', "#{sanitized_prefix}%").pluck(:key)
+          end
 
           @key_uuid_map.keys.select { |key| key.start_with?(prefix) }
+        end
+
+        def sanitize_sql_like_prefix(prefix)
+          if defined?(ActiveRecord::Base) && ActiveRecord::Base.respond_to?(:sanitize_sql_like)
+            ActiveRecord::Base.sanitize_sql_like(prefix.to_s)
+          else
+            prefix.to_s.gsub(/[\\%_]/) { |char| "\\#{char}" }
+          end
         end
 
         def key_if_uuid(key)
