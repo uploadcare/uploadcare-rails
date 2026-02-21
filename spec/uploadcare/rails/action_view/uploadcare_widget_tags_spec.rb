@@ -19,12 +19,14 @@ describe Uploadcare::Rails::ActionView::UploadcareWidgetTags, type: :helper do
           [true, false].each do |min|
             it "includes a widget from cdn with params: vesrion = #{version}, bundle = #{bundle} and min = #{min}" do
               tag = uploadcare_include_tag(version: version, bundle: bundle, min: min)
+              bundle_suffix = bundle == 'default' ? nil : ".#{bundle}"
+              min_suffix = '.min' if min
 
               expect(tag).to match(
                 [
                   '<script src="https://ucarecdn.com/libs/widget/',
                   version,
-                  "/uploadcare#{bundle == 'default' ? '' : ".#{bundle}"}#{min ? '.min' : ''}.js\"></script>"
+                  "/uploadcare#{bundle_suffix}#{min_suffix}.js\"></script>"
                 ].join
               )
             end

@@ -16,6 +16,7 @@ gem 'http-parser', '~> 1.2', '>= 1.2.3'
 gem 'rake', '~> 13.0.6'
 
 group :test do
+  gem 'benchmark', '~> 0.4'
   gem 'mongoid', '~> 9', require: false
   gem 'rspec', '~> 3.12'
   gem 'rspec-rails', '>= 5.1'

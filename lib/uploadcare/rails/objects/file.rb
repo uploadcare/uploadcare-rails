@@ -9,6 +9,7 @@ module Uploadcare
     # Uploadcare file wrapper with Rails-specific helpers.
     class File < Uploadcare::File
       include Objects::Loadable
+
       attr_writer :cdn_url
 
       # Builds transformed URL for file.
