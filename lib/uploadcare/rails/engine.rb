@@ -28,6 +28,15 @@ module Uploadcare
           require 'uploadcare/rails/mongoid/mount_uploadcare_file_group'
         end
       end
+
+      initializer 'uploadcare-rails.active_storage' do
+        require 'uploadcare/rails/active_storage/integration'
+
+        config.after_initialize do |app|
+          previewers = app.config.active_storage.respond_to?(:previewers) ? app.config.active_storage.previewers : nil
+          Uploadcare::Rails::ActiveStorage::Integration.install!(previewers: previewers)
+        end
+      end
     end
   end
 end

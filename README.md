@@ -522,6 +522,23 @@ Current limitations:
 * direct uploads are not supported yet (`url_for_direct_upload` raises `NotImplementedError`)
 * adapter stores Uploadcare UUID mapping in `ActiveStorage::Blob#metadata["uploadcare_uuid"]`
 
+Built-in Active Storage integrations:
+
+* Uploadcare PDF previewer (`Uploadcare::Rails::ActiveStorage::UploadcarePreviewer`) is auto-registered.
+  This allows standard Rails preview calls like:
+
+```ruby
+url_for(record.file.preview(resize_to_limit: [320, 320]))
+```
+
+* Uploadcare remote variant processing is prepended into `ActiveStorage::Variant`.
+  Standard Rails variant helpers keep working while transformations are executed through Uploadcare CDN:
+
+```ruby
+image_tag(record.image.variant(resize_to_limit: [320, 320], quality: "smart"))
+image_tag(record.image.variant(resize_to_fill: [200, 120]))
+```
+
 ### Uploadcare API interfaces
 
 Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
