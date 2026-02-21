@@ -247,6 +247,19 @@ class Post < ApplicationRecord
 end
 ```
 
+For multi-tenant setups, you can bind a non-default Uploadcare config:
+
+```ruby
+class Post < ApplicationRecord
+  mount_uploadcare_file :picture, uploadcare_config: -> {
+    Uploadcare::Rails.client_config(
+      public_key: tenant_uploadcare_public_key,
+      secret_key: tenant_uploadcare_secret_key
+    )
+  }
+end
+```
+
 ```erb
 <!-- app/views/posts/new.html.erb -->
 <h1> NEW POST </h1>
@@ -271,6 +284,8 @@ class Post < ApplicationRecord
   mount_uploadcare_file_group :attachments
 end
 ```
+
+`mount_uploadcare_file_group` also supports `uploadcare_config:` in the same way.
 
 ```erb
 <!-- app/views/posts/new.html.erb -->
@@ -372,18 +387,12 @@ Now the `post.picture` is an Uploadcare::Rails::File. Following methods are supp
 ```ruby
 # Store the file on an Uploadcare server permanently:
 post.picture.store
-#   => {
-#         "cdn_url"=>"https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/",
-#          ...other group data...
-#      }
+#   => #<Uploadcare::Rails::File ...>
 
 #
 # Delete the file from an Uploadcare server permanently:
 post.picture.delete
-#   => {
-#         "datetime_removed"=>"2021-07-30T09:19:30.797174Z",
-#          ...other group data...
-#      }
+#   => #<Uploadcare::File ...>
 
 # Get CDN-url of an object attribute:
 post.picture.to_s
@@ -393,10 +402,7 @@ post.picture.to_s
 # This data will be cached if the cache_files option is set to true
 # Default data (without asking an Uploadcare server) for each file contains cdn_url and uuid only:
 post.picture.load
-#   => {
-#         "cdn_url"=>"https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/",
-#          ...other file data...
-#      }
+#   => #<Uploadcare::Rails::File ...>
 
 # Check if an attribute loaded from the server.
 # Will return false unless the :load or the :store methods are called:
@@ -431,22 +437,12 @@ Now the `post.attachments` is an Uploadcare::Rails::Group. Following methods are
 ```ruby
 # Store the file group on an Uploadcare server permanently:
 post.attachments.store
-#   => {
-#         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
-#          ...other group data...
-#         "files"=> [{
-#            "datetime_stored"=>"2021-07-29T08:31:45.668354Z",
-#            ...other file data...
-#         }]
-#      }
+#   => #<Uploadcare::Group ...>
 
 #
 # Delete the file group from an Uploadcare server permanently:
 post.attachments.delete
-#   => {
-#         "datetime_removed"=>"2021-07-30T09:19:30.797174Z",
-#          ...other group data...
-#      }
+#   => #<direct SDK response payload>
 
 # Get CDN-url of an object attribute:
 post.attachments.to_s
@@ -454,14 +450,7 @@ post.attachments.to_s
 
 # Load object — works the same way as for the File:
 post.attachments.load
-#   => {
-#         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
-#          ...other group data...
-#         "files"=> [{
-#            "datetime_stored"=>"2021-07-29T08:31:45.668354Z",
-#            ...other file data...
-#         }]
-#      }
+#   => #<Uploadcare::Rails::Group ...>
 
 # Check if an attribute loaded from the server:
 post.attachments.loaded?
