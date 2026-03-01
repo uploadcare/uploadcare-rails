@@ -6,15 +6,13 @@ jobs:
     strategy:
       matrix:
         gemfile:
-          - Gemfile
-          - gemfiles/Gemfile-rails-8-1
           - gemfiles/Gemfile-rails-7-2
-          - gemfiles/Gemfile-rails-7-1
-          - gemfiles/Gemfile-rails-7-0
+          - gemfiles/Gemfile-rails-8-0
+          - gemfiles/Gemfile-rails-8-1
         ruby:
-          - "3.2"
           - "3.3"
           - "3.4"
+          - "4.0"
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}

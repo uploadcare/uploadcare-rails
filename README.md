@@ -20,6 +20,7 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 * [Usage](#usage)
   * [Configuration](#configuration)
   * [Uploadcare File Uploader](#uploadcare-file-uploader)
+    * [PR #156 API Index](#pr-156-api-index)
     * [Include Tag](#include-tag)
       * [Using CDN](#using-cdn)
       * [Using NPM](#using-npm)
@@ -42,8 +43,8 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 * [Useful links](#useful-links)
 
 ## Requirements
-* ruby 2.7+
-* Ruby on Rails 6.0+
+* ruby 3.3+
+* Ruby on Rails 7.2+
 
 ## Installation
 
@@ -135,6 +136,22 @@ In examples we're going to use `ucarecdn.com` domain. Check your project's subdo
 ### Uploadcare File Uploader
 
 The gem integrates with the new [Uploadcare File Uploader](https://uploadcare.com/docs/file-uploader/) which is built with Web Components for maximum compatibility across frameworks.
+
+### PR #156 API Index
+
+Helpers and methods added as part of the File Uploader v1 migration:
+
+- `uploadcare_include_tag(version: "v1", solution: "regular", min: true)`
+- `uploadcare_stylesheet_tag(version: "v1", solution: "regular", min: true)`
+- `uploadcare_uploader_field(object_name, method_name, solution: "regular", **options)`
+- `uploadcare_uploader_field_tag(name, solution: "regular", **options)`
+- `uploadcare_uploader(ctx_name:, solution: "regular", **options)`
+- `uploadcare_config_tag(ctx_name:, **options)`
+- `uploadcare_uploader_tag(ctx_name:, solution: "regular")`
+- `uploadcare_ctx_provider_tag(ctx_name:)`
+- `uploadcare_form_input_tag(name: nil, ctx_name:)`
+- `f.uploadcare_file(method, solution: "regular", **options)` (FormBuilder integration)
+- `rails g uploadcare_importmap` (Importmap generator for Rails 7+)
 
 ### Include Tag
 
@@ -293,6 +310,15 @@ The helper automatically generates all required Web Components:
 
 ```erb
 <%= uploadcare_uploader(ctx_name: 'my-uploader', solution: 'inline') %>
+```
+
+**Low-level component helpers** (for fully custom composition):
+
+```erb
+<%= uploadcare_form_input_tag(name: "post[picture]", ctx_name: "post-picture") %>
+<%= uploadcare_config_tag(ctx_name: "post-picture", multiple: true, img_only: true) %>
+<%= uploadcare_uploader_tag(ctx_name: "post-picture", solution: "regular") %>
+<%= uploadcare_ctx_provider_tag(ctx_name: "post-picture") %>
 ```
 
 ### FormBuilder Integration
