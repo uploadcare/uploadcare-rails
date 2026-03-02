@@ -4,6 +4,72 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 4.0.0
+
+This is a major release that replaces the legacy jQuery-based widget with the new
+[File Uploader](https://uploadcare.com/docs/file-uploader/) built on Web Components.
+
+See [v4.x-migrations-guide.md](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md) for a detailed upgrade guide.
+
+### Breaking Changes
+
+* **Minimum Ruby version raised to 3.3+**
+* **Minimum Rails version raised to 7.2+**
+* Replaced legacy jQuery widget with the new File Uploader (Web Components based)
+* `uploadcare_include_tag` now loads File Uploader CSS and JS instead of the jQuery widget bundle.
+  The `bundle:` parameter is removed; use `solution:` instead (`"regular"`, `"inline"`, `"minimal"`)
+* `uploadcare_uploader_field` and `uploadcare_uploader_field_tag` now render Web Components
+  (`<uc-form-input>`, `<uc-config>`, `<uc-file-uploader-*>`, `<uc-upload-ctx-provider>`)
+  instead of hidden `<input>` elements. Method signatures now use keyword arguments
+* Auto-detection of `multiple` from `mount_uploadcare_file_group` is preserved but can now
+  be overridden by passing `multiple:` explicitly
+* Module `Uploadcare::Rails::ActionView::UploadcareWidgetTags` renamed to
+  `Uploadcare::Rails::ActionView::UploadcareIncludeTags`
+* Configuration options renamed to match File Uploader API:
+  `images_only` -> `img_only`, `tabs` -> `source_list`, `input_accept_types` -> `accept`,
+  `preferred_types` -> `external_sources_preferred_types`, `multipart_min_size` -> `multipart_min_file_size`,
+  `preview_proxy` -> `secure_delivery_proxy`, `cdn_base` -> `cdn_cname`,
+  `camera_mirror_default` -> `camera_mirror`, `crop` -> `crop_preset`
+* `do_not_store` is still used for server-side model callbacks (`mount_uploadcare_file*`).
+  File Uploader `store` is a separate client-side setting and is not a drop-in replacement
+* Removed widget-specific configuration options with no File Uploader equivalent:
+  `live`, `manual_start`, `preview_step`, `clearable`, `system_dialog`,
+  `audio_bits_per_second`, `video_preferred_mime_types`, `video_bits_per_second`,
+  `locale_translations`, `locale_pluralize`
+* Legacy widget parameters (`WIDGET_PARAMS`) are retained in Configuration for backward compatibility
+  but are marked deprecated and no longer affect the new File Uploader
+
+### Added
+
+* File Uploader integration using Web Components (`<uc-config>`, `<uc-file-uploader-*>`,
+  `<uc-upload-ctx-provider>`, `<uc-form-input>`)
+* `uploadcare_stylesheet_tag` helper for including only File Uploader CSS
+* `uploadcare_uploader` helper for rendering the uploader without a form input
+* `uploadcare_config_tag` helper for rendering a `<uc-config>` element
+* `uploadcare_uploader_tag` helper for rendering a `<uc-file-uploader-*>` element
+* `uploadcare_ctx_provider_tag` helper for rendering a `<uc-upload-ctx-provider>` element
+* `uploadcare_form_input_tag` helper for rendering a `<uc-form-input>` element
+* FormBuilder integration: `f.uploadcare_file` for use with `form_with` / `form_for`
+* Importmap generator: `rails g uploadcare_importmap` for Rails 7+ importmap setup
+* Importmap mode for `uploadcare_include_tag` (`importmap: true` loads only CSS)
+* Per-component configuration via `<uc-config>` with global defaults from initializer
+* Rails 8.0 and 8.1 support
+* `FILE_UPLOADER_PARAMS` configuration constants for the new File Uploader options
+
+### Changed
+
+* Widget script CDN changed from `ucarecdn.com` to `cdn.jsdelivr.net` (for File Uploader assets)
+* Configuration now uses `uploader_config_attributes` (returns Hash for Web Component attributes)
+  instead of `uploader_parameters` (returned JS global variable assignments)
+* Generated config template (`rails g uploadcare_config`) updated with new File Uploader options
+* `store_files_async` and `delete_files_async` default to `false` in generated config template
+
+### Deprecated
+
+* `Uploadcare::Rails::Configuration#uploader_parameters` — use `uploader_config_attributes` instead
+* `Uploadcare::Rails::Configuration#widget` — use `uploader_config_attributes` instead
+* Legacy `WIDGET_PARAMS` configuration parameters — use `FILE_UPLOADER_PARAMS` equivalents instead
+
 ## 3.4.4 — 2024-11-07
 
 ### Added

@@ -11,8 +11,11 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 
 :heavy_exclamation_mark: *Note: This version uses the new [File Uploader](https://uploadcare.com/docs/file-uploader/) (Web Components based). For the legacy jQuery widget, use version 3.x.*
 
+:arrow_up: **Upgrading from 3.x?** See the [Migration Guide](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md) for step-by-step instructions.
+
 ## Table of Contents
 
+* [Migration from 3.x](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md)
 * [Requirements](#requirements)
 * [Installation](#installation)
   * [Using Gemfile](#using-gemfile)
@@ -1095,6 +1098,7 @@ Uploadcare::AddonsApi.remove_bg_status('6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c')
 
 
 ## Useful links
+* [Migration guide from 3.x](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md)
 * [Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
 * [Upload API reference](https://uploadcare.com/api-refs/upload-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
 * [REST API reference](https://uploadcare.com/api-refs/rest-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
