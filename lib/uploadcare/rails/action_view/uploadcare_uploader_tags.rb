@@ -34,6 +34,11 @@ module Uploadcare
           # Retrieve the object from instance variables (like Rails form helpers do)
           object = instance_variable_get("@#{object_name}")
 
+          # Auto-detect multiple from mount_uploadcare_file_group unless explicitly set
+          unless options.key?(:multiple)
+            options[:multiple] = true if uploadcare_file_group_attribute?(object_name, method_name)
+          end
+
           ctx_name ||= SecureRandom.uuid
           field_name = "#{object_name}[#{method_name}]"
           field_html = uploadcare_uploader_field_tag(field_name, ctx_name: ctx_name, solution: solution, **options)
@@ -152,6 +157,15 @@ module Uploadcare
         end
 
         private
+
+        # Check if the model uses mount_uploadcare_file_group for this attribute
+        def uploadcare_file_group_attribute?(object_name, method_name)
+          model = object_name.to_s.camelize.safe_constantize
+          return false unless model
+
+          checker = "has_uploadcare_file_group_for_#{method_name}?"
+          model.respond_to?(checker) && model.public_send(checker)
+        end
 
         # Check if the object has validation errors on the given method
         # Following the same pattern as Rails' ActiveModelInstanceTag

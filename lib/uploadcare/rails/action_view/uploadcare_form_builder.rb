@@ -35,6 +35,15 @@ module ActionView
       # @example With inline solution
       #   <%= f.uploadcare_file :photos, solution: "inline" %>
       def uploadcare_file(method, ctx_name: nil, solution: "regular", **options)
+        # Auto-detect multiple from mount_uploadcare_file_group unless explicitly set
+        unless options.key?(:multiple)
+          model = object_name.to_s.camelize.safe_constantize
+          if model
+            checker = "has_uploadcare_file_group_for_#{method}?"
+            options[:multiple] = true if model.respond_to?(checker) && model.public_send(checker)
+          end
+        end
+
         ctx_name ||= SecureRandom.uuid
         field_name = "#{object_name}[#{method}]"
 
