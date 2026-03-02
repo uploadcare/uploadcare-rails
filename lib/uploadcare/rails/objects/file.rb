@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/api/rest/file_api'
-require 'uploadcare/rails/transformations/image_transformations'
-require 'uploadcare/rails/objects/concerns/loadable'
+require "uploadcare/rails/api/rest/file_api"
+require "uploadcare/rails/transformations/image_transformations"
+require "uploadcare/rails/objects/concerns/loadable"
 
 module Uploadcare
   module Rails
@@ -11,7 +11,7 @@ module Uploadcare
     class File < Uploadcare::Entity::File
       include Objects::Loadable
 
-      ATTR_ENTITIES = [:cdn_url].freeze
+      ATTR_ENTITIES = [ :cdn_url ].freeze
 
       attr_entity(*superclass.entity_attributes + ATTR_ENTITIES)
 
@@ -19,7 +19,7 @@ module Uploadcare
         return if cdn_url.blank?
 
         transformations_query = transformator_class.new(transformations).call if transformations.present?
-        [cdn_url, transformations_query].compact.join('-')
+        [ cdn_url, transformations_query ].compact.join("-")
       end
 
       def store
@@ -41,9 +41,9 @@ module Uploadcare
                       ::Rails.cache.fetch(cache_key, expires_in: cache_expires_in) do
                         request_file_info_from_api
                       end
-                    else
+        else
                       request_file_info_from_api
-                    end
+        end
         update_attrs(file_info)
       end
 

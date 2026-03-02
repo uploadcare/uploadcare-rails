@@ -9,10 +9,13 @@
 A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
-:heavy_exclamation_mark: *Note: the gem uploadcare-rails 2.x is not backward compatible with 1.x.*
+:heavy_exclamation_mark: *Note: This version uses the new [File Uploader](https://uploadcare.com/docs/file-uploader/) (Web Components based). For the legacy jQuery widget, use version 3.x.*
+
+:arrow_up: **Upgrading from 3.x?** See the [Migration Guide](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md) for step-by-step instructions.
 
 ## Table of Contents
 
+* [Migration from 3.x](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md)
 * [Requirements](#requirements)
 * [Installation](#installation)
   * [Using Gemfile](#using-gemfile)
@@ -20,10 +23,12 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 * [Usage](#usage)
   * [Configuration](#configuration)
   * [Uploadcare File Uploader](#uploadcare-file-uploader)
-    * [Widget](#widget)
+    * [Include Tag](#include-tag)
       * [Using CDN](#using-cdn)
       * [Using NPM](#using-npm)
-    * [Input](#input)
+      * [Using Importmap (Rails 7+)](#using-importmap-rails-7)
+    * [Uploader Field](#uploader-field)
+    * [FormBuilder Integration](#formbuilder-integration)
   * [Using the File Uploader with Rails models](#using-the-file-uploader-with-rails-models)
     * [Form data](#form-data)
     * [File and Group wrappers](#file-and-group-wrappers)
@@ -40,8 +45,8 @@ Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (g
 * [Useful links](#useful-links)
 
 ## Requirements
-* ruby 2.7+
-* Ruby on Rails 6.0+
+* ruby 3.3+
+* Ruby on Rails 7.2+
 
 ## Installation
 
@@ -120,34 +125,28 @@ config.delete_files_after_destroy = true
 # Sets caching for Uploadcare files
 config.cache_files = true
 
-# Available locales currently are:
-# ar az ca cs da de el en es et fr he it ja ko lv nb nl pl pt ro ru sk sr sv tr uk vi zhTW zh
+# Available locales: ar, ca, cs, da, de, el, en, es, et, fr, he, hr, hu, id,
+# it, ja, ko, nb, nl, pl, pt, ro, ru, sk, sr, sv, tr, uk, vi, zh-CN, zh-TW
 config.locale = "en"
-
-# If true, inputs on your page are initialized automatically, see the article for details -
-# https://uploadcare.com/docs/file-uploader-api/widget-initialization/
-config.live = true
-
-# If true, input initialization is invoked manually.
-# See https://uploadcare.com/docs/file-uploader-api/widget-initialization/).
-config.manual_start = false
 ```
 
 Then you can configure all global variables such as files storing/caching, deleting files, etc.
 Full list of available options is listed in the file itself. Just uncomment an option and set the value.
 
-In examples we’re going to use `ucarecdn.com` domain. Check your project's subdomain in the [Dashboard](https://app.uploadcare.com/projects/-/settings/#delivery).
+In examples we're going to use `ucarecdn.com` domain. Check your project's subdomain in the [Dashboard](https://app.uploadcare.com/projects/-/settings/#delivery).
 
 ### Uploadcare File Uploader
 
-### Widget
+The gem integrates with the new [Uploadcare File Uploader](https://uploadcare.com/docs/file-uploader/) which is built with Web Components for maximum compatibility across frameworks.
+
+### Include Tag
 
 #### Using CDN
 
-The fastest way to start using file uploading is to add the Uploadcare widget to the html-page.
-There is a view helper that can do it with two strings of code:
+The fastest way to start using file uploading is to add the Uploadcare File Uploader to the html-page.
+There is a view helper that can do it with one line of code:
 
-Add this string to your `<head>` html-tag
+Add this to your `<head>` html-tag (e.g., in `application.html.erb`):
 
 ```erb
 <!DOCTYPE html>
@@ -157,60 +156,177 @@ Add this string to your `<head>` html-tag
   <%= uploadcare_include_tag %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
-    <script>
-      //<![CDATA[
-      UPLOADCARE_PUBLIC_KEY = "your_public_key";
-      UPLOADCARE_LOCALE = "en";
-      UPLOADCARE_LIVE = true;
-      UPLOADCARE_MANUAL_START = false;
-      //]]>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/uc-file-uploader-regular.min.css">
+    <script type="module">
+      import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/file-uploader.min.js';
+      UC.defineComponents(UC);
     </script>
   -->
 </head>
 ...
 ```
-This helper uses a CDN-url for the widget bundle and supports three options:
 
-- **version** — version of the Uploadcare widget. Default is "3.x".
-- **bundle** — bundle name. Available names are "full", "default", "api", "ie8" and "lang.en".
-               Default bundle is "full" — a full bundle with built-in jQuery.
-               More info about bundles [here](https://uploadcare.com/docs/uploads/file-uploader/#bundles).
+This helper uses a CDN-url for the File Uploader and supports these options:
+
+- **version** — version of the Uploadcare File Uploader. Default is "v1".
+- **solution** — solution type. Available names are "regular", "inline", "minimal".
+               Default is "regular". More info about solutions [here](https://uploadcare.com/docs/file-uploader/solutions/).
 - **min** — bool value detecting if the bundle must be minified.
 
-The `<head>` tag then also includes the `<script>` with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
+```erb
+<%= uploadcare_include_tag(version: 'v1', solution: 'inline', min: true) %>
+```
 
+#### Using Importmap (Rails 7+)
 
-#### Using asset pipeline
+For modern Rails applications using [importmap-rails](https://github.com/rails/importmap-rails), you can set up Uploadcare with a single command:
 
-Download and append widget manually to your asset pipeline. You may download (e.g. https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
+```console
+$ rails g uploadcare_importmap
+```
+
+This generator will:
+1. Add the Uploadcare File Uploader pin to your `config/importmap.rb`
+2. Create `app/javascript/uploadcare.js` with initialization code
+
+After running the generator, import Uploadcare in your `app/javascript/application.js`:
+
+```javascript
+import "uploadcare"
+```
+
+And add the CSS stylesheet to your application layout:
+
+```erb
+<%= uploadcare_stylesheet_tag %>
+```
 
 #### Using NPM
 
-Installing via NPM instructions can be found [here](https://uploadcare.com/docs/uploads/file-uploader/#npm).
+You can also install the File Uploader via NPM:
 
-### Input
-
-When the widget is on a html-page, you want to add an input to your view that will be used by the File Uploader:
-
-```erb
-...
-<%= uploadcare_uploader_field :object, :attribute %>
-<!--
-  results in:
-  <input role="uploadcare-uploader" type="hidden" name="object[attribute]" id="object_attribute">
--->
-...
+```bash
+npm install @uploadcare/file-uploader
 ```
 
-- **object** — object name;
-- **attribute** — object attribute name.
+Then import it in your JavaScript:
+
+```javascript
+import * as UC from '@uploadcare/file-uploader';
+
+UC.defineComponents(UC);
+```
+
+And include the CSS in your application:
+
+```javascript
+import '@uploadcare/file-uploader/web/uc-file-uploader-regular.min.css';
+```
+
+**Manual Setup**
+
+If you prefer manual setup, create your JavaScript initializer in `app/javascript/uploadcare.js`:
+
+```javascript
+import * as UC from "@uploadcare/file-uploader";
+
+UC.defineComponents(UC);
+```
+
+Import it in `app/javascript/application.js`:
+
+```javascript
+import "uploadcare"
+```
+
+Pin File Uploader and initializer in `config/importmap.rb`:
+
+```ruby
+pin "@uploadcare/file-uploader", to: "https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/file-uploader.min.js"
+pin "uploadcare"
+```
+
+Add the CSS to your layout:
+
+```erb
+<%= uploadcare_stylesheet_tag %>
+```
+
+### Uploader Field
+
+Add an uploader field to your form using the `uploadcare_uploader_field` helper:
+
+```erb
+<%= uploadcare_uploader_field :post, :picture %>
+<!--
+  results in:
+  <uc-form-input ctx-name="<auto-generated-uuid>" name="post[picture]"></uc-form-input>
+  <uc-config ctx-name="<auto-generated-uuid>" pubkey="your_public_key" locale="en"></uc-config>
+  <uc-file-uploader-regular ctx-name="<auto-generated-uuid>"></uc-file-uploader-regular>
+  <uc-upload-ctx-provider ctx-name="<auto-generated-uuid>"></uc-upload-ctx-provider>
+-->
+```
+
+The helper automatically generates all required Web Components:
+- `<uc-form-input>` — syncs uploaded files with your form (no manual JS needed!)
+- `<uc-config>` — applies configuration from `config/initializers/uploadcare.rb`
+- `<uc-file-uploader-*>` — the uploader UI component
+- `<uc-upload-ctx-provider>` — context provider for component communication
+
+**Options:**
+
+- **object_name** — object name which a field belongs to
+- **method_name** — object method name
+- **solution** — uploader solution type: "regular" (default), "inline", or "minimal"
+- **multiple** — allow multiple file selection
+- **img_only** — only allow image uploads
+- Any other [File Uploader configuration option](https://uploadcare.com/docs/file-uploader/configuration/)
+
+```erb
+<%= uploadcare_uploader_field :post, :picture, solution: "inline", img_only: true %>
+```
+
+**Standalone fields** (outside of model context):
+
+```erb
+<%= uploadcare_uploader_field_tag :file %>
+```
+
+**Just the uploader component** (without form input, for custom JS handling):
+
+```erb
+<%= uploadcare_uploader(ctx_name: 'my-uploader', solution: 'inline') %>
+```
+
+**Low-level component helpers** (for fully custom composition):
+
+```erb
+<%= uploadcare_form_input_tag(name: "post[picture]", ctx_name: "post-picture") %>
+<%= uploadcare_config_tag(ctx_name: "post-picture", multiple: true, img_only: true) %>
+<%= uploadcare_uploader_tag(ctx_name: "post-picture", solution: "regular") %>
+<%= uploadcare_ctx_provider_tag(ctx_name: "post-picture") %>
+```
+
+### FormBuilder Integration
+
+When using `form_with` or `form_for`, you can use the `uploadcare_file` method on the form builder:
+
+```erb
+<%= form_with model: @post do |f| %>
+  <%= f.uploadcare_file :picture %>
+  <%= f.uploadcare_file :gallery, multiple: true, solution: "inline" %>
+  <%= f.submit %>
+<% end %>
+```
+
+This provides the same functionality as `uploadcare_uploader_field` but with proper form builder integration and automatic validation error wrapping.
 
 ### Using the File Uploader with Rails models
 
-View helpers are good to be used for Rails models.
-First, you need to mount uploadcare file or group to the model attribute.
-For example you have a database table like this and model `Post`:
+View helpers are designed to work seamlessly with Rails models.
+First, mount an uploadcare file or group to the model attribute.
+
+For example, if you have a database table like this and a model `Post`:
 ```
 # DB table "posts"
 ---------------------
@@ -235,17 +351,24 @@ end
 
 ```erb
 <!-- app/views/posts/new.html.erb -->
-<h1> NEW POST </h1>
+<h1>NEW POST</h1>
+
+<%= uploadcare_include_tag %>
 
 <%= form_tag("/posts", method: :post) do %>
   <%= uploadcare_uploader_field :post, :picture %>
-  <!--
-    results in:
-    <input role="uploadcare-uploader" multiple="false" type="hidden" name="post[picture]" id="post_picture">
-  -->
   <div>
     <%= submit_tag "Save" %>
   </div>
+<% end %>
+```
+
+Or using `form_with`:
+
+```erb
+<%= form_with model: @post do |f| %>
+  <%= f.uploadcare_file :picture %>
+  <%= f.submit %>
 <% end %>
 ```
 
@@ -260,74 +383,18 @@ end
 
 ```erb
 <!-- app/views/posts/new.html.erb -->
-<h1> NEW POST </h1>
+<h1>NEW POST</h1>
 
-<%= form_tag("/posts", method: :post) do %>
-  <%= uploadcare_uploader_field :post, :attachments %>
-  <!--
-    results in:
-    <input role="uploadcare-uploader" multiple="true" type="hidden" name="post[attachments]" id="post_attachments">
-  -->
-  <div>
-    <%= submit_tag "Save" %>
-  </div>
+<%= uploadcare_include_tag %>
+
+<%= form_with model: @post do |f| %>
+  <%= f.uploadcare_file :attachments, multiple: true, group_output: true %>
+  <%= f.submit %>
 <% end %>
 ```
 
-The input will have a `value` property set to CDN-urls when you will select files to upload in the widget.
-
-```erb
-<input role="uploadcare-uploader" type="hidden" name="post[picture]" id="post_picture" value="https://ucarecdn.com/8355c2c5-f108-4d74-963d-703d48020f83/">
-```
-
-So, you get CDN-urls as a value of the attribute in the controller on form submit.
-The value will be available in the controller by `params[:post][:picture]`.
-
-The helper is detecting the value of the `multiple` property based on the mount type in your model.
-
-### Caching issues with Turbolinks/Hotwire
-
-If you are facing issue, with multiple input elements being rendered due to turbolinks caching you can append this fix in the `app/javascript/application.js` to overcome this:
-
-```
-document.addEventListener('turbolinks:before-cache', function() {
-    const dialogClose = document.querySelector('.uploadcare--dialog__close');
-    if (dialogClose) {
-        dialogClose.dispatchEvent(new Event('click'));
-    }
-
-    const dialog = document.querySelector('.uploadcare--dialog');
-    if (dialog) {
-        dialog.remove();
-    }
-
-    const widgets = document.querySelectorAll('.uploadcare--widget');
-    widgets.forEach(widget => {
-        widget.remove();
-    });
-});
-```
-
-Similarly if you are using [Hotwire](https://hotwired.dev/) then use can you use below code:
-
-```
-document.addEventListener('turbo:before-cache', function() {
-    const dialogClose = document.querySelector('.uploadcare--dialog__close');
-    if (dialogClose) {
-        dialogClose.dispatchEvent(new Event('click'));
-    }
-
-    const dialog = document.querySelector('.uploadcare--dialog');
-    if (dialog) {
-        dialog.remove();
-    }
-
-    const widgets = document.querySelectorAll('.uploadcare--widget');
-    widgets.forEach(widget => {
-        widget.remove();
-    });
-});
-```
+The `<uc-form-input>` component automatically syncs uploaded file URLs with your form.
+When you submit the form, the CDN URL(s) will be available in the controller via `params[:post][:picture]`.
 
 ### File and Group wrappers
 
@@ -1031,6 +1098,7 @@ Uploadcare::AddonsApi.remove_bg_status('6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c')
 
 
 ## Useful links
+* [Migration guide from 3.x](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md)
 * [Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
 * [Upload API reference](https://uploadcare.com/api-refs/upload-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
 * [REST API reference](https://uploadcare.com/api-refs/rest-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)

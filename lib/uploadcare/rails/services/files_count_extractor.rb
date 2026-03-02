@@ -6,7 +6,7 @@ module Uploadcare
     class FilesCountExtractor
       class << self
         def call(input_str)
-          input_str.split('~').last if input_str.present?
+          input_str.split("~").last if input_str.present?
         end
       end
     end

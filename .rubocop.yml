@@ -1,40 +1,8 @@
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+
 AllCops:
-  NewCops: enable
   TargetRubyVersion: 2.7
   Exclude:
     - 'spec/tmp/**/*.rb'
     - 'vendor/**/*'
-
-Gemspec/RequiredRubyVersion:
-  Exclude:
-    - 'uploadcare-rails.gemspec'
-
-Metrics/ClassLength:
-  Exclude:
-    - 'lib/uploadcare/rails/transformations/image_transformations.rb'
-
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*.rb'
-    - 'uploadcare-rails.gemspec'
-    - 'lib/uploadcare/rails/active_record/mount_uploadcare_file.rb'
-    - 'lib/uploadcare/rails/active_record/mount_uploadcare_file_group.rb'
-
-Naming/FileName:
-  Exclude:
-    - 'lib/uploadcare-rails.rb'
-
-Style/HashTransformKeys:
-  Exclude:
-    - 'lib/uploadcare/rails/action_view/uploadcare_uploader_tags.rb'
-    - 'lib/uploadcare/rails/transformations/image_transformations.rb'
-
-Style/OpenStructUse:
-  Exclude:
-    - 'spec/uploadcare/rails/active_record/mount_uploadcare_file_spec.rb'
-    - 'spec/uploadcare/rails/active_record/mount_uploadcare_group_spec.rb'
-    - 'spec/uploadcare/rails/objects/file_spec.rb'
-
-Metrics/ModuleLength:
-  Exclude:
-    - 'spec/**/*'

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/api/rest/group_api'
-require 'uploadcare/rails/transformations/image_transformations'
-require 'uploadcare/rails/objects/concerns/loadable'
+require "uploadcare/rails/api/rest/group_api"
+require "uploadcare/rails/transformations/image_transformations"
+require "uploadcare/rails/objects/concerns/loadable"
 
 module Uploadcare
   module Rails
@@ -21,7 +21,7 @@ module Uploadcare
 
         transformations_query = transformator_class.new(transformations).call if transformations.present?
         map_file_urls do |index|
-          [group_file_url(index), transformations_query].compact.join('-')
+          [ group_file_url(index), transformations_query ].compact.join("-")
         end
       end
 
@@ -44,9 +44,9 @@ module Uploadcare
                        ::Rails.cache.fetch(cache_key, expires_in: cache_expires_in) do
                          request_group_info_from_api
                        end
-                     else
+        else
                        request_group_info_from_api
-                     end
+        end
         update_attrs(group_info)
       end
 
