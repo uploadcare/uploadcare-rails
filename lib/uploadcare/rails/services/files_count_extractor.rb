@@ -9,7 +9,7 @@ module Uploadcare
         # @param input_str [String, nil]
         # @return [String, nil]
         def call(input_str)
-          input_str.split('~').last if input_str.present?
+          input_str.split("~").last if input_str.present?
         end
       end
     end

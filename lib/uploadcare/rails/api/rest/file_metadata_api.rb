@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/api/rest/base'
+require "uploadcare/rails/api/rest/base"
 
 module Uploadcare
   module Rails

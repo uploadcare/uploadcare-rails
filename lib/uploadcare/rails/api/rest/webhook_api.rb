@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/api/rest/base'
+require "uploadcare/rails/api/rest/base"
 
 module Uploadcare
   module Rails
@@ -11,33 +11,29 @@ module Uploadcare
           class << self
             # Returns a list (not paginated) of webhooks
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhooksList
-            def get_webhooks(config: Uploadcare.configuration)
-              Uploadcare::Webhook.list(config: config)
+            # rubocop:disable Naming/AccessorMethodName
+            def get_webhooks
+              Uploadcare::Webhook.list
             end
+            # rubocop:enable Naming/AccessorMethodName
 
             # Create a webhook
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookCreate
-            def create_webhook(
-              target_url,
-              event: 'file.uploaded',
-              is_active: true,
-              signing_secret: nil,
-              config: Uploadcare.configuration
-            )
+            def create_webhook(target_url, event: "file.uploaded", is_active: true, signing_secret: nil)
               options = { target_url: target_url, event: event, is_active: is_active, signing_secret: signing_secret }
-              Uploadcare::Webhook.create(**options.compact, config: config)
+              Uploadcare::Webhook.create(**options.compact)
             end
 
             # Updates a webhook
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/updateWebhook
-            def update_webhook(id, config: Uploadcare.configuration, **options)
-              Uploadcare::Webhook.update(id: id, **options, config: config)
+            def update_webhook(id, options = {})
+              Uploadcare::Webhook.update(id, options)
             end
 
             # Permanently deletes a webhook
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookUnsubscribe
-            def delete_webhook(target_url, config: Uploadcare.configuration)
-              Uploadcare::Webhook.delete(target_url: target_url, config: config)
+            def delete_webhook(target_url)
+              Uploadcare::Webhook.delete(target_url)
             end
           end
         end
@@ -46,5 +42,4 @@ module Uploadcare
   end
 end
 
-# Backward-compatible alias for webhook REST API client.
 Uploadcare::WebhookApi = Uploadcare::Rails::Api::Rest::WebhookApi

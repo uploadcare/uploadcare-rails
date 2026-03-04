@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'uploadcare/errors/type_error'
+require "uploadcare/errors/type_error"
 
 module Uploadcare
   module Rails
@@ -11,13 +11,13 @@ module Uploadcare
         def initialize(options = {})
           raise ArgumentError, "Options argument must be a Hash, #{options.class} is given?" unless options.is_a?(Hash)
 
-          @options = options.to_h { |k, v| [k.to_sym, v] }
+          @options = options.to_h { |k, v| [ k.to_sym, v ] }
         end
 
         # Builds Uploadcare transformation path.
         # @return [String, nil]
         def call
-          options_to_a.compact.join('-').squeeze('/').gsub(/\s/, '').presence
+          options_to_a.compact.join("-").squeeze("/").gsub(/\s/, "").presence
         end
 
         private
@@ -33,11 +33,11 @@ module Uploadcare
         def adjusted_value(value)
           case value
           when Hash
-            value.values.join('/')
-          when TrueClass, FalseClass, 'true', 'false'
+            value.values.join("/")
+          when TrueClass, FalseClass, "true", "false"
             nil
           when Array
-            value.join(',')
+            value.join(",")
           else
             value
           end

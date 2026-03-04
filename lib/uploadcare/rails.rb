@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/version'
+require "uploadcare/rails/version"
 
 module Uploadcare
   module Rails

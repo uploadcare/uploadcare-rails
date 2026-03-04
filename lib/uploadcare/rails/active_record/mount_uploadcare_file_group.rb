@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'active_record'
-require 'active_support/concern'
-require 'uploadcare/rails/services/id_extractor'
-require 'uploadcare/rails/services/files_count_extractor'
-require 'uploadcare/rails/jobs/store_group_job'
+require "active_record"
+require "active_support/concern"
+require "uploadcare/rails/services/id_extractor"
+require "uploadcare/rails/services/files_count_extractor"
+require "uploadcare/rails/jobs/store_group_job"
 
 module Uploadcare
   module Rails

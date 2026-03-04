@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/engine'
-require 'uploadcare/rails/configuration'
-require 'uploadcare/rails/objects/file'
-require 'uploadcare/rails/objects/group'
-require 'uploadcare/rails/api/rest/file_api'
-require 'uploadcare/rails/api/rest/group_api'
-require 'uploadcare/rails/api/rest/project_api'
-require 'uploadcare/rails/api/rest/webhook_api'
-require 'uploadcare/rails/api/rest/conversion_api'
-require 'uploadcare/rails/api/rest/file_metadata_api'
-require 'uploadcare/rails/api/rest/addons_api'
-require 'uploadcare/rails/api/upload/upload_api'
+require "uploadcare/rails/engine"
+require "uploadcare/rails/configuration"
+require "uploadcare/rails/objects/file"
+require "uploadcare/rails/objects/group"
+require "uploadcare/rails/api/rest/file_api"
+require "uploadcare/rails/api/rest/group_api"
+require "uploadcare/rails/api/rest/project_api"
+require "uploadcare/rails/api/rest/webhook_api"
+require "uploadcare/rails/api/rest/conversion_api"
+require "uploadcare/rails/api/rest/file_metadata_api"
+require "uploadcare/rails/api/rest/addons_api"
+require "uploadcare/rails/api/upload/upload_api"
 
 ## Top-level namespace for Uploadcare integrations.
 module Uploadcare

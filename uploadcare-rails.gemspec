@@ -10,9 +10,9 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 3.3.0'
 
   gem.name          = 'uploadcare-rails'
-  gem.authors       = ['@dmitrijivanchenko (Dmitrij Ivanchenko), @T0mbery (Andrey Aksenov)',
-                       'kraft001 (Konstantin Rafalskii)']
-  gem.email         = ['hello@uploadcare.com']
+  gem.authors       = [ '@dmitrijivanchenko (Dmitrij Ivanchenko), @T0mbery (Andrey Aksenov)',
+                       'kraft001 (Konstantin Rafalskii)' ]
+  gem.email         = [ 'hello@uploadcare.com' ]
   gem.summary       = 'Rails gem for Uploadcare'
   gem.description   = <<~DESCRIPTION
     Rails API client (based on uploadcare-ruby) that handles uploads
@@ -43,6 +43,6 @@ Gem::Specification.new do |gem|
   gem.rdoc_options      = %w[--line-numbers --title Uploadcare --main README.rdoc --encoding=UTF-8]
 
   gem.version = Uploadcare::Rails::VERSION
-  gem.add_dependency 'rails', '>= 7.0'
-  gem.add_dependency 'uploadcare-ruby', '>= 5.0.0'
+  gem.add_dependency 'rails', '>= 7.2'
+  gem.add_dependency 'uploadcare-ruby', '>= 4.4.2'
 end

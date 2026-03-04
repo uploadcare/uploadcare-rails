@@ -9,28 +9,30 @@
 A Ruby on Rails plugin for [Uploadcare](https://uploadcare.com) service.
 Based on [uploadcare-ruby](https://github.com/uploadcare/uploadcare-ruby) gem (general purpose wrapper for Uploadcare API)
 
-Version `5.x` is a major update aligned with `uploadcare-ruby` 5.x.
-Migration guide: [MIGRATING_V5.md](./MIGRATING_V5.md).
+:heavy_exclamation_mark: *Note: This version uses the new [File Uploader](https://uploadcare.com/docs/file-uploader/) (Web Components based). For the legacy jQuery widget, use version 3.x.*
+
+:arrow_up: **Upgrading from 3.x?** See the [Migration Guide](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md) for step-by-step instructions.
 
 ## Table of Contents
 
+* [Migration from 3.x](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md)
 * [Requirements](#requirements)
-* [Upgrading to 5.0](#upgrading-to-50)
 * [Installation](#installation)
   * [Using Gemfile](#using-gemfile)
   * [Using command line](#using-command-line)
 * [Usage](#usage)
   * [Configuration](#configuration)
   * [Uploadcare File Uploader](#uploadcare-file-uploader)
-    * [Widget](#widget)
+    * [Include Tag](#include-tag)
       * [Using CDN](#using-cdn)
       * [Using NPM](#using-npm)
-    * [Input](#input)
+      * [Using Importmap (Rails 7+)](#using-importmap-rails-7)
+    * [Uploader Field](#uploader-field)
+    * [FormBuilder Integration](#formbuilder-integration)
   * [Using the File Uploader with Rails models](#using-the-file-uploader-with-rails-models)
     * [Form data](#form-data)
     * [File and Group wrappers](#file-and-group-wrappers)
   * [Image Transformation](#image-transformation)
-  * [Active Storage](#active-storage)
   * [Uploadcare API interfaces](#uploadcare-api-interfaces)
     * [Upload Api](#upload-api)
     * [File Api](#file-api)
@@ -44,14 +46,7 @@ Migration guide: [MIGRATING_V5.md](./MIGRATING_V5.md).
 
 ## Requirements
 * ruby 3.3+
-* Ruby on Rails 7.0+
-
-## Upgrading to 5.0
-
-Read the migration guide before upgrading:
-
-* [MIGRATING_V5.md](./MIGRATING_V5.md)
-* [CHANGELOG.md](./CHANGELOG.md)
+* Ruby on Rails 7.2+
 
 ## Installation
 
@@ -68,6 +63,12 @@ And then execute:
 ```console
 $ bundle install
 ```
+
+If you use `api_struct` gem in your project, replace it with `uploadcare-api_struct`:
+```ruby
+gem 'uploadcare-api_struct'
+```
+and run `bundle install`
 
 ### Using command line
 
@@ -124,44 +125,28 @@ config.delete_files_after_destroy = true
 # Sets caching for Uploadcare files
 config.cache_files = true
 
-# Available locales currently are:
-# ar az ca cs da de el en es et fr he it ja ko lv nb nl pl pt ro ru sk sr sv tr uk vi zhTW zh
+# Available locales: ar, ca, cs, da, de, el, en, es, et, fr, he, hr, hu, id,
+# it, ja, ko, nb, nl, pl, pt, ro, ru, sk, sr, sv, tr, uk, vi, zh-CN, zh-TW
 config.locale = "en"
-
-# If true, inputs on your page are initialized automatically, see the article for details -
-# https://uploadcare.com/docs/file-uploader-api/widget-initialization/
-config.live = true
-
-# If true, input initialization is invoked manually.
-# See https://uploadcare.com/docs/file-uploader-api/widget-initialization/).
-config.manual_start = false
 ```
 
 Then you can configure all global variables such as files storing/caching, deleting files, etc.
 Full list of available options is listed in the file itself. Just uncomment an option and set the value.
 
-In examples we’re going to use `ucarecdn.com` domain. Check your project's subdomain in the [Dashboard](https://app.uploadcare.com/projects/-/settings/#delivery).
-For multi-tenant/multi-project setups (different keys in the same process), build dedicated SDK configs and pass them to API wrappers:
-
-```ruby
-tenant_config = Uploadcare::Rails.client_config(
-  public_key: "tenant_public_key",
-  secret_key: "tenant_secret_key"
-)
-
-Uploadcare::FileApi.get_file("7b2b35b4-125b-4c1e-9305-12e8da8916eb", config: tenant_config)
-```
+In examples we're going to use `ucarecdn.com` domain. Check your project's subdomain in the [Dashboard](https://app.uploadcare.com/projects/-/settings/#delivery).
 
 ### Uploadcare File Uploader
 
-### Widget
+The gem integrates with the new [Uploadcare File Uploader](https://uploadcare.com/docs/file-uploader/) which is built with Web Components for maximum compatibility across frameworks.
+
+### Include Tag
 
 #### Using CDN
 
-The fastest way to start using file uploading is to add the Uploadcare widget to the html-page.
-There is a view helper that can do it with two strings of code:
+The fastest way to start using file uploading is to add the Uploadcare File Uploader to the html-page.
+There is a view helper that can do it with one line of code:
 
-Add this string to your `<head>` html-tag
+Add this to your `<head>` html-tag (e.g., in `application.html.erb`):
 
 ```erb
 <!DOCTYPE html>
@@ -171,60 +156,177 @@ Add this string to your `<head>` html-tag
   <%= uploadcare_include_tag %>
   <!--
     results in:
-    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
-    <script>
-      //<![CDATA[
-      UPLOADCARE_PUBLIC_KEY = "your_public_key";
-      UPLOADCARE_LOCALE = "en";
-      UPLOADCARE_LIVE = true;
-      UPLOADCARE_MANUAL_START = false;
-      //]]>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/uc-file-uploader-regular.min.css">
+    <script type="module">
+      import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/file-uploader.min.js';
+      UC.defineComponents(UC);
     </script>
   -->
 </head>
 ...
 ```
-This helper uses a CDN-url for the widget bundle and supports three options:
 
-- **version** — version of the Uploadcare widget. Default is "3.x".
-- **bundle** — bundle name. Available names are "full", "default", "api", "ie8" and "lang.en".
-               Default bundle is "full" — a full bundle with built-in jQuery.
-               More info about bundles [here](https://uploadcare.com/docs/uploads/file-uploader/#bundles).
+This helper uses a CDN-url for the File Uploader and supports these options:
+
+- **version** — version of the Uploadcare File Uploader. Default is "v1".
+- **solution** — solution type. Available names are "regular", "inline", "minimal".
+               Default is "regular". More info about solutions [here](https://uploadcare.com/docs/file-uploader/solutions/).
 - **min** — bool value detecting if the bundle must be minified.
 
-The `<head>` tag then also includes the `<script>` with widget global settings set in `config/initializers/uploadcare.rb`. You can override them later in an individual widget.
+```erb
+<%= uploadcare_include_tag(version: 'v1', solution: 'inline', min: true) %>
+```
 
+#### Using Importmap (Rails 7+)
 
-#### Using asset pipeline
+For modern Rails applications using [importmap-rails](https://github.com/rails/importmap-rails), you can set up Uploadcare with a single command:
 
-Download and append widget manually to your asset pipeline. You may download (e.g. https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js) and serve the widget yourself along with your other assets.
+```console
+$ rails g uploadcare_importmap
+```
+
+This generator will:
+1. Add the Uploadcare File Uploader pin to your `config/importmap.rb`
+2. Create `app/javascript/uploadcare.js` with initialization code
+
+After running the generator, import Uploadcare in your `app/javascript/application.js`:
+
+```javascript
+import "uploadcare"
+```
+
+And add the CSS stylesheet to your application layout:
+
+```erb
+<%= uploadcare_stylesheet_tag %>
+```
 
 #### Using NPM
 
-Installing via NPM instructions can be found [here](https://uploadcare.com/docs/uploads/file-uploader/#npm).
+You can also install the File Uploader via NPM:
 
-### Input
-
-When the widget is on a html-page, you want to add an input to your view that will be used by the File Uploader:
-
-```erb
-...
-<%= uploadcare_uploader_field :object, :attribute %>
-<!--
-  results in:
-  <input role="uploadcare-uploader" type="hidden" name="object[attribute]" id="object_attribute">
--->
-...
+```bash
+npm install @uploadcare/file-uploader
 ```
 
-- **object** — object name;
-- **attribute** — object attribute name.
+Then import it in your JavaScript:
+
+```javascript
+import * as UC from '@uploadcare/file-uploader';
+
+UC.defineComponents(UC);
+```
+
+And include the CSS in your application:
+
+```javascript
+import '@uploadcare/file-uploader/web/uc-file-uploader-regular.min.css';
+```
+
+**Manual Setup**
+
+If you prefer manual setup, create your JavaScript initializer in `app/javascript/uploadcare.js`:
+
+```javascript
+import * as UC from "@uploadcare/file-uploader";
+
+UC.defineComponents(UC);
+```
+
+Import it in `app/javascript/application.js`:
+
+```javascript
+import "uploadcare"
+```
+
+Pin File Uploader and initializer in `config/importmap.rb`:
+
+```ruby
+pin "@uploadcare/file-uploader", to: "https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/file-uploader.min.js"
+pin "uploadcare"
+```
+
+Add the CSS to your layout:
+
+```erb
+<%= uploadcare_stylesheet_tag %>
+```
+
+### Uploader Field
+
+Add an uploader field to your form using the `uploadcare_uploader_field` helper:
+
+```erb
+<%= uploadcare_uploader_field :post, :picture %>
+<!--
+  results in:
+  <uc-form-input ctx-name="<auto-generated-uuid>" name="post[picture]"></uc-form-input>
+  <uc-config ctx-name="<auto-generated-uuid>" pubkey="your_public_key" locale="en"></uc-config>
+  <uc-file-uploader-regular ctx-name="<auto-generated-uuid>"></uc-file-uploader-regular>
+  <uc-upload-ctx-provider ctx-name="<auto-generated-uuid>"></uc-upload-ctx-provider>
+-->
+```
+
+The helper automatically generates all required Web Components:
+- `<uc-form-input>` — syncs uploaded files with your form (no manual JS needed!)
+- `<uc-config>` — applies configuration from `config/initializers/uploadcare.rb`
+- `<uc-file-uploader-*>` — the uploader UI component
+- `<uc-upload-ctx-provider>` — context provider for component communication
+
+**Options:**
+
+- **object_name** — object name which a field belongs to
+- **method_name** — object method name
+- **solution** — uploader solution type: "regular" (default), "inline", or "minimal"
+- **multiple** — allow multiple file selection
+- **img_only** — only allow image uploads
+- Any other [File Uploader configuration option](https://uploadcare.com/docs/file-uploader/configuration/)
+
+```erb
+<%= uploadcare_uploader_field :post, :picture, solution: "inline", img_only: true %>
+```
+
+**Standalone fields** (outside of model context):
+
+```erb
+<%= uploadcare_uploader_field_tag :file %>
+```
+
+**Just the uploader component** (without form input, for custom JS handling):
+
+```erb
+<%= uploadcare_uploader(ctx_name: 'my-uploader', solution: 'inline') %>
+```
+
+**Low-level component helpers** (for fully custom composition):
+
+```erb
+<%= uploadcare_form_input_tag(name: "post[picture]", ctx_name: "post-picture") %>
+<%= uploadcare_config_tag(ctx_name: "post-picture", multiple: true, img_only: true) %>
+<%= uploadcare_uploader_tag(ctx_name: "post-picture", solution: "regular") %>
+<%= uploadcare_ctx_provider_tag(ctx_name: "post-picture") %>
+```
+
+### FormBuilder Integration
+
+When using `form_with` or `form_for`, you can use the `uploadcare_file` method on the form builder:
+
+```erb
+<%= form_with model: @post do |f| %>
+  <%= f.uploadcare_file :picture %>
+  <%= f.uploadcare_file :gallery, multiple: true, solution: "inline" %>
+  <%= f.submit %>
+<% end %>
+```
+
+This provides the same functionality as `uploadcare_uploader_field` but with proper form builder integration and automatic validation error wrapping.
 
 ### Using the File Uploader with Rails models
 
-View helpers are good to be used for Rails models.
-First, you need to mount uploadcare file or group to the model attribute.
-For example you have a database table like this and model `Post`:
+View helpers are designed to work seamlessly with Rails models.
+First, mount an uploadcare file or group to the model attribute.
+
+For example, if you have a database table like this and a model `Post`:
 ```
 # DB table "posts"
 ---------------------
@@ -247,32 +349,26 @@ class Post < ApplicationRecord
 end
 ```
 
-For multi-tenant setups, you can bind a non-default Uploadcare config:
-
-```ruby
-class Post < ApplicationRecord
-  mount_uploadcare_file :picture, uploadcare_config: -> {
-    Uploadcare::Rails.client_config(
-      public_key: tenant_uploadcare_public_key,
-      secret_key: tenant_uploadcare_secret_key
-    )
-  }
-end
-```
-
 ```erb
 <!-- app/views/posts/new.html.erb -->
-<h1> NEW POST </h1>
+<h1>NEW POST</h1>
+
+<%= uploadcare_include_tag %>
 
 <%= form_tag("/posts", method: :post) do %>
   <%= uploadcare_uploader_field :post, :picture %>
-  <!--
-    results in:
-    <input role="uploadcare-uploader" multiple="false" type="hidden" name="post[picture]" id="post_picture">
-  -->
   <div>
     <%= submit_tag "Save" %>
   </div>
+<% end %>
+```
+
+Or using `form_with`:
+
+```erb
+<%= form_with model: @post do |f| %>
+  <%= f.uploadcare_file :picture %>
+  <%= f.submit %>
 <% end %>
 ```
 
@@ -285,78 +381,20 @@ class Post < ApplicationRecord
 end
 ```
 
-`mount_uploadcare_file_group` also supports `uploadcare_config:` in the same way.
-
 ```erb
 <!-- app/views/posts/new.html.erb -->
-<h1> NEW POST </h1>
+<h1>NEW POST</h1>
 
-<%= form_tag("/posts", method: :post) do %>
-  <%= uploadcare_uploader_field :post, :attachments %>
-  <!--
-    results in:
-    <input role="uploadcare-uploader" multiple="true" type="hidden" name="post[attachments]" id="post_attachments">
-  -->
-  <div>
-    <%= submit_tag "Save" %>
-  </div>
+<%= uploadcare_include_tag %>
+
+<%= form_with model: @post do |f| %>
+  <%= f.uploadcare_file :attachments, multiple: true, group_output: true %>
+  <%= f.submit %>
 <% end %>
 ```
 
-The input will have a `value` property set to CDN-urls when you will select files to upload in the widget.
-
-```erb
-<input role="uploadcare-uploader" type="hidden" name="post[picture]" id="post_picture" value="https://ucarecdn.com/8355c2c5-f108-4d74-963d-703d48020f83/">
-```
-
-So, you get CDN-urls as a value of the attribute in the controller on form submit.
-The value will be available in the controller by `params[:post][:picture]`.
-
-The helper is detecting the value of the `multiple` property based on the mount type in your model.
-
-### Caching issues with Turbolinks/Hotwire
-
-If you are facing issue, with multiple input elements being rendered due to turbolinks caching you can append this fix in the `app/javascript/application.js` to overcome this:
-
-```
-document.addEventListener('turbolinks:before-cache', function() {
-    const dialogClose = document.querySelector('.uploadcare--dialog__close');
-    if (dialogClose) {
-        dialogClose.dispatchEvent(new Event('click'));
-    }
-
-    const dialog = document.querySelector('.uploadcare--dialog');
-    if (dialog) {
-        dialog.remove();
-    }
-
-    const widgets = document.querySelectorAll('.uploadcare--widget');
-    widgets.forEach(widget => {
-        widget.remove();
-    });
-});
-```
-
-Similarly if you are using [Hotwire](https://hotwired.dev/) then use can you use below code:
-
-```
-document.addEventListener('turbo:before-cache', function() {
-    const dialogClose = document.querySelector('.uploadcare--dialog__close');
-    if (dialogClose) {
-        dialogClose.dispatchEvent(new Event('click'));
-    }
-
-    const dialog = document.querySelector('.uploadcare--dialog');
-    if (dialog) {
-        dialog.remove();
-    }
-
-    const widgets = document.querySelectorAll('.uploadcare--widget');
-    widgets.forEach(widget => {
-        widget.remove();
-    });
-});
-```
+The `<uc-form-input>` component automatically syncs uploaded file URLs with your form.
+When you submit the form, the CDN URL(s) will be available in the controller via `params[:post][:picture]`.
 
 ### File and Group wrappers
 
@@ -387,12 +425,18 @@ Now the `post.picture` is an Uploadcare::Rails::File. Following methods are supp
 ```ruby
 # Store the file on an Uploadcare server permanently:
 post.picture.store
-#   => #<Uploadcare::Rails::File ...>
+#   => {
+#         "cdn_url"=>"https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/",
+#          ...other group data...
+#      }
 
 #
 # Delete the file from an Uploadcare server permanently:
 post.picture.delete
-#   => #<Uploadcare::File ...>
+#   => {
+#         "datetime_removed"=>"2021-07-30T09:19:30.797174Z",
+#          ...other group data...
+#      }
 
 # Get CDN-url of an object attribute:
 post.picture.to_s
@@ -402,7 +446,10 @@ post.picture.to_s
 # This data will be cached if the cache_files option is set to true
 # Default data (without asking an Uploadcare server) for each file contains cdn_url and uuid only:
 post.picture.load
-#   => #<Uploadcare::Rails::File ...>
+#   => {
+#         "cdn_url"=>"https://ucarecdn.com/2d33999d-c74a-4ff9-99ea-abc23496b052/",
+#          ...other file data...
+#      }
 
 # Check if an attribute loaded from the server.
 # Will return false unless the :load or the :store methods are called:
@@ -437,12 +484,22 @@ Now the `post.attachments` is an Uploadcare::Rails::Group. Following methods are
 ```ruby
 # Store the file group on an Uploadcare server permanently:
 post.attachments.store
-#   => #<Uploadcare::Group ...>
+#   => {
+#         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
+#          ...other group data...
+#         "files"=> [{
+#            "datetime_stored"=>"2021-07-29T08:31:45.668354Z",
+#            ...other file data...
+#         }]
+#      }
 
 #
 # Delete the file group from an Uploadcare server permanently:
 post.attachments.delete
-#   => #<direct SDK response payload>
+#   => {
+#         "datetime_removed"=>"2021-07-30T09:19:30.797174Z",
+#          ...other group data...
+#      }
 
 # Get CDN-url of an object attribute:
 post.attachments.to_s
@@ -450,7 +507,14 @@ post.attachments.to_s
 
 # Load object — works the same way as for the File:
 post.attachments.load
-#   => #<Uploadcare::Rails::Group ...>
+#   => {
+#         "cdn_url"=>"https://ucarecdn.com/dbc4e868-b7a6-43ff-a35f-2ebef935dc1b~1/",
+#          ...other group data...
+#         "files"=> [{
+#            "datetime_stored"=>"2021-07-29T08:31:45.668354Z",
+#            ...other file data...
+#         }]
+#      }
 
 # Check if an attribute loaded from the server:
 post.attachments.loaded?
@@ -487,60 +551,9 @@ post.picture.transform_url(crop: { dimensions: "300x500", coords: "50, 50", alig
 
 Full list of operations and valid values can be found [here](https://uploadcare.com/docs/transformations/image/).
 
-### Active Storage
-
-`uploadcare-rails` provides `ActiveStorage::Service::UploadcareService`.
-
-Configure it in `config/storage.yml`:
-
-```yml
-uploadcare:
-  service: Uploadcare
-  public_key: <%= ENV.fetch("UPLOADCARE_PUBLIC_KEY") %>
-  secret_key: <%= ENV.fetch("UPLOADCARE_SECRET_KEY") %>
-```
-
-Then enable it in your environment config:
-
-```ruby
-config.active_storage.service = :uploadcare
-```
-
-Current limitations:
-
-* direct uploads are not supported yet (`url_for_direct_upload` raises `NotImplementedError`)
-* adapter stores Uploadcare UUID mapping in `ActiveStorage::Blob#metadata["uploadcare_uuid"]`
-
-Built-in Active Storage integrations:
-
-* Uploadcare PDF previewer (`Uploadcare::Rails::ActiveStorage::UploadcarePreviewer`) is auto-registered.
-  This allows standard Rails preview calls like:
-
-```ruby
-url_for(record.file.preview(resize_to_limit: [320, 320]))
-```
-
-* Uploadcare remote variant processing is prepended into `ActiveStorage::Variant`.
-  Standard Rails variant helpers keep working while transformations are executed through Uploadcare CDN:
-
-```ruby
-image_tag(record.image.variant(resize_to_limit: [320, 320], quality: "smart"))
-image_tag(record.image.variant(resize_to_fill: [200, 120]))
-image_tag(record.image.variant(resize_to_fit: [640, 480]))
-```
-
 ### Uploadcare API interfaces
 
 Uploadcare provides [APIs](https://uploadcare.com/docs/start/api/) to manage files, group, projects, webhooks, video and documents conversion and file uploads. The gem has unified interfaces to use Uploadcare APIs in RailsApp.
-
-`uploadcare-rails` 5.x returns native `uploadcare-ruby` v5 objects/results from wrappers.
-Examples:
-
-* `Uploadcare::FileApi.get_file` -> `Uploadcare::File`
-* `Uploadcare::FileApi.get_files` -> `Uploadcare::PaginatedCollection`
-* `Uploadcare::GroupApi.get_group` -> `Uploadcare::Group`
-* `Uploadcare::ProjectApi.get_project` -> `Uploadcare::Project`
-* `Uploadcare::WebhookApi.get_webhooks` -> `Array<Uploadcare::Webhook>`
 
 ### Upload API
 
@@ -555,7 +568,10 @@ file = File.open("kitten.png")
 
 # Upload file to Uploadcare
 uploadcare_file = Uploadcare::UploadApi.upload_file(file)
-#   => #<Uploadcare::File ...>
+#   => {
+#         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b053",
+#          ...other file data...
+#      }
 ```
 
 This method supports single file uploading and uploading files from an URL (depending on the type of first argument - can be either String (i.e. URL) or File).
@@ -564,7 +580,17 @@ This method supports single file uploading and uploading files from an URL (depe
 # Upload file from URL
 url = "https://ucarecdn.com/80b807be-faad-4f01-bbbe-0bbde172b9de/1secVIDEO.mp4"
 uploadcare_file = Uploadcare::UploadApi.upload_file(url)
-#   => #<Uploadcare::File ...>
+#   => [
+#        {
+#          "size"=>22108,
+#          "uuid"=>"b5ed5e1d-a939-4fe4-bfb2-31d3867bb6s6",
+#          "original_filename"=>"1 sec VIDEO.mp4",
+#          "is_image"=>false,
+#          "image_info"=>nil,
+#          "is_ready"=>true,
+#          "mime_type"=>"video/mp4"
+#        }
+#      ]
 ```
 
 
@@ -576,7 +602,12 @@ file = File.open("kitten.png")
 #   => #<File:kitten.png>
 # Upload several files to Uploadcare
 uploadcare_file = Uploadcare::UploadApi.upload_files([file])
-#   => [#<Uploadcare::File ...>]
+#   => [
+#        {
+#          "uuid"=>"2dfc94e6-e74e-4014-9ff5-a71b8928f4fa",
+#          "original_filename"=>:"kitten.png"
+#        }
+#      ]
 ```
 
 
@@ -594,7 +625,18 @@ FileApi provides an interface to manage single files, stored on Uploadcare Serve
 # ordering: ["datetime_uploaded"|"-datetime_uploaded"]
 # from: A starting point for filtering files. The value depends on your ordering parameter value.
 Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
-#   => #<Uploadcare::PaginatedCollection ...>
+#   => {
+#        "next"=>nil,
+#        "previous"=>nil,
+#        "total"=>2,
+#        "per_page"=>10,
+#        "results"=> [
+#          {
+#            "datetime_removed"=>nil,
+#            ... file data ...
+#          }
+#        ]
+#      }
 ```
 
 
@@ -602,7 +644,10 @@ Uploadcare::FileApi.get_files(ordering: "datetime_uploaded", limit: 10)
 
 ```ruby
 $ Uploadcare::FileApi.get_file("7b2b35b4-125b-4c1e-9305-12e8da8916eb")
-#   => #<Uploadcare::File ...>
+#   => {
+#         "cdn_url"=>"https://ucarecdn.com/7b2b35b4-125b-4c1e-9305-12e8da8916eb/",
+#          ...other file data...
+#      }
 ```
 
 
@@ -635,7 +680,10 @@ Uploadcare::FileApi.remote_copy_file("2d33999d-c74a-4ff9-99ea-abc23496b052", "my
 
 ```ruby
 Uploadcare::FileApi.store_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
-#   => #<Uploadcare::File ...>
+#   => {
+#         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
+#          ...other file data...
+#      }
 ```
 
 
@@ -643,7 +691,14 @@ Uploadcare::FileApi.store_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 
 ```ruby
 Uploadcare::FileApi.store_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
-#   => #<Uploadcare::BatchFileResult ...>
+#   => {
+#        "result" => [
+#          {
+#            "uuid"=>"f486132c-2fa5-454e-9e70-93c5e01a7e04",
+#            ...other file data...
+#          }
+#        ]
+#      }
 ```
 
 
@@ -651,7 +706,10 @@ Uploadcare::FileApi.store_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
 
 ```ruby
 Uploadcare::FileApi.delete_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
-#   => #<Uploadcare::File ...>
+#   => {
+#         "uuid"=>"2d33999d-c74a-4ff9-99ea-abc23496b052",
+#          ...other file data...
+#      }
 ```
 
 
@@ -659,7 +717,14 @@ Uploadcare::FileApi.delete_file("2d33999d-c74a-4ff9-99ea-abc23496b052")
 
 ```ruby
 Uploadcare::FileApi.delete_files(["f486132c-2fa5-454e-9e70-93c5e01a7e04"])
-#   => #<Uploadcare::BatchFileResult ...>
+#   => {
+#        "result" => [
+#          {
+#            "uuid"=>"f486132c-2fa5-454e-9e70-93c5e01a7e04",
+#            ...other file data...
+#          }
+#        ]
+#      }
 ```
 
 
@@ -676,7 +741,23 @@ GroupApi provides an interface to manage file groups stored on Uploadcare Server
 # from: A starting point for filtering group lists. MUST be a datetime value with T used as a separator.
 #   example: "2015-01-02T10:00:00"
 Uploadcare::GroupApi.get_groups(ordering: "datetime_uploaded", limit: 10)
-#   => #<Uploadcare::PaginatedCollection ...>
+#   => {
+#        "next"=>"next"=>"https://api.uploadcare.com/groups/?ordering=datetime_uploaded&limit=10&from=2021-07-16T11%3A12%3A12.236280%2B00%3A00&offset=0",
+#        "previous"=>nil,
+#        "total"=>82,
+#        "per_page"=>10,
+#        "results"=> [
+#          {
+#            "id"=>"d476f4c9-44a9-4670-88a5-c3cf5a26b6c2~20",
+#            "datetime_created"=>"2021-07-16T11:03:01.182239Z",
+#            "datetime_stored"=>nil,
+#            "files_count"=>20,
+#            "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d16b6c2~20/",
+#            "url"=>"https://api.uploadcare.com/groups/d476f4c9-44a9-4670-83a5-c3cf5d26b6c2~20/"
+#          },
+#          ... other groups data ...
+#        ]
+#      }
 ```
 
 
@@ -684,7 +765,14 @@ Uploadcare::GroupApi.get_groups(ordering: "datetime_uploaded", limit: 10)
 
 ```ruby
 Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
-#   => #<Uploadcare::Group ...>
+#   => {
+#         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20/",
+#          ...other group data...
+#         "files"=> [{
+#            "datetime_stored"=>"2021-07-29T08:31:45.668354Z",
+#            ...other file data...
+#         }]
+#      }
 ```
 
 
@@ -692,7 +780,7 @@ Uploadcare::GroupApi.get_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
 
 ```ruby
 Uploadcare::GroupApi.store_group("d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~20")
-#   => #<Uploadcare::Group ...>
+#   => "200 OK"
 ```
 
 
@@ -706,7 +794,14 @@ It is possible to specify transformed URLs with UUIDs of files OR just UUIDs.
 
 ```ruby
 Uploadcare::GroupApi.create_group(["e08dec9e-7e25-49c5-810e-4c360d86bbae/-/resize/300x500/"])
-#   => #<Uploadcare::Group ...>
+#   => {
+#         "cdn_url"=>"https://ucarecdn.com/d476f4c9-44a9-4670-88a5-c3cf5d26a6c2~1/",
+#          ...other group data...
+#         "files"=> [{
+#            "datetime_stored"=>"2021-07-29T08:31:45.668354Z",
+#            ...other file data...
+#         }]
+#      }
 ```
 
 
@@ -724,7 +819,12 @@ ProjectApi interface provides just one method - to get a configuration of your U
 
 ```ruby
 Uploadcare::ProjectApi.get_project
-#   => #<Uploadcare::Project ...>
+#   => {
+#        "collaborators"=>[],
+#        "name"=>"New project",
+#        "pub_key"=>"your_public_key",
+#        "autostore_enabled"=>true
+#      }
 ```
 
 
@@ -738,7 +838,15 @@ This method returns a non-paginated list of webhooks set in your project
 
 ```ruby
 Uploadcare::WebhookApi.get_webhooks
-#   => [#<Uploadcare::Webhook ...>]
+#   => [{
+#        "id"=>815677,
+#        "created"=>"2021-08-02T05:02:14.588794Z",
+#        "updated"=>"2021-08-02T05:02:14.588814Z",
+#        "event"=>"file.uploaded",
+#        "target_url"=>"https://example.com",
+#        "project"=>123682,
+#        "is_active"=>true
+#      }]
 ```
 
 
@@ -754,7 +862,15 @@ More info about secure webhooks [here](https://uploadcare.com/docs/security/secu
 # event: ["file.uploaded"]
 # is_active: [true|false]
 Uploadcare::WebhookApi.create_webhook("https://example.com", event: "file.uploaded", is_active: true, signing_secret: "some-secret")
-#   => #<Uploadcare::Webhook ...>
+#   => {
+#        "id"=>815671,
+#        "created"=>"2021-08-02T05:02:14.588794Z",
+#        "updated"=>"2021-08-02T05:02:14.588814Z",
+#        "event"=>"file.uploaded",
+#        "target_url"=>"https://example.com",
+#        "project"=>123682,
+#        "is_active"=>true
+#      }
 ```
 
 
@@ -767,7 +883,15 @@ Updating a webhook is available if webhook ID is known. The ID is returned in a 
 # event: Presently, we only support the "file.uploaded" event
 # is_active: [true|false]
 Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example1.com", event: "file.uploaded", is_active: false, signing_secret: "some-secret")
-#   => #<Uploadcare::Webhook ...>
+#   => {
+#        "id"=>815671,
+#        "created"=>"2021-08-02T05:02:14.588794Z",
+#        "updated"=>"2021-08-02T05:02:14.588814Z",
+#        "event"=>"file.uploaded",
+#        "target_url"=>"https://example1.com",
+#        "project"=>123682,
+#        "is_active"=>false
+#      }
 ```
 
 
@@ -775,7 +899,7 @@ Uploadcare::WebhookApi.update_webhook("webhook_id", target_url: "https://example
 
 ```ruby
 Uploadcare::WebhookApi.delete_webhook("https://example1.com")
-#   => ""
+#   => Success(nil)
 ```
 
 ### Conversion API
@@ -793,7 +917,14 @@ Uploadcare::ConversionApi.convert_document(
   { uuid: "466740dd-cfad-4de4-9218-1ddc0edf7aa6", format: "png", page: 1 },
   store: false
 )
-#   => {"result"=>[{"token"=>21316034, "uuid"=>"db6e52b8-cc03-4174-a07a-012be43b144e"}], "problems"=>{}}
+#   => Success({
+#        :result=>[{
+#          :original_source=>"466740dd-cfad-4de4-9218-1ddc0edf7aa6/document/-/format/png/-/page/1/",
+#          :token=>21316034,
+#          :uuid=>"db6e52b8-cc03-4174-a07a-012be43b144e"
+#        }],
+#        :problems=>{}
+#     })
 ```
 
 
@@ -803,7 +934,13 @@ This method requires a token obtained in a response to the [convert_document](#c
 
 ```ruby
 Uploadcare::ConversionApi.get_document_conversion_status(21316034)
-#   => #<Uploadcare::DocumentConverter ...>
+#   => Success({
+#        :result=>{
+#          :uuid=>"db6e52b8-cc03-4174-a07a-012be43b144e"
+#        },
+#        :error=>nil,
+#        :status=>"finished"
+#     })
 ```
 
 
@@ -824,7 +961,15 @@ Uploadcare::ConversionApi.convert_video(
   },
   store: false
 )
-#   => #<Uploadcare::VideoConverter ...>
+#   => Success({
+#        :result=>[{
+#          :original_source=>"80b807be-faad-4f01-bbbe-0bbde172b9de/video/-/size/600x400/change_ratio/-/quality/best/-/format/ogg/-/cut/0:0:0.0/0:0:1.0/-/thumbs~2/1/",
+#          :token=>916090555,
+#          :uuid=>"df597ef4-59e7-47ef-af5d-365d8409934c~2",
+#          :thumbnails_group_uuid=>"df597ef4-59e7-47ef-af5d-365d8409934c~2"
+#        }],
+#        :problems=>{}
+#     })
 ```
 
 
@@ -834,7 +979,14 @@ This method requires a token obtained in a response to the [convert_video](#conv
 
 ```ruby
 Uploadcare::ConversionApi.get_video_conversion_status(916090555)
-#   => #<Uploadcare::VideoConverter ...>
+#   => Success({
+#        :result=>{
+#          :uuid=>"f0a3e66e-cd22-4397-ba0a-8a8becc925f9",
+#          :thumbnails_group_uuid=>"df597ef4-59e7-47ef-af5d-365d8409934c~2"
+#        },
+#        :error=>nil,
+#        :status=>"finished"
+#     })
 ```
 
 
@@ -946,10 +1098,10 @@ Uploadcare::AddonsApi.remove_bg_status('6d26a7d5-0955-4aeb-a9b1-c9776c83aa4c')
 
 
 ## Useful links
+* [Migration guide from 3.x](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md)
 * [Uploadcare documentation](https://uploadcare.com/docs/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
 * [Upload API reference](https://uploadcare.com/api-refs/upload-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
 * [REST API reference](https://uploadcare.com/api-refs/rest-api/?utm_source=github&utm_medium=referral&utm_campaign=uploadcare-rails)
-* [Migration guide (v5)](./MIGRATING_V5.md)
 * [Changelog](./CHANGELOG.md)
 * [Contributing guide](https://github.com/uploadcare/.github/blob/master/CONTRIBUTING.md)
 * [Security policy](https://github.com/uploadcare/uploadcare-rails/security/policy)

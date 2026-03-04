@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'mongoid'
-require 'active_support/concern'
-require 'uploadcare/rails/services/id_extractor'
-require 'uploadcare/rails/jobs/delete_file_job'
-require 'uploadcare/rails/jobs/store_file_job'
-require 'uploadcare/rails/objects/file'
+require "mongoid"
+require "active_support/concern"
+require "uploadcare/rails/services/id_extractor"
+require "uploadcare/rails/jobs/delete_file_job"
+require "uploadcare/rails/jobs/store_file_job"
+require "uploadcare/rails/objects/file"
 
 module Uploadcare
   module Rails
