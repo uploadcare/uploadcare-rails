@@ -31,7 +31,7 @@ module ActiveStorage
           uri = URI.parse(url)
           request = build_request(uri, range)
 
-          Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+          Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
             return request_streaming(http, request, &block) if block
 
             request_once(http, request)
@@ -40,7 +40,7 @@ module ActiveStorage
 
         def build_request(uri, range)
           request = Net::HTTP::Get.new(uri)
-          request['Range'] = "bytes=#{range.begin}-#{range.end}" if range
+          request["Range"] = "bytes=#{range.begin}-#{range.end}" if range
           request
         end
 

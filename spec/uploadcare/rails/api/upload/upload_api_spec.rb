@@ -32,9 +32,9 @@ module Uploadcare
 
             it 'forwards config for upload_files' do
               file = ::File.open('spec/fixtures/kitten.jpeg')
-              expect(Uploadcare::Uploader).to receive(:upload).with(object: [file], config: custom_config, store: true)
+              expect(Uploadcare::Uploader).to receive(:upload).with(object: [ file ], config: custom_config, store: true)
 
-              subject.upload_files([file], { store: true }, config: custom_config)
+              subject.upload_files([ file ], { store: true }, config: custom_config)
             end
           end
 

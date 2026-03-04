@@ -34,7 +34,7 @@ module Uploadcare
             def store_group(uuid, config: Uploadcare.configuration)
               group = Uploadcare::Group.info(group_id: uuid, config: config)
               Array(group.files).each do |file|
-                file_uuid = file.respond_to?(:uuid) ? file.uuid : file['uuid']
+                file_uuid = file.respond_to?(:uuid) ? file.uuid : file["uuid"]
                 Uploadcare::File.new({ uuid: file_uuid }, config).store
               end
               group

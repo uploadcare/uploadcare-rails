@@ -24,7 +24,7 @@ module ActiveStorage
           return unless defined?(ActiveStorage::Blob)
 
           blob = ActiveStorage::Blob.find_by(key: key)
-          blob&.metadata&.[]('uploadcare_uuid')
+          blob&.metadata&.[]("uploadcare_uuid")
         end
 
         def persist_uuid_to_blob(key, uuid)
@@ -34,16 +34,16 @@ module ActiveStorage
           return unless blob
 
           metadata = (blob.metadata || {}).dup
-          return if metadata['uploadcare_uuid'] == uuid
+          return if metadata["uploadcare_uuid"] == uuid
 
-          metadata['uploadcare_uuid'] = uuid
+          metadata["uploadcare_uuid"] = uuid
           blob.update!(metadata: metadata)
         end
 
         def keys_for_prefix(prefix)
           if defined?(ActiveStorage::Blob)
             sanitized_prefix = sanitize_sql_like_prefix(prefix)
-            return ActiveStorage::Blob.where('key LIKE ?', "#{sanitized_prefix}%").pluck(:key)
+            return ActiveStorage::Blob.where("key LIKE ?", "#{sanitized_prefix}%").pluck(:key)
           end
 
           @key_uuid_map.keys.select { |key| key.start_with?(prefix) }

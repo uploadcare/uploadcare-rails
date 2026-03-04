@@ -30,8 +30,8 @@ module Uploadcare
         end
       end
 
-      initializer 'uploadcare-rails.active_storage' do
-        require 'uploadcare/rails/active_storage/integration'
+      initializer "uploadcare-rails.active_storage" do
+        require "uploadcare/rails/active_storage/integration"
 
         config.after_initialize do |app|
           previewers = app.config.active_storage.respond_to?(:previewers) ? app.config.active_storage.previewers : nil

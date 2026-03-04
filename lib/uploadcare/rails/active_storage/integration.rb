@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'uploadcare/rails/active_storage/uploadcare_previewer'
-require 'uploadcare/rails/active_storage/variant_remote_processing'
+require "uploadcare/rails/active_storage/uploadcare_previewer"
+require "uploadcare/rails/active_storage/variant_remote_processing"
 
 module Uploadcare
   module Rails

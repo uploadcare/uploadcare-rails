@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'net/http'
-require 'tempfile'
+require "net/http"
+require "tempfile"
 
 module Uploadcare
   module Rails
@@ -25,7 +25,7 @@ module Uploadcare
         end
 
         def download_transformed_uploadcare_image
-          tempfile = Tempfile.open(['uploadcare-variant', ".#{variation.format}"], Dir.tmpdir)
+          tempfile = Tempfile.open([ "uploadcare-variant", ".#{variation.format}" ], Dir.tmpdir)
           tempfile.binmode
 
           response = http_get(variant_source_url)
@@ -44,7 +44,7 @@ module Uploadcare
         end
 
         def uploadcare_uuid
-          blob.metadata['uploadcare_uuid'].presence || blob.key
+          blob.metadata["uploadcare_uuid"].presence || blob.key
         end
 
         def uploadcare_transformations
@@ -60,7 +60,7 @@ module Uploadcare
           return if dimensions.blank?
 
           width, height = dimensions
-          mapped[:resize] = [width, height].compact.join('x')
+          mapped[:resize] = [ width, height ].compact.join("x")
         end
 
         def map_scale_crop!(mapped, dimensions)
@@ -68,8 +68,8 @@ module Uploadcare
 
           width, height = dimensions
           mapped[:scale_crop] = {
-            dimensions: [width, height].compact.join('x'),
-            offsets: '50%,50%'
+            dimensions: [ width, height ].compact.join("x"),
+            offsets: "50%,50%"
           }
         end
 
@@ -78,14 +78,14 @@ module Uploadcare
         end
 
         def http_get(url, limit = 5)
-          raise ::ActiveStorage::IntegrityError, 'Uploadcare variant redirect limit exceeded' if limit.zero?
+          raise ::ActiveStorage::IntegrityError, "Uploadcare variant redirect limit exceeded" if limit.zero?
 
           uri = URI.parse(url)
-          response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+          response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
             http.request(Net::HTTP::Get.new(uri))
           end
 
-          return http_get(response['location'], limit - 1) if response.is_a?(Net::HTTPRedirection)
+          return http_get(response["location"], limit - 1) if response.is_a?(Net::HTTPRedirection)
 
           response
         end

@@ -6,14 +6,10 @@ require "uploadcare/rails/objects/concerns/loadable"
 
 module Uploadcare
   module Rails
-    # A wrapper class for Uploadcare::File object.
-    # Allows caching loaded files and has methods for Rails model attributes
-    class File < Uploadcare::Entity::File
+    class File < Uploadcare::File
       include Objects::Loadable
 
-      ATTR_ENTITIES = [ :cdn_url ].freeze
-
-      attr_entity(*superclass.entity_attributes + ATTR_ENTITIES)
+      attr_writer :cdn_url
 
       def transform_url(transformations, transformator_class = Uploadcare::Rails::Transformations::ImageTransformations)
         return if cdn_url.blank?
@@ -23,7 +19,7 @@ module Uploadcare
       end
 
       def store
-        file_info = Uploadcare::FileApi.store_file(uuid).merge(cdn_url: cdn_url).to_h
+        file_info = to_resource_hash(Uploadcare::FileApi.store_file(uuid)).merge("cdn_url" => cdn_url)
         ::Rails.cache.write(cache_key, file_info, expires_in: cache_expires_in) if caching_enabled?
         update_attrs(file_info)
       end
@@ -34,6 +30,10 @@ module Uploadcare
 
       def to_s
         cdn_url
+      end
+
+      def cdn_url
+        @cdn_url.presence || super
       end
 
       def load
@@ -54,7 +54,13 @@ module Uploadcare
       private
 
       def request_file_info_from_api
-        Uploadcare::FileApi.get_file(uuid).merge(self).to_h
+        to_resource_hash(Uploadcare::FileApi.get_file(uuid)).merge("cdn_url" => cdn_url)
+      end
+
+      def to_resource_hash(resource)
+        resource.class::ATTRIBUTES.each_with_object({}) do |attribute, result|
+          result[attribute.to_s] = resource.public_send(attribute)
+        end
       end
     end
   end

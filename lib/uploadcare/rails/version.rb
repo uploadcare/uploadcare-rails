@@ -2,6 +2,7 @@
 
 module Uploadcare
   module Rails
-    VERSION = "4.0.0"
+    # Current gem version.
+    VERSION = "5.0.0"
   end
 end

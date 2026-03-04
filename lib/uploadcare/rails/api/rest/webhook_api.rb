@@ -27,13 +27,13 @@ module Uploadcare
             # Updates a webhook
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/updateWebhook
             def update_webhook(id, options = {})
-              Uploadcare::Webhook.update(id, options)
+              Uploadcare::Webhook.update(id: id, **options)
             end
 
             # Permanently deletes a webhook
             # @see https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/webhookUnsubscribe
             def delete_webhook(target_url)
-              Uploadcare::Webhook.delete(target_url)
+              Uploadcare::Webhook.delete(target_url: target_url)
             end
           end
         end

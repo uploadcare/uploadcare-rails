@@ -21,6 +21,9 @@ module Uploadcare
         end
 
         def update_attrs(new_attrs)
+          return self if new_attrs.nil?
+          raise ArgumentError, "new_attrs must be a Hash" unless new_attrs.is_a?(Hash)
+
           assign_attributes(new_attrs)
           self
         end

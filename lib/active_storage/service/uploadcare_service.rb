@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'active_storage/service'
-require 'base64'
-require 'digest'
-require 'net/http'
-require 'uri'
-require 'uploadcare-rails'
-require 'active_storage/service/uploadcare_service/helpers'
-require 'active_storage/service/uploadcare_service/uuid_mapping'
+require "active_storage/service"
+require "base64"
+require "digest"
+require "net/http"
+require "uri"
+require "uploadcare-rails"
+require "active_storage/service/uploadcare_service/helpers"
+require "active_storage/service/uploadcare_service/uuid_mapping"
 
 # Namespace for ActiveStorage integration.
 module ActiveStorage
@@ -113,7 +113,7 @@ module ActiveStorage
       # Direct uploads are not supported.
       # @raise [NotImplementedError]
       def url_for_direct_upload(*)
-        raise NotImplementedError, 'Direct uploads are not supported for UploadcareService yet'
+        raise NotImplementedError, "Direct uploads are not supported for UploadcareService yet"
       end
 
       # Returns direct upload headers.
