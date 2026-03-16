@@ -26,6 +26,12 @@ describe Uploadcare::Rails::Group do
     expect(group.files_count).to eq('2')
   end
 
+  it 'preserves false-valued boolean attributes' do
+    g = described_class.new({ is_image: false, is_ready: false })
+    expect(g.is_image).to eq(false)
+    expect(g.is_ready).to eq(false)
+  end
+
   it 'returns cdn_url from to_s' do
     expect(group.to_s).to eq group.cdn_url
   end
@@ -57,14 +63,41 @@ describe Uploadcare::Rails::Group do
   end
 
   context 'when store is called' do
-    it 'calls client.groups.find' do
+    it 'fetches group then batch-stores its files' do
+      group_resource = double(files: [{ 'uuid' => 'file-1' }, { 'uuid' => 'file-2' }])
+      groups_accessor = double
+      files_accessor = double
+      client = double(groups: groups_accessor, files: files_accessor)
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
+      expect(files_accessor).to receive(:batch_store).with(uuids: %w[file-1 file-2])
+
+      group.store
+    end
+
+    it 'skips batch_store when group has no files' do
+      group_resource = double(files: [])
+      groups_accessor = double
+      files_accessor = double
+      client = double(groups: groups_accessor, files: files_accessor)
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
+      expect(files_accessor).not_to receive(:batch_store)
+
+      group.store
+    end
+  end
+
+  context 'when delete is called' do
+    it 'deletes the group via SDK resource' do
+      group_resource = double
       groups_accessor = double
       client = double(groups: groups_accessor)
       allow(Uploadcare::Rails).to receive(:client).and_return(client)
-      allow(groups_accessor).to receive(:find).with(group_id: group.id)
+      allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
+      expect(group_resource).to receive(:delete)
 
-      group.store
-      expect(groups_accessor).to have_received(:find).with(group_id: group.id)
+      group.delete
     end
   end
 end

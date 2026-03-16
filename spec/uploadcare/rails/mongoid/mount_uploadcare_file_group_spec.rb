@@ -78,11 +78,14 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFileGroup do
         allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(false)
       end
 
-      it 'stores via client.groups.find' do
+      it 'fetches group and batch-stores its files' do
+        group_resource = double(files: [{ 'uuid' => 'f1' }, { 'uuid' => 'f2' }])
         groups_accessor = double
-        client = double(groups: groups_accessor)
+        files_accessor = double
+        client = double(groups: groups_accessor, files: files_accessor)
         allow(Uploadcare::Rails).to receive(:client).and_return(client)
-        expect(groups_accessor).to receive(:find).with(group_id: group_id)
+        allow(groups_accessor).to receive(:find).with(group_id: group_id).and_return(group_resource)
+        expect(files_accessor).to receive(:batch_store).with(uuids: %w[f1 f2])
         model.uploadcare_store_cdn_url!
       end
     end

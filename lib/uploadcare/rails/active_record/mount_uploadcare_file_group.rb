@@ -47,7 +47,10 @@ module Uploadcare
                 return store_job.perform_later(group.id, client_options)
               end
 
-              (client || Uploadcare::Rails.client).groups.find(group_id: group.id)
+              resolved = client || Uploadcare::Rails.client
+              group_resource = resolved.groups.find(group_id: group.id)
+              file_uuids = Array(group_resource.files).filter_map { |f| f["uuid"] || f[:uuid] }
+              resolved.files.batch_store(uuids: file_uuids) if file_uuids.any?
             end
 
             if Uploadcare::Rails.configuration.store_files_after_save

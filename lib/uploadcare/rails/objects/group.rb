@@ -22,8 +22,8 @@ module Uploadcare
         @client = client
         attributes = attributes.transform_keys(&:to_s)
         ATTRIBUTES.each do |attr|
-          value = attributes[attr.to_s]
-          instance_variable_set("@#{attr}", value) if value
+          key = attr.to_s
+          instance_variable_set("@#{attr}", attributes[key]) if attributes.key?(key)
         end
       end
 
@@ -46,7 +46,15 @@ module Uploadcare
       end
 
       def store
-        resolve_client.groups.find(group_id: id)
+        client = resolve_client
+        group_resource = client.groups.find(group_id: id)
+        file_uuids = Array(group_resource.files).filter_map { |f| f["uuid"] || f[:uuid] }
+        client.files.batch_store(uuids: file_uuids) if file_uuids.any?
+        group_resource
+      end
+
+      def delete
+        resolve_client.groups.find(group_id: id).delete
       end
 
       def load

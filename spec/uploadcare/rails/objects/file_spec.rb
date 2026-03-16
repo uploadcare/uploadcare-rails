@@ -25,6 +25,12 @@ describe Uploadcare::Rails::File do
     expect(file.cdn_url).to eq('https://ucarecdn.com/2254146d-3652-4419-abf6-305d36ef30a8/')
   end
 
+  it 'preserves false-valued boolean attributes' do
+    f = described_class.new({ is_image: false, is_ready: false })
+    expect(f.is_image).to eq(false)
+    expect(f.is_ready).to eq(false)
+  end
+
   it 'accepts a client' do
     client = double('client')
     f = described_class.new({ uuid: 'abc' }, client: client)

@@ -21,8 +21,8 @@ module Uploadcare
         @client = client
         attributes = attributes.transform_keys(&:to_s)
         ATTRIBUTES.each do |attr|
-          value = attributes[attr.to_s]
-          instance_variable_set("@#{attr}", value) if value
+          key = attr.to_s
+          instance_variable_set("@#{attr}", attributes[key]) if attributes.key?(key)
         end
       end
 
