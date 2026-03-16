@@ -40,17 +40,15 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     end
   end
 
-  let(:blob) { double(metadata: { 'uploadcare_uuid' => uuid }, key: 'blob-key') }
-  let(:variation) { double(format: 'png', transformations: { resize_to_limit: [ 320, 320 ], quality: 'smart' }) }
+  let(:blob) { double(metadata: { 'uploadcare_uuid' => uuid }, key: 'blob-key', service: service) }
+  let(:variation) { double(format: 'png', transformations: { resize_to_limit: [320, 320], quality: 'smart' }) }
 
   it 'downloads transformed image from uploadcare and uploads variant to service' do
     host = variant_host_class.new(service: service, blob: blob, variation: variation)
 
     allow(service).to receive(:upload)
-
-    file = instance_double(Uploadcare::Rails::File)
-    allow(Uploadcare::Rails::File).to receive(:new).with({ uuid: uuid }).and_return(file)
-    allow(file).to receive(:transform_url).with(hash_including(resize: '320x320', quality: 'smart')).and_return("https://ucarecdn.com/#{uuid}/-/resize/320x320/-/quality/smart/")
+    allow(service.client.files).to receive(:find).with(uuid: uuid)
+                                                 .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
 
     response = Net::HTTPOK.new('1.1', '200', 'OK')
     allow(response).to receive(:body).and_return('transformed-bytes')
@@ -62,7 +60,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
   end
 
   it 'maps resize_to_fill into uploadcare scale_crop operation' do
-    fill_variation = double(format: 'png', transformations: { resize_to_fill: [ 200, 100 ] })
+    fill_variation = double(format: 'png', transformations: { resize_to_fill: [200, 100] })
     host = variant_host_class.new(service: service, blob: blob, variation: fill_variation)
 
     mapped = host.send(:uploadcare_transformations)
@@ -71,7 +69,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
   end
 
   it 'maps resize_to_fit into uploadcare resize operation' do
-    fit_variation = double(format: 'png', transformations: { resize_to_fit: [ 640, 480 ] })
+    fit_variation = double(format: 'png', transformations: { resize_to_fit: [640, 480] })
     host = variant_host_class.new(service: service, blob: blob, variation: fit_variation)
 
     mapped = host.send(:uploadcare_transformations)

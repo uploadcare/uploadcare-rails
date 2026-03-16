@@ -6,7 +6,6 @@ require "tempfile"
 module Uploadcare
   module Rails
     module ActiveStorage
-      # :nodoc:
       module VariantRemoteProcessing
         private
 
@@ -25,7 +24,7 @@ module Uploadcare
         end
 
         def download_transformed_uploadcare_image
-          tempfile = Tempfile.open([ "uploadcare-variant", ".#{variation.format}" ], Dir.tmpdir)
+          tempfile = Tempfile.open(["uploadcare-variant", ".#{variation.format}"], Dir.tmpdir)
           tempfile.binmode
 
           response = http_get(variant_source_url)
@@ -39,12 +38,21 @@ module Uploadcare
         end
 
         def variant_source_url
-          file = Uploadcare::Rails::File.new({ uuid: uploadcare_uuid })
+          file = Uploadcare::Rails::File.new({ uuid: uploadcare_uuid, cdn_url: uploadcare_cdn_url }, client: service_client)
           file.transform_url(uploadcare_transformations)
+        end
+
+        def service_client
+          blob.service.client
         end
 
         def uploadcare_uuid
           blob.metadata["uploadcare_uuid"].presence || blob.key
+        end
+
+        def uploadcare_cdn_url
+          file = service_client.files.find(uuid: uploadcare_uuid)
+          file.cdn_url
         end
 
         def uploadcare_transformations
@@ -60,7 +68,7 @@ module Uploadcare
           return if dimensions.blank?
 
           width, height = dimensions
-          mapped[:resize] = [ width, height ].compact.join("x")
+          mapped[:resize] = [width, height].compact.join("x")
         end
 
         def map_scale_crop!(mapped, dimensions)
@@ -68,7 +76,7 @@ module Uploadcare
 
           width, height = dimensions
           mapped[:scale_crop] = {
-            dimensions: [ width, height ].compact.join("x"),
+            dimensions: [width, height].compact.join("x"),
             offsets: "50%,50%"
           }
         end

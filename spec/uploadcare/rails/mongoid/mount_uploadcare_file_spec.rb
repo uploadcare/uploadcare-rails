@@ -10,7 +10,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
       double(
         store_files_async: false,
         delete_files_async: false,
-        do_not_store: false,
+        store_files_after_save: false,
         delete_files_after_destroy: false,
         cache_files: false,
         cache_namespace: 'uploadcare'
@@ -27,7 +27,7 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
       define_model_callbacks :save, only: :after
 
-      mount_uploadcare_file :cdn_url
+      has_uploadcare_file :cdn_url
     end
   end
 
@@ -37,103 +37,79 @@ describe Uploadcare::Rails::Mongoid::MountUploadcareFile do
 
   describe '#build_uploadcare_file' do
     context 'when cdn_url is empty' do
-      it 'should return nil' do
+      it 'returns nil' do
         model.cdn_url = ''
         expect(subject).to be_nil
       end
     end
 
     context 'when cdn_url is not empty' do
-      it 'should build Uploadcare::Rails::File object' do
+      it 'builds Uploadcare::Rails::File object' do
         expect(subject).to be_an_instance_of(Uploadcare::Rails::File)
       end
 
-      it 'should set cdn_url attribute' do
+      it 'sets cdn_url attribute' do
         expect(subject.cdn_url).to eq(cdn_url)
       end
 
-      it 'should set uuid attribute' do
+      it 'sets uuid attribute' do
         expect(subject.uuid).to eq('bec49a46-7a5b-453c-836e-acc894e50c83')
       end
     end
   end
 
-  describe '.mount_uploadcare_file' do
-    it 'should define uploadcare_store_cdn_url! method' do
+  describe '.has_uploadcare_file' do
+    it 'defines uploadcare_store method' do
       expect(model).to respond_to(:uploadcare_store_cdn_url!)
     end
 
-    it 'should define uploadcare_delete_cdn_url! method' do
+    it 'defines uploadcare_delete method' do
       expect(model).to respond_to(:uploadcare_delete_cdn_url!)
     end
 
-    context 'when store_files_async configuration is true' do
-      before do
-        allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(true)
-      end
-
-      it 'should enqueue StoreFileJob when calling uploadcare_store_cdn_url!' do
-        expect(Uploadcare::Rails::StoreFileJob).to receive(:perform_later).with('bec49a46-7a5b-453c-836e-acc894e50c83')
-        model.uploadcare_store_cdn_url!
-      end
-    end
-
-    context 'when store_files_async configuration is false' do
+    context 'when store_files_async is false' do
       before do
         allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(false)
       end
 
-      it 'should call Uploadcare::FileApi.store_file when calling uploadcare_store_cdn_url!' do
-        expect(Uploadcare::FileApi).to receive(:store_file).with('bec49a46-7a5b-453c-836e-acc894e50c83')
+      it 'stores via client.files.batch_store' do
+        files_accessor = double
+        client = double(files: files_accessor)
+        allow(Uploadcare::Rails).to receive(:client).and_return(client)
+        expect(files_accessor).to receive(:batch_store).with(uuids: ['bec49a46-7a5b-453c-836e-acc894e50c83'])
         model.uploadcare_store_cdn_url!
       end
     end
 
-    context 'when delete_files_async configuration is true' do
+    context 'when store_files_async is true' do
       before do
-        allow(Uploadcare::Rails.configuration).to receive(:delete_files_async).and_return(true)
+        allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(true)
       end
 
-      it 'should enqueue DeleteFileJob when calling uploadcare_delete_cdn_url!' do
-        expect(Uploadcare::Rails::DeleteFileJob).to receive(:perform_later).with('bec49a46-7a5b-453c-836e-acc894e50c83')
-        model.uploadcare_delete_cdn_url!
+      it 'enqueues StoreFileJob' do
+        expect(Uploadcare::Rails::StoreFileJob).to receive(:perform_later).with('bec49a46-7a5b-453c-836e-acc894e50c83', {})
+        model.uploadcare_store_cdn_url!
       end
     end
 
-    context 'when delete_files_async configuration is false' do
+    context 'when delete_files_async is false' do
       before do
         allow(Uploadcare::Rails.configuration).to receive(:delete_files_async).and_return(false)
       end
 
-      it 'should call Uploadcare::FileApi.delete_file when calling uploadcare_delete_cdn_url!' do
-        expect(Uploadcare::FileApi).to receive(:delete_file).with('bec49a46-7a5b-453c-836e-acc894e50c83')
+      it 'deletes via client.files.batch_delete' do
+        files_accessor = double
+        client = double(files: files_accessor)
+        allow(Uploadcare::Rails).to receive(:client).and_return(client)
+        expect(files_accessor).to receive(:batch_delete).with(uuids: ['bec49a46-7a5b-453c-836e-acc894e50c83'])
         model.uploadcare_delete_cdn_url!
       end
     end
+  end
 
-    context 'when do_not_store configuration is false' do
-      before do
-        allow(Uploadcare::Rails.configuration).to receive(:do_not_store).and_return(false)
-      end
-
-      it 'should set callback for saving to call uploadcare_store_cdn_url! if cdn_url attribute changed' do
-        expect(TestModel).to receive(:set_callback).with(:save, :after, :uploadcare_store_cdn_url!,
-                                                         if: :cdn_url_changed?)
-        TestModel.mount_uploadcare_file(:cdn_url)
-      end
-    end
-
-    context 'when delete_files_after_destroy configuration is true' do
-      before do
-        allow(Uploadcare::Rails.configuration).to receive(:delete_files_after_destroy).and_return(true)
-      end
-
-      it 'should set callback for destroying to call uploadcare_delete_cdn_url!' do
-        expect(TestModel).to receive(:set_callback).with(:save, :after, :uploadcare_store_cdn_url!,
-                                                         if: :cdn_url_changed?)
-        expect(TestModel).to receive(:set_callback).with(:destroy, :after, :uploadcare_delete_cdn_url!)
-        TestModel.mount_uploadcare_file(:cdn_url)
-      end
+  describe 'mount_uploadcare_file alias' do
+    it 'works as an alias' do
+      expect(TestModel.method(:mount_uploadcare_file)).to eq(TestModel.method(:has_uploadcare_file))
     end
   end
 end

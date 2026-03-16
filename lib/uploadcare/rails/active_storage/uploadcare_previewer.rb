@@ -8,7 +8,6 @@ require "tempfile"
 module Uploadcare
   module Rails
     module ActiveStorage
-      # :nodoc:
       class UploadcarePreviewer < ::ActiveStorage::Previewer
         class << self
           def accept?(blob)
@@ -35,8 +34,12 @@ module Uploadcare
         private
 
         def preview_url
-          file = Uploadcare::FileApi.get_file(uploadcare_uuid)
+          file = service_client.files.find(uuid: uploadcare_uuid)
           "#{file.cdn_url}-/document/-/format/png/-/page/1/"
+        end
+
+        def service_client
+          blob.service.client
         end
 
         def uploadcare_uuid
@@ -44,7 +47,7 @@ module Uploadcare
         end
 
         def open_preview_io(url)
-          tempfile = Tempfile.open([ "uploadcare-preview", ".png" ], tmpdir)
+          tempfile = Tempfile.open(["uploadcare-preview", ".png"], tmpdir)
           tempfile.binmode
 
           response = http_get(url)

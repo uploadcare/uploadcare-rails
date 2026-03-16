@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
-require "active_model"
-
 module Uploadcare
   module Rails
     module Objects
-      # A module that contains methods for attribute assignation and caching
       module Loadable
-        extend ActiveSupport::Concern
-        include ActiveModel::AttributeAssignment
+        def self.included(base)
+          base.extend(ClassMethods)
+        end
 
-        class_methods do
+        module ClassMethods
           def build_cache_key(key)
-            [ uploadcare_configuration.cache_namespace, key ].flatten.reject(&:blank?)
+            [uploadcare_configuration.cache_namespace, key].flatten.reject(&:blank?)
           end
 
           def uploadcare_configuration
@@ -24,7 +22,10 @@ module Uploadcare
           return self if new_attrs.nil?
           raise ArgumentError, "new_attrs must be a Hash" unless new_attrs.is_a?(Hash)
 
-          assign_attributes(new_attrs)
+          new_attrs.each do |key, value|
+            setter = "#{key}="
+            public_send(setter, value) if respond_to?(setter)
+          end
           self
         end
 

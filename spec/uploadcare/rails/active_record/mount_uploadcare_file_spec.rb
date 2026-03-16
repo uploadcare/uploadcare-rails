@@ -29,7 +29,7 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFile do
         @attributes['picture'] = value
       end
 
-      mount_uploadcare_file :picture
+      has_uploadcare_file :picture
     end
   end
 
@@ -54,6 +54,30 @@ describe Uploadcare::Rails::ActiveRecord::MountUploadcareFile do
       expect(file).to be_an_instance_of(Uploadcare::Rails::File)
       expect(file.cdn_url).to eq(cdn_url)
       expect(file.uuid).to eq('bec49a46-7a5b-453c-836e-acc894e50c83')
+    end
+  end
+
+  context 'when mount_uploadcare_file alias is used' do
+    it 'works as an alias for has_uploadcare_file' do
+      stub_const 'LegacyPost', Class.new
+      LegacyPost.class_eval do
+        include Uploadcare::Rails::ActiveRecord::MountUploadcareFile
+        extend ActiveModel::Callbacks
+        define_model_callbacks :save, only: :after
+
+        def initialize
+          @attributes = { 'image' => '' }
+        end
+
+        def attributes
+          @attributes
+        end
+
+        mount_uploadcare_file :image
+      end
+
+      post = LegacyPost.new
+      expect(post).to respond_to(:uploadcare_store_image!)
     end
   end
 end

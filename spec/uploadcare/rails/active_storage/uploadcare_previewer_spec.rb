@@ -36,9 +36,10 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
   end
 
   describe '#preview' do
-    it 'yields png preview attachable payload' do
+    it 'yields png preview attachable payload using service client' do
       previewer = described_class.new(blob)
-      allow(Uploadcare::FileApi).to receive(:get_file).with(uuid).and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
+      allow(service.client.files).to receive(:find).with(uuid: uuid)
+                                                   .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
 
       response = Net::HTTPOK.new('1.1', '200', 'OK')
       allow(response).to receive(:body).and_return('png-preview-data')

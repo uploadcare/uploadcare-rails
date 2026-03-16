@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'uploadcare/rails/action_view/uploadcare_uploader_tags'
 require 'uploadcare/rails/action_view/uploadcare_form_builder'
 
-RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper do
+RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file_field', type: :helper do
   let(:public_key) { 'demopublickey' }
   let(:config_attributes) { { pubkey: public_key } }
 

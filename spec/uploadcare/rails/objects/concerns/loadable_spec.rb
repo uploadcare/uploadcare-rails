@@ -4,18 +4,25 @@ require 'spec_helper'
 require 'uploadcare/rails/objects/concerns/loadable'
 
 RSpec.describe Uploadcare::Rails::Objects::Loadable do
+  let(:config) { OpenStruct.new(cache_files: false, cache_expires_in: 60, cache_namespace: nil) }
+
   let(:klass) do
     Class.new do
       include Uploadcare::Rails::Objects::Loadable
 
-      attr_accessor :name
+      attr_accessor :name, :cdn_url
 
-      def self.uploadcare_configuration
-        Struct.new(:cache_namespace, :cache_expires_in, :cache_files).new(nil, 1.minute, false)
+      def initialize(name: nil, cdn_url: nil)
+        @name = name
+        @cdn_url = cdn_url
       end
     end
   end
   let(:instance) { klass.new }
+
+  before do
+    allow(Uploadcare::Rails).to receive(:configuration).and_return(config)
+  end
 
   describe '#update_attrs' do
     it 'returns self when attrs are nil' do
@@ -30,6 +37,16 @@ RSpec.describe Uploadcare::Rails::Objects::Loadable do
       instance.update_attrs('name' => 'Uploadcare')
 
       expect(instance.name).to eq('Uploadcare')
+    end
+
+    it 'ignores unknown attributes' do
+      expect { instance.update_attrs('unknown' => 'value') }.not_to raise_error
+    end
+  end
+
+  describe '#caching_enabled?' do
+    it 'returns false when cache_files is falsy' do
+      expect(instance.caching_enabled?).to eq(false)
     end
   end
 end

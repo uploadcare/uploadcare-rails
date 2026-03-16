@@ -7,13 +7,12 @@ require 'rails/all'
 describe Uploadcare::Rails::Group do
   let(:group) do
     described_class.new(
-      cdn_url: 'https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/',
-      id: '6053b054-b8d4-4f57-992d-94b8f1d6ba65~2',
-      files_count: '2'
+      { cdn_url: 'https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/',
+        id: '6053b054-b8d4-4f57-992d-94b8f1d6ba65~2',
+        files_count: '2' }
     )
   end
-  let(:cache) { Rails.cache }
-  let(:config) { Struct.new(:cache_files).new(true) }
+  let(:config) { Struct.new(:cache_files, :cache_expires_in, :cache_namespace).new(true, 300, nil) }
   let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
   before do
@@ -22,20 +21,13 @@ describe Uploadcare::Rails::Group do
     Rails.cache.clear
   end
 
-  context 'when checking group storing' do
-    it 'stores a group', :aggregate_failures do
-      VCR.use_cassette 'group_api_store_group' do
-        response = group.store
-        expect(response).to be_a(Uploadcare::Group)
-        expect(response.id).to eq(group.id)
-      end
-    end
+  it 'initializes with attributes' do
+    expect(group.id).to eq('6053b054-b8d4-4f57-992d-94b8f1d6ba65~2')
+    expect(group.files_count).to eq('2')
   end
 
-  context 'when checking group to_s method' do
-    it 'returns the cdn_url of a group' do
-      expect(group.to_s).to eq group.cdn_url
-    end
+  it 'returns cdn_url from to_s' do
+    expect(group.to_s).to eq group.cdn_url
   end
 
   context 'when checking file urls' do
@@ -58,9 +50,21 @@ describe Uploadcare::Rails::Group do
 
     before { allow(transformator_class).to receive_message_chain(:new, :call).and_return(transformations) }
 
-    it 'sends a :new method to the transformator_class', :aggregate_failures do
+    it 'builds transformed urls' do
       expect(transformator_class).to receive(:new).with(transformation_args)
       expect(subject).to contain_exactly(*expected_urls)
+    end
+  end
+
+  context 'when store is called' do
+    it 'calls client.groups.find' do
+      groups_accessor = double
+      client = double(groups: groups_accessor)
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      allow(groups_accessor).to receive(:find).with(group_id: group.id)
+
+      group.store
+      expect(groups_accessor).to have_received(:find).with(group_id: group.id)
     end
   end
 end

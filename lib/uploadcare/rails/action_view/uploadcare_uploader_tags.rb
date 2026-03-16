@@ -163,7 +163,7 @@ module Uploadcare
           model = object_name.to_s.camelize.safe_constantize
           return false unless model
 
-          checker = "has_uploadcare_file_group_for_#{method_name}?"
+          checker = "has_uploadcare_files_for_#{method_name}?"
           model.respond_to?(checker) && model.public_send(checker)
         end
 

@@ -8,16 +8,11 @@ require "uploadcare/rails/jobs/store_file_job"
 
 module Uploadcare
   module Rails
-    # ActiveRecord integration for Uploadcare.
     module ActiveRecord
-      # A module containing ActiveRecord extension. Allows to use uploadcare file methods in Rails models
       module MountUploadcareFile
         extend ActiveSupport::Concern
 
-        # Builds Uploadcare file object from model attribute value.
-        # @param attribute [Symbol, String]
-        # @return [Uploadcare::Rails::File, nil]
-        def build_uploadcare_file(attribute)
+        def build_uploadcare_file(attribute, client: nil)
           cdn_url = attributes[attribute.to_s].to_s
           return if cdn_url.empty?
 
@@ -25,76 +20,61 @@ module Uploadcare
           cache_key = File.build_cache_key(cdn_url)
           default_attributes = { cdn_url: cdn_url, uuid: uuid.presence }
           file_attributes = ::Rails.cache.read(cache_key).presence || default_attributes
-          Uploadcare::Rails::File.new(file_attributes)
+          Uploadcare::Rails::File.new(file_attributes, client: client)
         end
 
         class_methods do
-          # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-          def mount_uploadcare_file(attribute, uploadcare_config: nil)
-            use_custom_config = !uploadcare_config.nil?
-
+          def has_uploadcare_file(attribute, uploadcare_client: nil)
             define_method attribute do
-              build_uploadcare_file(attribute).tap do |file|
-                next unless file
-
-                file.config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
-              end
+              client = resolve_uploadcare_client(uploadcare_client)
+              build_uploadcare_file(attribute, client: client)
             end
 
             define_method "uploadcare_store_#{attribute}!" do |store_job = StoreFileJob|
-              file_uuid = public_send(attribute)&.uuid
-              return unless file_uuid
+              file = public_send(attribute)
+              return unless file&.uuid
 
-              config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
+              client = resolve_uploadcare_client(uploadcare_client)
               if Uploadcare::Rails.configuration.store_files_async
-                if use_custom_config
-                  config_options = Uploadcare::Rails.serialize_client_config(config)
-                  return store_job.perform_later(file_uuid, config_options)
-                end
-                return store_job.perform_later(file_uuid)
+                client_options = client ? Uploadcare::Rails.serialize_client_options(client) : {}
+                return store_job.perform_later(file.uuid, client_options)
               end
 
-              return Uploadcare::FileApi.store_file(file_uuid, config: config) if use_custom_config
-
-              Uploadcare::FileApi.store_file(file_uuid)
+              (client || Uploadcare::Rails.client).files.batch_store(uuids: [file.uuid])
             end
 
             define_method "uploadcare_delete_#{attribute}!" do |delete_job = DeleteFileJob|
-              file_uuid = public_send(attribute)&.uuid
-              return unless file_uuid
+              file = public_send(attribute)
+              return unless file&.uuid
 
-              config = resolve_uploadcare_config(uploadcare_config) if use_custom_config
+              client = resolve_uploadcare_client(uploadcare_client)
               if Uploadcare::Rails.configuration.delete_files_async
-                if use_custom_config
-                  config_options = Uploadcare::Rails.serialize_client_config(config)
-                  return delete_job.perform_later(file_uuid, config_options)
-                end
-                return delete_job.perform_later(file_uuid)
+                client_options = client ? Uploadcare::Rails.serialize_client_options(client) : {}
+                return delete_job.perform_later(file.uuid, client_options)
               end
 
-              return Uploadcare::FileApi.delete_file(file_uuid, config: config) if use_custom_config
-
-              Uploadcare::FileApi.delete_file(file_uuid)
+              (client || Uploadcare::Rails.client).files.batch_delete(uuids: [file.uuid])
             end
 
-            unless Uploadcare::Rails.configuration.do_not_store
+            if Uploadcare::Rails.configuration.store_files_after_save
               after_save :"uploadcare_store_#{attribute}!", if: :"will_save_change_to_#{attribute}?"
             end
 
-            return unless Uploadcare::Rails.configuration.delete_files_after_destroy
-
-            after_destroy :"uploadcare_delete_#{attribute}!"
+            if Uploadcare::Rails.configuration.delete_files_after_destroy
+              after_destroy :"uploadcare_delete_#{attribute}!"
+            end
           end
-          # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+          alias_method :mount_uploadcare_file, :has_uploadcare_file
         end
 
         private
 
-        def resolve_uploadcare_config(config_source)
-          return Uploadcare.configuration if config_source.nil?
-          return instance_exec(&config_source) if config_source.respond_to?(:call)
+        def resolve_uploadcare_client(client_source)
+          return nil if client_source.nil?
+          return instance_exec(&client_source) if client_source.respond_to?(:call)
 
-          config_source
+          client_source
         end
       end
     end

@@ -7,12 +7,11 @@ require 'rails/all'
 describe Uploadcare::Rails::File do
   let(:file) do
     described_class.new(
-      cdn_url: 'https://ucarecdn.com/2254146d-3652-4419-abf6-305d36ef30a8/',
-      uuid: '2254146d-3652-4419-abf6-305d36ef30a8'
+      { cdn_url: 'https://ucarecdn.com/2254146d-3652-4419-abf6-305d36ef30a8/',
+        uuid: '2254146d-3652-4419-abf6-305d36ef30a8' }
     )
   end
-  let(:cache) { Rails.cache }
-  let(:config) { OpenStruct.new(cache_files: true) }
+  let(:config) { OpenStruct.new(cache_files: true, cache_expires_in: 300, cache_namespace: nil) }
   let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
   before do
@@ -21,43 +20,23 @@ describe Uploadcare::Rails::File do
     Rails.cache.clear
   end
 
-  context 'when checking file storing' do
-    it 'stores a file', :aggregate_failures do
-      VCR.use_cassette 'file_api_store_file' do
-        response = file.store
-        expect(response).to be_a(described_class)
-        expect(response.uuid).to eq(file.uuid)
-        expect(file.loaded?).to be_truthy
-      end
-    end
+  it 'initializes with attributes' do
+    expect(file.uuid).to eq('2254146d-3652-4419-abf6-305d36ef30a8')
+    expect(file.cdn_url).to eq('https://ucarecdn.com/2254146d-3652-4419-abf6-305d36ef30a8/')
   end
 
-  context 'when checking file deleting' do
-    it 'deletes a file' do
-      VCR.use_cassette 'file_api_delete_file' do
-        response = file.delete
-        expect(response.uuid).to eq(file.uuid)
-      end
-    end
+  it 'accepts a client' do
+    client = double('client')
+    f = described_class.new({ uuid: 'abc' }, client: client)
+    expect(f.uuid).to eq('abc')
   end
 
-  context 'when checking file to_s method' do
-    it 'check the :to_s method' do
-      expect(file.to_s).to eq file.cdn_url
-    end
+  it 'returns cdn_url from to_s' do
+    expect(file.to_s).to eq file.cdn_url
   end
 
-  context 'when checking file loading' do
-    it 'checks that a file is not loaded by default' do
-      expect(file.loaded?).to be_falsey
-    end
-
-    it 'checks that a file is loaded' do
-      VCR.use_cassette 'file_api_get_file' do
-        file.load
-        expect(file.loaded?).to be_truthy
-      end
-    end
+  it 'is not loaded by default' do
+    expect(file.loaded?).to be_falsey
   end
 
   context 'when checking url transformations' do
@@ -70,9 +49,39 @@ describe Uploadcare::Rails::File do
 
     before { allow(transformator_class).to receive_message_chain(:new, :call).and_return(transformations) }
 
-    it 'checks that the transformator received :new method', :aggregate_failures do
+    it 'builds transformed url' do
       expect(transformator_class).to receive(:new).with(transformation_args)
       expect(subject).to eq new_url
+    end
+  end
+
+  context 'when store is called' do
+    it 'calls client.files.find and store' do
+      resource = double(store: nil, cdn_url: file.cdn_url)
+      allow(resource).to receive(:class).and_return(
+        Class.new { self::ATTRIBUTES = [:uuid, :cdn_url, :datetime_uploaded]; attr_accessor(*self::ATTRIBUTES) }
+      )
+      allow(resource).to receive_messages(uuid: file.uuid, cdn_url: file.cdn_url, datetime_uploaded: Time.now)
+
+      files_accessor = double
+      client = double(files: files_accessor)
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      allow(files_accessor).to receive(:find).with(uuid: file.uuid).and_return(resource)
+
+      file.store
+      expect(resource).to have_received(:store)
+    end
+  end
+
+  context 'when delete is called' do
+    it 'calls client.files.batch_delete' do
+      files_accessor = double
+      client = double(files: files_accessor)
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      allow(files_accessor).to receive(:batch_delete).with(uuids: [file.uuid])
+
+      file.delete
+      expect(files_accessor).to have_received(:batch_delete).with(uuids: [file.uuid])
     end
   end
 end

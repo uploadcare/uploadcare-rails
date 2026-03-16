@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "uploadcare/errors/type_error"
-
 module Uploadcare
   module Rails
     # Namespace for URL transformation builders.

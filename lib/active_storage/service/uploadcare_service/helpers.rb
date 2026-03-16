@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 module ActiveStorage
-  # Service implementations for ActiveStorage.
   class Service
     class UploadcareService < Service
-      # Shared helper methods for Uploadcare service operations.
       module Helpers
         private
 
@@ -15,7 +13,7 @@ module ActiveStorage
         end
 
         def file_download_url(uuid)
-          file = Uploadcare::File.info(uuid: uuid, config: @client_config)
+          file = @client.files.find(uuid: uuid)
           file.original_file_url || file.cdn_url
         end
 
@@ -23,7 +21,7 @@ module ActiveStorage
           uuid = uuid_for(key)
           return false unless uuid
 
-          Uploadcare::File.info(uuid: uuid, config: @client_config)
+          @client.files.find(uuid: uuid)
           true
         end
 
