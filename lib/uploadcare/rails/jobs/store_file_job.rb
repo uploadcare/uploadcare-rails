@@ -14,7 +14,7 @@ module Uploadcare
         return unless file_uuid
 
         client = Uploadcare::Rails.build_client_from_options(client_options)
-        client.files.batch_store(uuids: [file_uuid])
+        client.files.batch_store(uuids: [ file_uuid ])
       end
     end
   end

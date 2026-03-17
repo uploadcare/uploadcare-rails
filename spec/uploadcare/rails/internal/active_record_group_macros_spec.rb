@@ -46,5 +46,4 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks, 'group macros' do
       expect(extracted_group_id).to eq('dc140069-62b1-4ee0-b603-18e2062e26e4~1')
     end
   end
-
 end

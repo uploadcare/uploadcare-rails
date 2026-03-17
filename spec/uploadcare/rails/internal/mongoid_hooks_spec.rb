@@ -79,7 +79,7 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
           files_accessor = double
           client = double(files: files_accessor)
           allow(Uploadcare::Rails).to receive(:client).and_return(client)
-          expect(files_accessor).to receive(:batch_store).with(uuids: ['bec49a46-7a5b-453c-836e-acc894e50c83'])
+          expect(files_accessor).to receive(:batch_store).with(uuids: [ 'bec49a46-7a5b-453c-836e-acc894e50c83' ])
           model.uploadcare_store_cdn_url!
         end
       end
@@ -104,12 +104,11 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
           files_accessor = double
           client = double(files: files_accessor)
           allow(Uploadcare::Rails).to receive(:client).and_return(client)
-          expect(files_accessor).to receive(:batch_delete).with(uuids: ['bec49a46-7a5b-453c-836e-acc894e50c83'])
+          expect(files_accessor).to receive(:batch_delete).with(uuids: [ 'bec49a46-7a5b-453c-836e-acc894e50c83' ])
           model.uploadcare_delete_cdn_url!
         end
       end
     end
-
   end
 
   describe 'has_uploadcare_files' do
@@ -176,7 +175,7 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
         end
 
         it 'fetches group and batch-stores its files' do
-          group_resource = double(files: [{ 'uuid' => 'f1' }, { 'uuid' => 'f2' }])
+          group_resource = double(files: [ { 'uuid' => 'f1' }, { 'uuid' => 'f2' } ])
           groups_accessor = double
           files_accessor = double
           client = double(groups: groups_accessor, files: files_accessor)
@@ -198,6 +197,5 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
         end
       end
     end
-
   end
 end

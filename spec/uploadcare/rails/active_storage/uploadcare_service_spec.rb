@@ -63,7 +63,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   it 'deletes a mapped file via client.files.batch_delete' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    expect(service.client.files).to receive(:batch_delete).with(uuids: [uuid])
+    expect(service.client.files).to receive(:batch_delete).with(uuids: [ uuid ])
 
     service.delete('blob-key')
   end

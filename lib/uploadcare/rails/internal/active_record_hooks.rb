@@ -39,4 +39,3 @@ module Uploadcare
     end
   end
 end
-

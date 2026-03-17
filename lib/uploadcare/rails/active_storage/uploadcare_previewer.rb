@@ -47,7 +47,7 @@ module Uploadcare
         end
 
         def open_preview_io(url)
-          tempfile = Tempfile.open(["uploadcare-preview", ".png"], tmpdir)
+          tempfile = Tempfile.open([ "uploadcare-preview", ".png" ], tmpdir)
           tempfile.binmode
 
           response = http_get(url)

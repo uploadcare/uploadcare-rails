@@ -15,7 +15,7 @@ RSpec.describe Uploadcare::Rails::StoreGroupJob, type: :job do
 
   describe '#perform' do
     it 'fetches group and batch-stores its files' do
-      group_resource = double(files: [{ 'uuid' => 'f1' }, { 'uuid' => 'f2' }])
+      group_resource = double(files: [ { 'uuid' => 'f1' }, { 'uuid' => 'f2' } ])
       groups_accessor = double
       files_accessor = double
       client = double(groups: groups_accessor, files: files_accessor)
@@ -27,7 +27,7 @@ RSpec.describe Uploadcare::Rails::StoreGroupJob, type: :job do
     end
 
     it 'fetches group and batch-stores with provided client options' do
-      group_resource = double(files: [{ 'uuid' => 'f1' }])
+      group_resource = double(files: [ { 'uuid' => 'f1' } ])
       groups_accessor = double
       files_accessor = double
       client = double(groups: groups_accessor, files: files_accessor)

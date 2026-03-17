@@ -24,7 +24,7 @@ module Uploadcare
         end
 
         def download_transformed_uploadcare_image
-          tempfile = Tempfile.open(["uploadcare-variant", ".#{variation.format}"], Dir.tmpdir)
+          tempfile = Tempfile.open([ "uploadcare-variant", ".#{variation.format}" ], Dir.tmpdir)
           tempfile.binmode
 
           response = http_get(variant_source_url)
@@ -68,7 +68,7 @@ module Uploadcare
           return if dimensions.blank?
 
           width, height = dimensions
-          mapped[:resize] = [width, height].compact.join("x")
+          mapped[:resize] = [ width, height ].compact.join("x")
         end
 
         def map_scale_crop!(mapped, dimensions)
@@ -76,7 +76,7 @@ module Uploadcare
 
           width, height = dimensions
           mapped[:scale_crop] = {
-            dimensions: [width, height].compact.join("x"),
+            dimensions: [ width, height ].compact.join("x"),
             offsets: "50%,50%"
           }
         end

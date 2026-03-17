@@ -35,7 +35,7 @@ module Uploadcare
 
         transformations_query = transformator_class.new(transformations).call if transformations.present?
         map_file_urls do |index|
-          [group_file_url(index), transformations_query].compact.join("-")
+          [ group_file_url(index), transformations_query ].compact.join("-")
         end
       end
 
@@ -101,6 +101,5 @@ module Uploadcare
         Array.new(files_count.to_i, &block)
       end
     end
-
   end
 end

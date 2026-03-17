@@ -64,7 +64,7 @@ describe Uploadcare::Rails::AttachedFiles do
 
   context 'when store is called' do
     it 'fetches group then batch-stores its files' do
-      group_resource = double(files: [{ 'uuid' => 'file-1' }, { 'uuid' => 'file-2' }])
+      group_resource = double(files: [ { 'uuid' => 'file-1' }, { 'uuid' => 'file-2' } ])
       groups_accessor = double
       files_accessor = double
       client = double(groups: groups_accessor, files: files_accessor)
@@ -104,7 +104,7 @@ describe Uploadcare::Rails::AttachedFiles do
   context 'when load is forced' do
     it 'clears the cache before fetching fresh data' do
       resource_class = Class.new do
-        self::ATTRIBUTES = [:id, :cdn_url, :datetime_created, :files_count, :files]
+        self::ATTRIBUTES = [ :id, :cdn_url, :datetime_created, :files_count, :files ]
         attr_accessor(*self::ATTRIBUTES)
       end
       group_resource = resource_class.new

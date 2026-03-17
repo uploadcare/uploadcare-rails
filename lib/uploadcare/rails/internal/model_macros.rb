@@ -50,7 +50,7 @@ module Uploadcare
                 return store_job.perform_later(file.uuid, client_options)
               end
 
-              (client || Uploadcare::Rails.client).files.batch_store(uuids: [file.uuid])
+              (client || Uploadcare::Rails.client).files.batch_store(uuids: [ file.uuid ])
             end
 
             define_method "uploadcare_delete_#{attribute}!" do |delete_job = DeleteFileJob|
@@ -63,7 +63,7 @@ module Uploadcare
                 return delete_job.perform_later(file.uuid, client_options)
               end
 
-              (client || Uploadcare::Rails.client).files.batch_delete(uuids: [file.uuid])
+              (client || Uploadcare::Rails.client).files.batch_delete(uuids: [ file.uuid ])
             end
 
             register_uploadcare_file_callbacks(attribute)
@@ -97,7 +97,6 @@ module Uploadcare
 
             register_uploadcare_group_callbacks(attribute)
           end
-
         end
 
         private

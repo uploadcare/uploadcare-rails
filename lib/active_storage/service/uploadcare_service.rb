@@ -61,7 +61,7 @@ module ActiveStorage
         return unless uuid
 
         instrument :delete, key: key do
-          @client.files.batch_delete(uuids: [uuid])
+          @client.files.batch_delete(uuids: [ uuid ])
         end
       rescue Uploadcare::Exception::NotFoundError
         nil

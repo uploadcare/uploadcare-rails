@@ -56,7 +56,6 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks do
       expect(file.cdn_url).to eq(cdn_url)
       expect(file.uuid).to eq('bec49a46-7a5b-453c-836e-acc894e50c83')
     end
-
   end
 
   describe 'has_uploadcare_files' do
@@ -99,6 +98,5 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks do
       expect(group.cdn_url).to eq(cdn_url)
       expect(group.id).to eq('e6c3fb25-0653-454c-9c8e-7e91902bb044~2')
     end
-
   end
 end

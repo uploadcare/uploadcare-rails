@@ -30,7 +30,7 @@ module Uploadcare
         return if cdn_url.blank?
 
         transformations_query = transformator_class.new(transformations).call if transformations.present?
-        [cdn_url, transformations_query].compact.join("-")
+        [ cdn_url, transformations_query ].compact.join("-")
       end
 
       def store
@@ -42,7 +42,7 @@ module Uploadcare
       end
 
       def delete
-        resolve_client.files.batch_delete(uuids: [uuid])
+        resolve_client.files.batch_delete(uuids: [ uuid ])
       end
 
       def load(force: false)
@@ -83,6 +83,5 @@ module Uploadcare
         end
       end
     end
-
   end
 end

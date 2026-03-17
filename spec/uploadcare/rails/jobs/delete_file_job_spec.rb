@@ -18,7 +18,7 @@ RSpec.describe Uploadcare::Rails::DeleteFileJob, type: :job do
       files_accessor = double
       client = double(files: files_accessor)
       allow(Uploadcare::Rails).to receive(:client).and_return(client)
-      expect(files_accessor).to receive(:batch_delete).with(uuids: ['file-uuid'])
+      expect(files_accessor).to receive(:batch_delete).with(uuids: [ 'file-uuid' ])
 
       described_class.new.perform('file-uuid')
     end
@@ -27,7 +27,7 @@ RSpec.describe Uploadcare::Rails::DeleteFileJob, type: :job do
       files_accessor = double
       client = double(files: files_accessor)
       allow(Uploadcare::Client).to receive(:new).with(public_key: 'pk', secret_key: 'sk').and_return(client)
-      expect(files_accessor).to receive(:batch_delete).with(uuids: ['file-uuid'])
+      expect(files_accessor).to receive(:batch_delete).with(uuids: [ 'file-uuid' ])
 
       described_class.new.perform('file-uuid', { public_key: 'pk', secret_key: 'sk' })
     end
