@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/objects/file'
+require 'uploadcare/rails/attached_file'
 require 'rails/all'
 
-describe Uploadcare::Rails::File do
+describe Uploadcare::Rails::AttachedFile do
   let(:file) do
     described_class.new(
       { cdn_url: 'https://ucarecdn.com/2254146d-3652-4419-abf6-305d36ef30a8/',
@@ -88,6 +88,30 @@ describe Uploadcare::Rails::File do
 
       file.delete
       expect(files_accessor).to have_received(:batch_delete).with(uuids: [file.uuid])
+    end
+  end
+
+  context 'when load is forced' do
+    it 'clears the cache before fetching fresh data' do
+      files_accessor = double
+      resource_class = Class.new do
+        self::ATTRIBUTES = [:uuid, :cdn_url, :datetime_uploaded]
+        attr_accessor(*self::ATTRIBUTES)
+      end
+      resource = resource_class.new
+      resource.uuid = file.uuid
+      resource.cdn_url = file.cdn_url
+      resource.datetime_uploaded = Time.now
+      client = double(files: files_accessor)
+
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      allow(files_accessor).to receive(:find).with(uuid: file.uuid).and_return(resource)
+
+      Rails.cache.write(file.cache_key, { "uuid" => file.uuid, "cdn_url" => file.cdn_url, "datetime_uploaded" => nil })
+
+      file.load(force: true)
+
+      expect(file.datetime_uploaded).to eq(resource.datetime_uploaded)
     end
   end
 end

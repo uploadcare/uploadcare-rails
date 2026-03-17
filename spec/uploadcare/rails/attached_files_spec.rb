@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/objects/group'
+require 'uploadcare/rails/attached_files'
 require 'rails/all'
 
-describe Uploadcare::Rails::Group do
+describe Uploadcare::Rails::AttachedFiles do
   let(:group) do
     described_class.new(
       { cdn_url: 'https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/',
@@ -98,6 +98,32 @@ describe Uploadcare::Rails::Group do
       expect(group_resource).to receive(:delete)
 
       group.delete
+    end
+  end
+
+  context 'when load is forced' do
+    it 'clears the cache before fetching fresh data' do
+      resource_class = Class.new do
+        self::ATTRIBUTES = [:id, :cdn_url, :datetime_created, :files_count, :files]
+        attr_accessor(*self::ATTRIBUTES)
+      end
+      group_resource = resource_class.new
+      group_resource.id = group.id
+      group_resource.cdn_url = group.cdn_url
+      group_resource.datetime_created = Time.now
+      group_resource.files_count = group.files_count
+      group_resource.files = []
+      groups_accessor = double
+      client = double(groups: groups_accessor)
+
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
+
+      Rails.cache.write(group.cache_key, { "id" => group.id, "cdn_url" => group.cdn_url, "datetime_created" => nil })
+
+      group.load(force: true)
+
+      expect(group.datetime_created).to eq(group_resource.datetime_created)
     end
   end
 end

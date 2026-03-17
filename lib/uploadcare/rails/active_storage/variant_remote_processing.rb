@@ -38,7 +38,7 @@ module Uploadcare
         end
 
         def variant_source_url
-          file = Uploadcare::Rails::File.new({ uuid: uploadcare_uuid, cdn_url: uploadcare_cdn_url }, client: service_client)
+          file = Uploadcare::Rails::AttachedFile.new({ uuid: uploadcare_uuid, cdn_url: uploadcare_cdn_url }, client: service_client)
           file.transform_url(uploadcare_transformations)
         end
 

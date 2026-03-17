@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
+require "active_support/concern"
+
 module Uploadcare
   module Rails
-    module Objects
-      module Loadable
-        def self.included(base)
-          base.extend(ClassMethods)
-        end
+    module Internal
+      module AttachmentLoading
+        extend ActiveSupport::Concern
 
-        module ClassMethods
+        class_methods do
           def build_cache_key(key)
             [uploadcare_configuration.cache_namespace, key].flatten.reject(&:blank?)
           end

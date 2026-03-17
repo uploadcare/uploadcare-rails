@@ -4,12 +4,36 @@ All notable changes to this project will be documented in this file.
 The format is based now on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+* Re-centered the gem around `Uploadcare::Client` and `Uploadcare::Rails.client`
+* Simplified the public Rails API to `has_uploadcare_file`, `has_uploadcare_files`,
+  `uploadcare_file_field`, `uploadcare_files_field`, and the matching tag and FormBuilder helpers
+* Renamed mounted wrapper objects to `Uploadcare::Rails::AttachedFile` and
+  `Uploadcare::Rails::AttachedFiles`
+* Rewrote the README and migration documentation to describe the actual rewrite surface
+  instead of the old wrapper-based API
+
+### Removed
+
+* `mount_uploadcare_file`
+* `mount_uploadcare_file_group`
+* `uploadcare_uploader_field`
+* `uploadcare_uploader_field_tag`
+* `f.uploadcare_file`
+* `Uploadcare::Rails::File`
+* `Uploadcare::Rails::Group`
+* low-level uploader composition helpers from the documented public API
+* stale migration guides that described the pre-rewrite compatibility surface
+
 ## 4.0.0
 
 This is a major release that replaces the legacy jQuery-based widget with the new
 [File Uploader](https://uploadcare.com/docs/file-uploader/) built on Web Components.
 
-See [v4.x-migrations-guide.md](https://github.com/uploadcare/uploadcare-rails/blob/main/v4.x-migrations-guide.md) for a detailed upgrade guide.
+See [MIGRATING_V5.md](https://github.com/uploadcare/uploadcare-rails/blob/main/MIGRATING_V5.md) for the current rewrite migration guide.
 
 ### Breaking Changes
 

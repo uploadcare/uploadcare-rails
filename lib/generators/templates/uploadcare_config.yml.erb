@@ -1,0 +1,21 @@
+default: &default
+  public_key: <%= Rails.application.credentials.dig(:uploadcare, :public_key) %>
+  secret_key: <%= Rails.application.credentials.dig(:uploadcare, :secret_key) %>
+  store_files_after_save: true
+  delete_files_after_destroy: true
+  store_files_async: false
+  delete_files_async: false
+  cache_namespace: uploadcare
+  cache_files: true
+  cache_expires_in: 1.day
+  locale: en
+  cdn_hostname: ucarecdn.com
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

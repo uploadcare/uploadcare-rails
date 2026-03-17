@@ -17,7 +17,7 @@ module ActionView
         ctx_name ||= SecureRandom.uuid
         field_name = "#{object_name}[#{method}]"
 
-        field_html = @template.uploadcare_uploader_field_tag(
+        field_html = @template.uploadcare_file_field_tag(
           field_name,
           ctx_name: ctx_name,
           solution: solution,
@@ -31,7 +31,14 @@ module ActionView
         end
       end
 
-      alias_method :uploadcare_file, :uploadcare_file_field
+      def uploadcare_files_field(method, ctx_name: nil, solution: "regular", **options)
+        uploadcare_file_field(
+          method,
+          ctx_name: ctx_name,
+          solution: solution,
+          **{ multiple: true, group_output: true }.merge(options)
+        )
+      end
 
       private
 

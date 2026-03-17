@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "uploadcare/rails/transformations/image_transformations"
-require "uploadcare/rails/objects/concerns/loadable"
+require "uploadcare/rails/internal/image_transformations"
+require "uploadcare/rails/internal/attachment_loading"
 
 module Uploadcare
   module Rails
-    class File
-      include Objects::Loadable
+    class AttachedFile
+      include Internal::AttachmentLoading
 
       ATTRIBUTES = %i[
         uuid cdn_url datetime_uploaded datetime_stored datetime_removed
@@ -45,7 +45,9 @@ module Uploadcare
         resolve_client.files.batch_delete(uuids: [uuid])
       end
 
-      def load
+      def load(force: false)
+        ::Rails.cache.delete(cache_key) if force && caching_enabled?
+
         file_info = if caching_enabled?
                       ::Rails.cache.fetch(cache_key, expires_in: cache_expires_in) do
                         request_file_info_from_api
@@ -81,5 +83,6 @@ module Uploadcare
         end
       end
     end
+
   end
 end

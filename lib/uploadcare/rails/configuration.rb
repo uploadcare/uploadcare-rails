@@ -1,17 +1,14 @@
 # frozen_string_literal: true
 
-require "singleton"
-
 module Uploadcare
   module Rails
     class Configuration
-      include Singleton
-
       RAILS_PARAMS = %w[
         public_key secret_key
         cache_files cache_expires_in cache_namespace cdn_hostname
         store_files_after_save store_files_async
         delete_files_after_destroy delete_files_async
+        job_queue
       ].freeze
 
       FILE_UPLOADER_PARAMS = %w[
@@ -47,6 +44,16 @@ module Uploadcare
 
       attr_accessor(*(RAILS_PARAMS + FILE_UPLOADER_PARAMS).uniq)
 
+      def initialize(source = nil)
+        @cache_files = false
+        @cache_expires_in = 300
+        @store_files_after_save = false
+        @store_files_async = false
+        @delete_files_after_destroy = false
+        @delete_files_async = false
+        apply(source)
+      end
+
       def uploader_config_attributes
         attrs = {}
 
@@ -67,6 +74,15 @@ module Uploadcare
       end
 
       private
+
+      def apply(source)
+        return if source.nil?
+
+        source.each do |key, value|
+          setter = "#{key}="
+          public_send(setter, value) if respond_to?(setter)
+        end
+      end
 
       def format_config_value(param_value)
         case param_value

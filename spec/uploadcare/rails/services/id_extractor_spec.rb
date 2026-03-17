@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/services/id_extractor'
+require 'uploadcare/rails/internal/id_extractor'
 
 describe Uploadcare::Rails::IdExtractor, type: :service do
   subject { described_class.call(cdn_url, regex) }

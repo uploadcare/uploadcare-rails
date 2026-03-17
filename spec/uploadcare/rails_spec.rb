@@ -19,6 +19,27 @@ RSpec.describe Uploadcare::Rails do
     expect(Uploadcare.configuration.secret_key).to eq 'rails_secret_key'
   end
 
+  it 'resets the default client and syncs SDK configuration when configuration is reassigned' do
+    Uploadcare::Rails.configure do |config|
+      config.public_key = 'default_pk'
+      config.secret_key = 'default_sk'
+    end
+
+    initial_client = described_class.client
+
+    described_class.configuration = Uploadcare::Rails::Configuration.new(
+      public_key: 'new_pk',
+      secret_key: 'new_sk'
+    )
+
+    updated_client = described_class.client
+
+    expect(updated_client).not_to equal(initial_client)
+    expect(updated_client.config.public_key).to eq('new_pk')
+    expect(Uploadcare.configuration.public_key).to eq('new_pk')
+    expect(Uploadcare.configuration.secret_key).to eq('new_sk')
+  end
+
   describe '.client' do
     before do
       Uploadcare::Rails.configure do |config|

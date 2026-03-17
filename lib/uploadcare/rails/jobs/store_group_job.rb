@@ -5,6 +5,11 @@ require "active_job"
 module Uploadcare
   module Rails
     class StoreGroupJob < ActiveJob::Base
+      queue_as { Uploadcare::Rails.configuration.job_queue || :default }
+      retry_on Uploadcare::Exception::RequestError, Uploadcare::Exception::ThrottleError,
+               wait: :polynomially_longer, attempts: 3
+      discard_on ActiveJob::DeserializationError
+
       def perform(group_id, client_options = {})
         return unless group_id
 

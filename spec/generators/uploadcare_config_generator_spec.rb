@@ -6,7 +6,7 @@ require 'generators/uploadcare_config_generator'
 RSpec.describe UploadcareConfigGenerator, type: :generator do
   destination File.expand_path('../tmp', __dir__)
 
-  let(:config_file_path) { 'spec/tmp/config/initializers/uploadcare.rb' }
+  let(:config_file_path) { 'spec/tmp/config/uploadcare.yml' }
 
   before do
     prepare_destination
@@ -24,8 +24,8 @@ RSpec.describe UploadcareConfigGenerator, type: :generator do
       expect(File.exist?(config_file_path)).to be(true)
     end
 
-    it 'checks that the config file contains the :configure method call' do
-      expect(File.read(config_file_path)).to match(/Uploadcare::Rails.configure do |config|/)
+    it 'creates a config file that reads credentials' do
+      expect(File.read(config_file_path)).to include('Rails.application.credentials.dig(:uploadcare, :public_key)')
     end
   end
 end

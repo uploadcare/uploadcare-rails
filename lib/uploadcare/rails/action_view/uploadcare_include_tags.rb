@@ -81,4 +81,3 @@ module Uploadcare
   end
 end
 
-ActionView::Base.include Uploadcare::Rails::ActionView::UploadcareIncludeTags

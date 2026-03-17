@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/transformations/image_transformations'
+require 'uploadcare/rails/internal/image_transformations'
 
 describe Uploadcare::Rails::Transformations::ImageTransformations do
   subject { described_class.new(**arguments).call }

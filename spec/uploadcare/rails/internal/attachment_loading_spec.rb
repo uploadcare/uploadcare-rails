@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/objects/concerns/loadable'
+require 'uploadcare/rails/internal/attachment_loading'
 
-RSpec.describe Uploadcare::Rails::Objects::Loadable do
+RSpec.describe Uploadcare::Rails::Internal::AttachmentLoading do
   let(:config) { OpenStruct.new(cache_files: false, cache_expires_in: 60, cache_namespace: nil) }
 
   let(:klass) do
     Class.new do
-      include Uploadcare::Rails::Objects::Loadable
+      include Uploadcare::Rails::Internal::AttachmentLoading
 
       attr_accessor :name, :cdn_url
 

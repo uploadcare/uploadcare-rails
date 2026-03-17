@@ -2,9 +2,7 @@
 
 module Uploadcare
   module Rails
-    # Namespace for URL transformation builders.
-    module Transformations
-      # A class for building image urls after image transformations.
+    module Internal
       class ImageTransformations
         def initialize(options = {})
           raise ArgumentError, "Options argument must be a Hash, #{options.class} is given?" unless options.is_a?(Hash)
@@ -12,8 +10,6 @@ module Uploadcare
           @options = options.to_h { |k, v| [ k.to_sym, v ] }
         end
 
-        # Builds Uploadcare transformation path.
-        # @return [String, nil]
         def call
           options_to_a.compact.join("-").squeeze("/").gsub(/\s/, "").presence
         end
@@ -41,6 +37,10 @@ module Uploadcare
           end
         end
       end
+    end
+
+    module Transformations
+      ImageTransformations = Internal::ImageTransformations
     end
   end
 end

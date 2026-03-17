@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "uploadcare/rails/transformations/image_transformations"
-require "uploadcare/rails/objects/concerns/loadable"
+require "uploadcare/rails/internal/image_transformations"
+require "uploadcare/rails/internal/attachment_loading"
 
 module Uploadcare
   module Rails
-    class Group
-      include Objects::Loadable
+    class AttachedFiles
+      include Internal::AttachmentLoading
 
       ATTRIBUTES = %i[
         id cdn_url datetime_created files_count files
@@ -57,7 +57,9 @@ module Uploadcare
         resolve_client.groups.find(group_id: id).delete
       end
 
-      def load
+      def load(force: false)
+        ::Rails.cache.delete(cache_key) if force && caching_enabled?
+
         group_info = if caching_enabled?
                        ::Rails.cache.fetch(cache_key, expires_in: cache_expires_in) do
                          request_group_info_from_api
@@ -99,5 +101,6 @@ module Uploadcare
         Array.new(files_count.to_i, &block)
       end
     end
+
   end
 end

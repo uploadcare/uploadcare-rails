@@ -1,26 +1,36 @@
 # frozen_string_literal: true
 
-require "active_record"
 require "active_support/concern"
-require "uploadcare/rails/services/id_extractor"
-require "uploadcare/rails/jobs/delete_file_job"
-require "uploadcare/rails/jobs/store_file_job"
 
 module Uploadcare
   module Rails
-    module ActiveRecord
-      module MountUploadcareFile
+    module Internal
+      module ModelMacros
         extend ActiveSupport::Concern
 
+        GROUP_ID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b~\d+/.freeze
+
         def build_uploadcare_file(attribute, client: nil)
-          cdn_url = attributes[attribute.to_s].to_s
+          cdn_url = read_uploadcare_attribute(attribute).to_s
           return if cdn_url.empty?
 
           uuid = IdExtractor.call(cdn_url)
-          cache_key = File.build_cache_key(cdn_url)
+          cache_key = AttachedFile.build_cache_key(cdn_url)
           default_attributes = { cdn_url: cdn_url, uuid: uuid.presence }
           file_attributes = ::Rails.cache.read(cache_key).presence || default_attributes
-          Uploadcare::Rails::File.new(file_attributes, client: client)
+          AttachedFile.new(file_attributes, client: client)
+        end
+
+        def build_uploadcare_file_group(attribute, client: nil)
+          cdn_url = read_uploadcare_attribute(attribute).to_s
+          return if cdn_url.empty?
+
+          group_id = IdExtractor.call(cdn_url, GROUP_ID_REGEX).presence
+          cache_key = AttachedFiles.build_cache_key(cdn_url)
+          files_count = FilesCountExtractor.call(group_id)
+          default_attributes = { cdn_url: cdn_url, id: group_id, files_count: files_count }
+          file_attributes = ::Rails.cache.read(cache_key).presence || default_attributes
+          AttachedFiles.new(file_attributes, client: client)
         end
 
         class_methods do
@@ -56,16 +66,38 @@ module Uploadcare
               (client || Uploadcare::Rails.client).files.batch_delete(uuids: [file.uuid])
             end
 
-            if Uploadcare::Rails.configuration.store_files_after_save
-              after_save :"uploadcare_store_#{attribute}!", if: :"will_save_change_to_#{attribute}?"
-            end
-
-            if Uploadcare::Rails.configuration.delete_files_after_destroy
-              after_destroy :"uploadcare_delete_#{attribute}!"
-            end
+            register_uploadcare_file_callbacks(attribute)
           end
 
-          alias_method :mount_uploadcare_file, :has_uploadcare_file
+          def has_uploadcare_files(attribute, uploadcare_client: nil)
+            define_singleton_method "has_uploadcare_files_for_#{attribute}?" do
+              true
+            end
+
+            define_method attribute do
+              client = resolve_uploadcare_client(uploadcare_client)
+              build_uploadcare_file_group(attribute, client: client)
+            end
+
+            define_method "uploadcare_store_#{attribute}!" do |store_job = StoreGroupJob|
+              group = public_send(attribute)
+              return unless group&.id
+
+              client = resolve_uploadcare_client(uploadcare_client)
+              if Uploadcare::Rails.configuration.store_files_async
+                client_options = client ? Uploadcare::Rails.serialize_client_options(client) : {}
+                return store_job.perform_later(group.id, client_options)
+              end
+
+              resolved = client || Uploadcare::Rails.client
+              group_resource = resolved.groups.find(group_id: group.id)
+              file_uuids = Array(group_resource.files).filter_map { |f| f["uuid"] || f[:uuid] }
+              resolved.files.batch_store(uuids: file_uuids) if file_uuids.any?
+            end
+
+            register_uploadcare_group_callbacks(attribute)
+          end
+
         end
 
         private
@@ -80,5 +112,3 @@ module Uploadcare
     end
   end
 end
-
-ActiveRecord::Base.include Uploadcare::Rails::ActiveRecord::MountUploadcareFile

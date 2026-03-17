@@ -1,12 +1,26 @@
 # frozen_string_literal: true
 
+require "uploadcare"
+require "uploadcare/rails/version"
 require "uploadcare/rails/engine"
-require "uploadcare/rails/configuration"
-require "uploadcare/rails/objects/file"
-require "uploadcare/rails/objects/group"
 
 module Uploadcare
   module Rails
+    autoload :Configuration, "uploadcare/rails/configuration"
+    autoload :AttachedFile, "uploadcare/rails/attached_file"
+    autoload :AttachedFiles, "uploadcare/rails/attached_files"
+    autoload :StoreFileJob, "uploadcare/rails/jobs/store_file_job"
+    autoload :StoreGroupJob, "uploadcare/rails/jobs/store_group_job"
+    autoload :DeleteFileJob, "uploadcare/rails/jobs/delete_file_job"
+
+    module Internal
+      autoload :ClientResolver, "uploadcare/rails/internal/client_resolver"
+      autoload :IdExtractor, "uploadcare/rails/internal/id_extractor"
+      autoload :FilesCountExtractor, "uploadcare/rails/internal/files_count_extractor"
+    end
+
+    extend Internal::ClientResolver
+
     class << self
       def configure
         yield configuration
@@ -14,11 +28,12 @@ module Uploadcare
       end
 
       def configuration
-        @configuration
+        @configuration ||= Configuration.new
       end
 
-      def initialize_config
-        @configuration = Uploadcare::Rails::Configuration.instance
+      def configuration=(config)
+        @configuration = config.is_a?(Configuration) ? config : Configuration.new(config)
+        sync_sdk_configuration
       end
 
       def client(public_key: nil, secret_key: nil, **options)
@@ -29,40 +44,17 @@ module Uploadcare
             **options
           )
         else
-          @default_client ||= Uploadcare::Client.new(
-            public_key: configuration.public_key,
-            secret_key: configuration.secret_key
-          )
-        end
-      end
-
-      def resolve_client(client_or_options = nil)
-        case client_or_options
-        when Uploadcare::Client
-          client_or_options
-        when Hash
-          client(**client_or_options.symbolize_keys)
-        when nil
-          client
-        else
-          client
+          @client_mutex.synchronize do
+            @default_client ||= Uploadcare::Client.new(
+              public_key: configuration.public_key,
+              secret_key: configuration.secret_key
+            )
+          end
         end
       end
 
       def reset_default_client!
-        @default_client = nil
-      end
-
-      def serialize_client_options(client_instance)
-        return {} unless client_instance
-
-        client_instance.config.to_h
-      end
-
-      def build_client_from_options(options = {})
-        return client if options.blank?
-
-        Uploadcare::Client.new(**options.symbolize_keys)
+        @client_mutex.synchronize { @default_client = nil }
       end
 
       private
@@ -76,6 +68,6 @@ module Uploadcare
       end
     end
 
-    initialize_config
+    @client_mutex = Mutex.new
   end
 end

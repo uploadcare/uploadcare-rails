@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module ActiveStorage
-  class Service
-    class UploadcareService < Service
-      module Helpers
+module Uploadcare
+  module Rails
+    module Internal
+      module ActiveStorageServiceHelpers
         private
 
         def stream_download(key, download_url, &block)
@@ -56,13 +56,13 @@ module ActiveStorage
         end
 
         def raise_not_found!(response)
-          raise ActiveStorage::FileNotFoundError if response.is_a?(Net::HTTPNotFound)
+          raise ::ActiveStorage::FileNotFoundError if response.is_a?(Net::HTTPNotFound)
         end
 
         def ensure_integrity(io, checksum)
           io.rewind
           actual_checksum = Base64.strict_encode64(Digest::MD5.digest(io.read))
-          raise ActiveStorage::IntegrityError unless actual_checksum == checksum
+          raise ::ActiveStorage::IntegrityError unless actual_checksum == checksum
         ensure
           io.rewind
         end

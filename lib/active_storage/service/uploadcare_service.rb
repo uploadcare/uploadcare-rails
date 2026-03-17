@@ -6,14 +6,14 @@ require "digest"
 require "net/http"
 require "uri"
 require "uploadcare-rails"
-require "active_storage/service/uploadcare_service/helpers"
-require "active_storage/service/uploadcare_service/uuid_mapping"
+require "uploadcare/rails/internal/active_storage_service_helpers"
+require "uploadcare/rails/internal/active_storage_uuid_mapping"
 
 module ActiveStorage
   class Service
     class UploadcareService < Service
-      include Helpers
-      include UuidMapping
+      include Uploadcare::Rails::Internal::ActiveStorageServiceHelpers
+      include Uploadcare::Rails::Internal::ActiveStorageUuidMapping
 
       attr_reader :client
 
