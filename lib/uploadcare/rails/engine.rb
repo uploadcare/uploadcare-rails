@@ -9,10 +9,6 @@ require "active_support/ordered_options"
 module Uploadcare
   module Rails
     class Engine < ::Rails::Engine
-      isolate_namespace Uploadcare::Rails
-
-      config.autoload_paths << root.join("lib")
-      config.eager_load_paths << root.join("lib")
       config.uploadcare = ActiveSupport::OrderedOptions.new
 
       initializer "uploadcare-rails.configuration", before: :load_config_initializers do |app|

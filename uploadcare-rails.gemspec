@@ -43,6 +43,6 @@ Gem::Specification.new do |gem|
   gem.rdoc_options      = %w[--line-numbers --title Uploadcare --main README.rdoc --encoding=UTF-8]
 
   gem.version = Uploadcare::Rails::VERSION
-  gem.add_dependency 'rails', '>= 7.0'
+  gem.add_dependency 'rails', '>= 7.2'
   gem.add_dependency 'uploadcare-ruby', '>= 5.0.0'
 end

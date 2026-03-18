@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-require "net/http"
 require "tempfile"
+require "uploadcare/rails/internal/remote_http_fetching"
 
 module Uploadcare
   module Rails
     module ActiveStorage
       module VariantRemoteProcessing
+        include Uploadcare::Rails::Internal::RemoteHttpFetching
+
         private
 
         def process
@@ -27,7 +29,13 @@ module Uploadcare
           tempfile = Tempfile.open([ "uploadcare-variant", ".#{variation.format}" ], Dir.tmpdir)
           tempfile.binmode
 
-          response = http_get(variant_source_url)
+          response = fetch_http_response(
+            variant_source_url,
+            limit: 5,
+            error_class: ::ActiveStorage::IntegrityError,
+            label: "variant",
+            wrap_transport_errors: true
+          )
           raise_integrity_error(response) unless response.is_a?(Net::HTTPSuccess)
 
           tempfile.write(response.body)
@@ -83,27 +91,6 @@ module Uploadcare
 
         def raise_integrity_error(response)
           raise ::ActiveStorage::IntegrityError, "Uploadcare variant fetch failed: #{response.code}"
-        end
-
-        def http_get(url, limit = 5)
-          raise ::ActiveStorage::IntegrityError, "Uploadcare variant redirect limit exceeded" if limit.zero?
-
-          uri = URI.parse(url)
-          response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
-            http.request(Net::HTTP::Get.new(uri))
-          end
-
-          if response.is_a?(Net::HTTPRedirection)
-            location = response["location"]
-            raise ::ActiveStorage::IntegrityError, "Uploadcare variant redirect is missing a Location header" if location.blank?
-
-            return http_get(URI.join(url, location).to_s, limit - 1)
-          end
-
-          response
-        rescue Net::OpenTimeout, Net::ReadTimeout, Net::WriteTimeout, SocketError, EOFError,
-               Errno::ECONNRESET, Errno::ECONNABORTED, OpenSSL::SSL::SSLError => e
-          raise ::ActiveStorage::IntegrityError, "Uploadcare variant fetch failed: #{e.class}"
         end
       end
     end

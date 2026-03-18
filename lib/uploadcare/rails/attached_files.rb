@@ -2,11 +2,13 @@
 
 require "uploadcare/rails/internal/image_transformations"
 require "uploadcare/rails/internal/attachment_loading"
+require "uploadcare/rails/internal/file_uuid_extraction"
 
 module Uploadcare
   module Rails
     class AttachedFiles
       include Internal::AttachmentLoading
+      include Internal::FileUuidExtraction
 
       ATTRIBUTES = %i[
         id cdn_url datetime_created files_count files
@@ -101,30 +103,6 @@ module Uploadcare
         return [] unless block_given?
 
         Array.new(files_count.to_i, &block)
-      end
-
-      def resource_to_hash(resource)
-        return resource.to_h.transform_keys(&:to_s) if resource.respond_to?(:to_h)
-        return resource.attributes.transform_keys(&:to_s) if resource.respond_to?(:attributes)
-
-        extract_resource_attributes(resource).each_with_object({}) do |attribute, result|
-          result[attribute.to_s] = resource.public_send(attribute)
-        end
-      end
-
-      def extract_resource_attributes(resource)
-        return resource.class::ATTRIBUTES if resource.class.const_defined?(:ATTRIBUTES, false)
-
-        resource.public_methods(false).select do |method_name|
-          resource.method(method_name).arity.zero? && method_name.to_s !~ /[=?!]/
-        end
-      end
-
-      def extract_file_uuid(file)
-        return file.uuid if file.respond_to?(:uuid)
-        return file["uuid"] || file[:uuid] if file.is_a?(Hash)
-
-        nil
       end
     end
   end

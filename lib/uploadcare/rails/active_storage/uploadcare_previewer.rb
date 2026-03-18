@@ -2,13 +2,15 @@
 
 require "active_storage/previewer"
 require "marcel"
-require "net/http"
 require "tempfile"
+require "uploadcare/rails/internal/remote_http_fetching"
 
 module Uploadcare
   module Rails
     module ActiveStorage
       class UploadcarePreviewer < ::ActiveStorage::Previewer
+        include Uploadcare::Rails::Internal::RemoteHttpFetching
+
         class << self
           def accept?(blob)
             !!(uploadcare_blob?(blob) && pdf?(blob.content_type))
@@ -50,7 +52,7 @@ module Uploadcare
           tempfile = Tempfile.open([ "uploadcare-preview", ".png" ], tmpdir)
           tempfile.binmode
 
-          response = http_get(url)
+          response = fetch_http_response(url, limit: 5, error_class: ::ActiveStorage::PreviewError, label: "preview")
           raise_preview_error(response) unless response.is_a?(Net::HTTPSuccess)
 
           tempfile.write(response.body)
@@ -62,24 +64,6 @@ module Uploadcare
 
         def raise_preview_error(response)
           raise ::ActiveStorage::PreviewError, "Uploadcare preview fetch failed: #{response.code}"
-        end
-
-        def http_get(url, limit = 5)
-          raise ::ActiveStorage::PreviewError, "Uploadcare preview redirect limit exceeded" if limit.zero?
-
-          uri = URI.parse(url)
-          response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
-            http.request(Net::HTTP::Get.new(uri))
-          end
-
-          if response.is_a?(Net::HTTPRedirection)
-            location = response["location"]
-            raise ::ActiveStorage::PreviewError, "Uploadcare preview redirect is missing a Location header" if location.blank?
-
-            return http_get(URI.join(url, location).to_s, limit - 1)
-          end
-
-          response
         end
       end
     end

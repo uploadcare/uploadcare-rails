@@ -53,7 +53,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
 
     response = Net::HTTPOK.new('1.1', '200', 'OK')
     allow(response).to receive(:body).and_return('transformed-bytes')
-    allow(host).to receive(:http_get).and_return(response)
+    allow(host).to receive(:fetch_http_response).and_return(response)
 
     host.send(:process)
 
@@ -114,7 +114,16 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
       block.call(http)
     end
 
-    expect(host.send(:http_get, "https://ucarecdn.com/#{uuid}/-/resize/100x100/")).to eq(success)
+    expect(
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    ).to eq(success)
   end
 
   it 'wraps write timeouts as integrity errors' do
@@ -123,7 +132,14 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     allow(Net::HTTP).to receive(:start).and_raise(Net::WriteTimeout)
 
     expect do
-      host.send(:http_get, "https://ucarecdn.com/#{uuid}/-/resize/100x100/")
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
     end.to raise_error(ActiveStorage::IntegrityError, /Net::WriteTimeout/)
   end
 end

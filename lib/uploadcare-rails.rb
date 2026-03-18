@@ -21,6 +21,8 @@ module Uploadcare
 
     extend Internal::ClientResolver
 
+    class Error < StandardError; end
+
     class << self
       def configure
         yield configuration

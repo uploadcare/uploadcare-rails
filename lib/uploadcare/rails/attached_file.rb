@@ -81,23 +81,6 @@ module Uploadcare
         file_info_from_resource(resource)
       end
 
-      def resource_to_hash(resource)
-        return resource.to_h.transform_keys(&:to_s) if resource.respond_to?(:to_h)
-        return resource.attributes.transform_keys(&:to_s) if resource.respond_to?(:attributes)
-
-        extract_resource_attributes(resource).each_with_object({}) do |attribute, result|
-          result[attribute.to_s] = resource.public_send(attribute)
-        end
-      end
-
-      def extract_resource_attributes(resource)
-        return resource.class::ATTRIBUTES if resource.class.const_defined?(:ATTRIBUTES, false)
-
-        resource.public_methods(false).select do |method_name|
-          resource.method(method_name).arity.zero? && method_name.to_s !~ /[=?!]/
-        end
-      end
-
       def file_info_from_resource(resource)
         resource_hash = resource_to_hash(resource)
         resolved_cdn_url = cdn_url.presence || resource_hash["cdn_url"].presence || resource_hash["url"]

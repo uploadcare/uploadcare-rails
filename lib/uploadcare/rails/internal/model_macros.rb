@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require "active_support/concern"
+require "uploadcare/rails/internal/file_uuid_extraction"
 
 module Uploadcare
   module Rails
     module Internal
       module ModelMacros
         extend ActiveSupport::Concern
+        include FileUuidExtraction
 
         GROUP_ID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b~\d+/.freeze
 
@@ -91,7 +93,7 @@ module Uploadcare
 
               resolved = client || Uploadcare::Rails.client
               group_resource = resolved.groups.find(group_id: group.id)
-              file_uuids = Array(group_resource.files).filter_map { |file| extract_group_file_uuid(file) }
+              file_uuids = Array(group_resource.files).filter_map { |file| extract_file_uuid(file) }
               resolved.files.batch_store(uuids: file_uuids) if file_uuids.any?
             end
 
@@ -106,13 +108,6 @@ module Uploadcare
           return nil if resolved.nil?
 
           Uploadcare::Rails.resolve_client(resolved)
-        end
-
-        def extract_group_file_uuid(file)
-          return file.uuid if file.respond_to?(:uuid)
-          return file["uuid"] || file[:uuid] if file.is_a?(Hash)
-
-          nil
         end
       end
     end

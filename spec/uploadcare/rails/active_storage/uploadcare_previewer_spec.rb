@@ -44,7 +44,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
 
       response = Net::HTTPOK.new('1.1', '200', 'OK')
       allow(response).to receive(:body).and_return('png-preview-data')
-      allow(previewer).to receive(:http_get).and_return(response)
+      allow(previewer).to receive(:fetch_http_response).and_return(response)
 
       yielded = nil
       previewer.preview do |attachable|
@@ -72,7 +72,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
 
       response = Net::HTTPOK.new('1.1', '200', 'OK')
       allow(response).to receive(:body).and_return('png-preview-data')
-      allow(previewer).to receive(:http_get).and_return(response)
+      allow(previewer).to receive(:fetch_http_response).and_return(response)
 
       previewer.preview { |_| }
 
@@ -95,7 +95,15 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
         block.call(http)
       end
 
-      expect(previewer.send(:http_get, "https://ucarecdn.com/#{uuid}/-/preview/")).to eq(success)
+      expect(
+        previewer.send(
+          :fetch_http_response,
+          "https://ucarecdn.com/#{uuid}/-/preview/",
+          limit: 5,
+          error_class: ActiveStorage::PreviewError,
+          label: "preview"
+        )
+      ).to eq(success)
     end
   end
 end
