@@ -21,17 +21,21 @@ module Uploadcare
 
           def register_uploadcare_file_callbacks(attribute)
             if Uploadcare::Rails.configuration.store_files_after_save
-              after_save :"uploadcare_store_#{attribute}!", if: :"will_save_change_to_#{attribute}?"
+              after_commit :"uploadcare_store_#{attribute}!",
+                           on: %i[create update],
+                           if: :"saved_change_to_#{attribute}?"
             end
 
             if Uploadcare::Rails.configuration.delete_files_after_destroy
-              after_destroy :"uploadcare_delete_#{attribute}!"
+              after_commit :"uploadcare_delete_#{attribute}!", on: :destroy
             end
           end
 
           def register_uploadcare_group_callbacks(attribute)
             if Uploadcare::Rails.configuration.store_files_after_save
-              after_save :"uploadcare_store_#{attribute}!", if: :"will_save_change_to_#{attribute}?"
+              after_commit :"uploadcare_store_#{attribute}!",
+                           on: %i[create update],
+                           if: :"saved_change_to_#{attribute}?"
             end
           end
         end

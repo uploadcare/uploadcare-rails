@@ -77,6 +77,20 @@ describe Uploadcare::Rails::AttachedFiles do
       instance.store
     end
 
+    it 'extracts uuids from object-shaped file entries' do
+      file_resource = double(uuid: 'file-1')
+      group_resource = double(files: [ file_resource ])
+      groups_accessor = double
+      files_accessor = double
+      client = double('custom-client', groups: groups_accessor, files: files_accessor)
+      instance = described_class.new({ cdn_url: group.cdn_url, id: group.id, files_count: group.files_count }, client: client)
+
+      allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
+      expect(files_accessor).to receive(:batch_store).with(uuids: %w[file-1])
+
+      instance.store
+    end
+
     it 'skips batch_store when group has no files' do
       group_resource = double(files: [])
       groups_accessor = double

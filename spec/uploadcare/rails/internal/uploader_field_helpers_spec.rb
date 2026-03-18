@@ -72,6 +72,24 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
     end
   end
 
+  it 'uses the bound object class to detect group-backed attributes' do
+    form_object_class = Class.new do
+      def self.has_uploadcare_files_for_photos?
+        true
+      end
+
+      def errors
+        {}
+      end
+    end
+
+    instance_variable_set(:@post_form, form_object_class.new)
+
+    tag = uploadcare_file_field(:post_form, :photos)
+
+    expect(tag).to include('multiple="multiple"')
+  end
+
   describe 'uploadcare_files_field_tag' do
     it 'passes multiple and group_output automatically' do
       tag = uploadcare_files_field_tag(:photos)

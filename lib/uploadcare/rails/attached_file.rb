@@ -36,7 +36,7 @@ module Uploadcare
       def store
         resource = resolve_client.files.find(uuid: uuid)
         resource.store
-        file_info = resource_to_hash(resource).merge("cdn_url" => cdn_url)
+        file_info = file_info_from_resource(resource)
         ::Rails.cache.write(cache_key, file_info, expires_in: cache_expires_in) if caching_enabled?
         update_attrs(file_info)
       end
@@ -68,13 +68,17 @@ module Uploadcare
 
       private
 
+      def cache_identity
+        cdn_url.presence || uuid
+      end
+
       def resolve_client
         @client || Uploadcare::Rails.client
       end
 
       def request_file_info_from_api
         resource = resolve_client.files.find(uuid: uuid)
-        resource_to_hash(resource).merge("cdn_url" => cdn_url)
+        file_info_from_resource(resource)
       end
 
       def resource_to_hash(resource)
@@ -92,6 +96,12 @@ module Uploadcare
         resource.public_methods(false).select do |method_name|
           resource.method(method_name).arity.zero? && method_name.to_s !~ /[=?!]/
         end
+      end
+
+      def file_info_from_resource(resource)
+        resource_hash = resource_to_hash(resource)
+        resolved_cdn_url = cdn_url.presence || resource_hash["cdn_url"].presence || resource_hash["url"]
+        resource_hash.merge("cdn_url" => resolved_cdn_url)
       end
     end
   end

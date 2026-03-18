@@ -47,6 +47,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     host = variant_host_class.new(service: service, blob: blob, variation: variation)
 
     allow(service).to receive(:upload)
+    allow(service).to receive(:uuid_for).with('blob-key').and_return(uuid)
     allow(service.client.files).to receive(:find).with(uuid: uuid)
                                                  .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
 
@@ -57,6 +58,19 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     host.send(:process)
 
     expect(service).to have_received(:upload).with('variant-key', anything, content_type: 'image/png')
+  end
+
+  it 'resolves the uploadcare uuid through the service mapping' do
+    mapped_blob = double(metadata: {}, key: 'mapped-key', service: service)
+    host = variant_host_class.new(service: service, blob: mapped_blob, variation: variation)
+
+    allow(service).to receive(:uuid_for).with('mapped-key').and_return(uuid)
+    allow(service.client.files).to receive(:find).with(uuid: uuid)
+                                                 .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
+
+    host.send(:variant_source_url)
+
+    expect(service).to have_received(:uuid_for).with('mapped-key').at_least(:once)
   end
 
   it 'maps resize_to_fill into uploadcare scale_crop operation' do
@@ -101,5 +115,15 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     end
 
     expect(host.send(:http_get, "https://ucarecdn.com/#{uuid}/-/resize/100x100/")).to eq(success)
+  end
+
+  it 'wraps write timeouts as integrity errors' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+
+    allow(Net::HTTP).to receive(:start).and_raise(Net::WriteTimeout)
+
+    expect do
+      host.send(:http_get, "https://ucarecdn.com/#{uuid}/-/resize/100x100/")
+    end.to raise_error(ActiveStorage::IntegrityError, /Net::WriteTimeout/)
   end
 end

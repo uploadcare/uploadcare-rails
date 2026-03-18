@@ -11,7 +11,7 @@ module Uploadcare
           object = instance_variable_get("@#{object_name}")
 
           unless options.key?(:multiple)
-            options[:multiple] = true if uploadcare_file_group_attribute?(object_name, method_name)
+            options[:multiple] = true if uploadcare_file_group_attribute?(object_name, method_name, object: object)
           end
 
           ctx_name ||= SecureRandom.uuid
@@ -94,8 +94,8 @@ module Uploadcare
           content_tag("uc-form-input", "", options)
         end
 
-        def uploadcare_file_group_attribute?(object_name, method_name)
-          model = object_name.to_s.camelize.safe_constantize
+        def uploadcare_file_group_attribute?(object_name, method_name, object: nil)
+          model = object_name.to_s.camelize.safe_constantize || object&.class
           return false unless model
 
           checker = "has_uploadcare_files_for_#{method_name}?"

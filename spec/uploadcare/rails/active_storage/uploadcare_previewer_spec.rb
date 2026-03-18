@@ -38,6 +38,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
   describe '#preview' do
     it 'yields png preview attachable payload using service client' do
       previewer = described_class.new(blob)
+      allow(service).to receive(:uuid_for).with('fallback-key').and_return(uuid)
       allow(service.client.files).to receive(:find).with(uuid: uuid)
                                                    .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
 
@@ -53,6 +54,29 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
 
       expect(yielded[:filename].to_s).to eq('report.png')
       expect(yielded[:content_type]).to eq('image/png')
+    end
+
+    it 'resolves the uploadcare uuid through the service mapping' do
+      mapped_blob = double(
+        service: service,
+        content_type: 'application/pdf',
+        metadata: {},
+        key: 'mapped-key',
+        filename: filename
+      )
+      previewer = described_class.new(mapped_blob)
+
+      allow(service).to receive(:uuid_for).with('mapped-key').and_return(uuid)
+      allow(service.client.files).to receive(:find).with(uuid: uuid)
+                                                   .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
+
+      response = Net::HTTPOK.new('1.1', '200', 'OK')
+      allow(response).to receive(:body).and_return('png-preview-data')
+      allow(previewer).to receive(:http_get).and_return(response)
+
+      previewer.preview { |_| }
+
+      expect(service).to have_received(:uuid_for).with('mapped-key')
     end
 
     it 'resolves relative redirect locations' do

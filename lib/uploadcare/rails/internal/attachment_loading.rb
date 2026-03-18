@@ -42,7 +42,11 @@ module Uploadcare
         end
 
         def cache_key
-          self.class.build_cache_key(cdn_url)
+          self.class.build_cache_key(cache_identity)
+        end
+
+        def cache_identity
+          cdn_url
         end
       end
     end

@@ -15,8 +15,17 @@ module Uploadcare
 
         client = Uploadcare::Rails.build_client_from_options(client_options)
         group_resource = client.groups.find(group_id: group_id)
-        file_uuids = Array(group_resource.files).filter_map { |f| f["uuid"] || f[:uuid] }
+        file_uuids = Array(group_resource.files).filter_map { |file| extract_file_uuid(file) }
         client.files.batch_store(uuids: file_uuids) if file_uuids.any?
+      end
+
+      private
+
+      def extract_file_uuid(file)
+        return file.uuid if file.respond_to?(:uuid)
+        return file["uuid"] || file[:uuid] if file.is_a?(Hash)
+
+        nil
       end
     end
   end

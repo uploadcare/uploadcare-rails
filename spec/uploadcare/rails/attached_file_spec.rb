@@ -111,4 +111,27 @@ describe Uploadcare::Rails::AttachedFile do
       expect(instance.datetime_uploaded).to eq(timestamp)
     end
   end
+
+  context 'when initialized with only a uuid' do
+    it 'uses the uuid as the cache identity and backfills cdn_url from the resource' do
+      uuid = '2254146d-3652-4419-abf6-305d36ef30a8'
+      files_accessor = double
+      resource = double(
+        to_h: {
+          uuid: uuid,
+          url: "https://ucarecdn.com/#{uuid}/",
+          datetime_uploaded: Time.now
+        }
+      )
+      client = double('custom-client', files: files_accessor)
+      instance = described_class.new({ uuid: uuid }, client: client)
+
+      allow(files_accessor).to receive(:find).with(uuid: uuid).and_return(resource)
+
+      instance.load
+
+      expect(instance.cdn_url).to eq("https://ucarecdn.com/#{uuid}/")
+      expect(Rails.cache.read(described_class.build_cache_key(uuid))["cdn_url"]).to eq("https://ucarecdn.com/#{uuid}/")
+    end
+  end
 end

@@ -47,7 +47,7 @@ module Uploadcare
         end
 
         def uploadcare_uuid
-          blob.metadata["uploadcare_uuid"].presence || blob.key
+          service.send(:uuid_for, blob.key)
         end
 
         def uploadcare_cdn_url
@@ -101,6 +101,9 @@ module Uploadcare
           end
 
           response
+        rescue Net::OpenTimeout, Net::ReadTimeout, Net::WriteTimeout, SocketError, EOFError,
+               Errno::ECONNRESET, Errno::ECONNABORTED, OpenSSL::SSL::SSLError => e
+          raise ::ActiveStorage::IntegrityError, "Uploadcare variant fetch failed: #{e.class}"
         end
       end
     end

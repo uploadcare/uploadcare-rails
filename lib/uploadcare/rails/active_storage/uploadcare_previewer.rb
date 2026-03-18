@@ -43,7 +43,7 @@ module Uploadcare
         end
 
         def uploadcare_uuid
-          blob.metadata["uploadcare_uuid"].presence || blob.key
+          blob.service.send(:uuid_for, blob.key)
         end
 
         def open_preview_io(url)

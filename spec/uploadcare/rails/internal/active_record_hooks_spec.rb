@@ -19,7 +19,7 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks do
         include Uploadcare::Rails::Internal::ActiveRecordHooks
         extend ActiveModel::Callbacks
 
-        define_model_callbacks :save, only: :after
+        def self.after_commit(*); end
 
         def initialize
           @attributes = { 'picture' => '' }
@@ -65,7 +65,7 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks do
         include Uploadcare::Rails::Internal::ActiveRecordHooks
         extend ActiveModel::Callbacks
 
-        define_model_callbacks :save, only: :after
+        def self.after_commit(*); end
 
         def initialize
           @attributes = { 'photos' => '' }

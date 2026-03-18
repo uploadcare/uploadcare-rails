@@ -48,7 +48,7 @@ module Uploadcare
       def store
         client = resolve_client
         group_resource = client.groups.find(group_id: id)
-        file_uuids = Array(group_resource.files).filter_map { |f| f["uuid"] || f[:uuid] }
+        file_uuids = Array(group_resource.files).filter_map { |file| extract_file_uuid(file) }
         client.files.batch_store(uuids: file_uuids) if file_uuids.any?
         group_resource
       end
@@ -79,6 +79,10 @@ module Uploadcare
       end
 
       private
+
+      def cache_identity
+        cdn_url.presence || id
+      end
 
       def resolve_client
         @client || Uploadcare::Rails.client
@@ -114,6 +118,13 @@ module Uploadcare
         resource.public_methods(false).select do |method_name|
           resource.method(method_name).arity.zero? && method_name.to_s !~ /[=?!]/
         end
+      end
+
+      def extract_file_uuid(file)
+        return file.uuid if file.respond_to?(:uuid)
+        return file["uuid"] || file[:uuid] if file.is_a?(Hash)
+
+        nil
       end
     end
   end

@@ -11,7 +11,7 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks, 'group macros' do
       include Uploadcare::Rails::Internal::ActiveRecordHooks
       extend ActiveModel::Callbacks
 
-      define_model_callbacks :save, only: :after
+      def self.after_commit(*); end
 
       def initialize
         @attributes = { 'gallery' => '' }
