@@ -4,6 +4,8 @@ require 'spec_helper'
 require 'uploadcare/rails/internal/uploader_field_helpers'
 
 describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
+  include described_class
+
   before do
     allow(Uploadcare::Rails).to receive(:configuration).and_return(
       double(uploader_config_attributes: {})
@@ -31,7 +33,7 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
       '<uc-form-input',
       'name="post[title]"',
       '<uc-config',
-      'multiple="true"',
+      'multiple="multiple"',
       '<uc-file-uploader-regular'
     ].each do |fragment|
       expect(tag).to include(fragment)
@@ -55,7 +57,7 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
   it 'does not add legacy value data attributes' do
     tag = uploadcare_file_field_tag(:title, value: 'https://ucarecdn.com/file/', multiple: true)
 
-    expect(tag).to include('multiple="true"')
+    expect(tag).to include('multiple="multiple"')
     expect(tag).to include('value="https://ucarecdn.com/file/"')
     expect(tag).not_to include('data-value=')
   end
@@ -64,7 +66,7 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
     it 'passes multiple and group_output automatically' do
       tag = uploadcare_files_field(:post, :photos)
 
-      expect(tag).to include('multiple="true"')
+      expect(tag).to include('multiple="multiple"')
       expect(tag).to include('group-output="true"')
       expect(tag).to include('name="post[photos]"')
     end
@@ -74,13 +76,9 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
     it 'passes multiple and group_output automatically' do
       tag = uploadcare_files_field_tag(:photos)
 
-      expect(tag).to include('multiple="true"')
+      expect(tag).to include('multiple="multiple"')
       expect(tag).to include('group-output="true"')
       expect(tag).to include('name="photos"')
     end
   end
-end
-
-RSpec.configure do |c|
-  c.include Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper
 end

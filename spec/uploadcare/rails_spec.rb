@@ -97,13 +97,11 @@ RSpec.describe Uploadcare::Rails do
   end
 
   describe '.serialize_client_options' do
-    it 'returns hash from client config' do
+    it 'returns only the keys required to rebuild a client' do
       client = Uploadcare::Client.new(public_key: 'pk', secret_key: 'sk')
       serialized = described_class.serialize_client_options(client)
 
-      expect(serialized).to be_a(Hash)
-      expect(serialized[:public_key]).to eq('pk')
-      expect(serialized[:secret_key]).to eq('sk')
+      expect(serialized).to eq(public_key: 'pk', secret_key: 'sk')
     end
 
     it 'returns empty hash for nil' do
@@ -128,6 +126,13 @@ RSpec.describe Uploadcare::Rails do
 
       expect(client).to be_a(Uploadcare::Client)
       expect(client.config.public_key).to eq('other_pk')
+    end
+
+    it 'preserves defaults when only part of the client options are provided' do
+      client = described_class.build_client_from_options(public_key: 'other_pk')
+
+      expect(client.config.public_key).to eq('other_pk')
+      expect(client.config.secret_key).to eq('default_sk')
     end
   end
 end

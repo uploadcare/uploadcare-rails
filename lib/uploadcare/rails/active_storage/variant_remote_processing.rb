@@ -93,7 +93,12 @@ module Uploadcare
             http.request(Net::HTTP::Get.new(uri))
           end
 
-          return http_get(response["location"], limit - 1) if response.is_a?(Net::HTTPRedirection)
+          if response.is_a?(Net::HTTPRedirection)
+            location = response["location"]
+            raise ::ActiveStorage::IntegrityError, "Uploadcare variant redirect is missing a Location header" if location.blank?
+
+            return http_get(URI.join(url, location).to_s, limit - 1)
+          end
 
           response
         end

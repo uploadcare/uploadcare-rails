@@ -55,5 +55,11 @@ RSpec.describe Uploadcare::Rails::StoreGroupJob, type: :job do
 
       described_class.new.perform(nil)
     end
+
+    it 'does nothing when group id is blank' do
+      expect(Uploadcare::Rails).not_to receive(:client)
+
+      described_class.new.perform('')
+    end
   end
 end

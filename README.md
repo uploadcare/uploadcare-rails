@@ -48,8 +48,8 @@ gem "uploadcare-rails"
 
 Then install:
 
-```console
-$ bundle install
+```bash
+bundle install
 ```
 
 If your application uses `api_struct`, replace it with `uploadcare-api_struct`:
@@ -60,23 +60,23 @@ gem "uploadcare-api_struct"
 
 You can also install the gem directly:
 
-```console
-$ gem install uploadcare-rails
+```bash
+gem install uploadcare-rails
 ```
 
 ## Configuration
 
 Set your Uploadcare credentials with environment variables:
 
-```console
-$ export UPLOADCARE_PUBLIC_KEY=your_public_key
-$ export UPLOADCARE_SECRET_KEY=your_secret_key
+```bash
+export UPLOADCARE_PUBLIC_KEY=your_public_key
+export UPLOADCARE_SECRET_KEY=your_secret_key
 ```
 
 Generate the config file:
 
-```console
-$ rails g uploadcare_config
+```bash
+rails g uploadcare_config
 ```
 
 That creates `config/uploadcare.yml`.
@@ -92,7 +92,7 @@ default: &default
   store_files_async: false
   delete_files_async: false
   cache_files: true
-  cache_expires_in: 1.day
+  cache_expires_in: <%= 1.day.to_i %>
   locale: en
 
 development:
@@ -163,12 +163,12 @@ Example:
 <%= uploadcare_include_tag(solution: "inline", version: "v1") %>
 ```
 
-### Importmap
+### Import map
 
 For Rails apps using `importmap-rails`:
 
-```console
-$ rails g uploadcare_importmap
+```bash
+rails g uploadcare_importmap
 ```
 
 Then import the initializer:
@@ -187,8 +187,8 @@ And add the stylesheet to your layout:
 
 Install the uploader package:
 
-```console
-$ npm install @uploadcare/file-uploader
+```bash
+npm install @uploadcare/file-uploader
 ```
 
 Register the Web Components:
@@ -319,6 +319,8 @@ Model macros accept `uploadcare_client:` so records can resolve a tenant-specifi
 
 ```ruby
 class Asset < ApplicationRecord
+  belongs_to :account
+
   has_uploadcare_file :file, uploadcare_client: -> {
     Uploadcare::Client.new(
       public_key: account.uploadcare_public_key,
@@ -471,6 +473,8 @@ Then configure your environment:
 ```ruby
 config.active_storage.service = :uploadcare
 ```
+
+Private signed URLs are not supported by `UploadcareService`; configure the service with `public: true`.
 
 The service:
 

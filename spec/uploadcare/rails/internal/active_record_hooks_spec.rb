@@ -89,7 +89,7 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks do
 
     it 'builds a group object from the stored attribute' do
       album = Album.new
-      cdn_url = 'https://api.uploadcare.com/groups/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/'
+      cdn_url = 'https://ucarecdn.com/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/'
 
       album.photos = cdn_url
       group = album.photos
@@ -97,6 +97,12 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks do
       expect(group).to be_an_instance_of(Uploadcare::Rails::AttachedFiles)
       expect(group.cdn_url).to eq(cdn_url)
       expect(group.id).to eq('e6c3fb25-0653-454c-9c8e-7e91902bb044~2')
+      expect(group.file_urls).to eq(
+        [
+          'https://ucarecdn.com/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/nth/0/',
+          'https://ucarecdn.com/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/nth/1/'
+        ]
+      )
     end
   end
 end

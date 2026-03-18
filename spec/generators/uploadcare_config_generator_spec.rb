@@ -27,5 +27,9 @@ RSpec.describe UploadcareConfigGenerator, type: :generator do
     it 'creates a config file that reads credentials' do
       expect(File.read(config_file_path)).to include('Rails.application.credentials.dig(:uploadcare, :public_key)')
     end
+
+    it 'renders cache_expires_in as numeric seconds' do
+      expect(File.read(config_file_path)).to include('<%= 1.day.to_i %>')
+    end
   end
 end

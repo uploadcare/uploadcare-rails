@@ -31,7 +31,7 @@ module Uploadcare
 
           def register_uploadcare_group_callbacks(attribute)
             if Uploadcare::Rails.configuration.store_files_after_save
-              after_save :"uploadcare_store_#{attribute}!"
+              after_save :"uploadcare_store_#{attribute}!", if: :"will_save_change_to_#{attribute}?"
             end
           end
         end

@@ -18,13 +18,20 @@ module Uploadcare
         def serialize_client_options(client_instance)
           return {} unless client_instance
 
-          client_instance.config.to_h
+          config = client_instance.config
+
+          # Async jobs need per-account credentials so tenant-scoped clients can be rebuilt at perform time.
+          # Keep the payload limited to the keys required to reconstruct that client.
+          {
+            public_key: config.public_key,
+            secret_key: config.secret_key
+          }.compact
         end
 
         def build_client_from_options(options = {})
           return client if options.blank?
 
-          Uploadcare::Client.new(**options.symbolize_keys)
+          client(**options.symbolize_keys)
         end
       end
     end

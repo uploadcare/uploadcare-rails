@@ -102,10 +102,10 @@ module Uploadcare
         private
 
         def resolve_uploadcare_client(client_source)
-          return nil if client_source.nil?
-          return instance_exec(&client_source) if client_source.respond_to?(:call)
+          resolved = client_source.respond_to?(:call) ? instance_exec(&client_source) : client_source
+          return nil if resolved.nil?
 
-          client_source
+          Uploadcare::Rails.resolve_client(resolved)
         end
       end
     end

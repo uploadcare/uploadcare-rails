@@ -48,5 +48,11 @@ RSpec.describe Uploadcare::Rails::Internal::AttachmentLoading do
     it 'returns false when cache_files is falsy' do
       expect(instance.caching_enabled?).to eq(false)
     end
+
+    it 'returns true when cache_files is truthy' do
+      allow(config).to receive(:cache_files).and_return(true)
+
+      expect(instance.caching_enabled?).to eq(true)
+    end
   end
 end

@@ -54,5 +54,24 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
       expect(yielded[:filename].to_s).to eq('report.png')
       expect(yielded[:content_type]).to eq('image/png')
     end
+
+    it 'resolves relative redirect locations' do
+      previewer = described_class.new(blob)
+      redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+      success = Net::HTTPOK.new('1.1', '200', 'OK')
+      calls = 0
+
+      allow(redirect).to receive(:[]).with('location').and_return('/preview/final.png')
+      allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+        calls += 1
+        expect(use_ssl).to eq(true)
+
+        http = double
+        allow(http).to receive(:request).and_return(calls == 1 ? redirect : success)
+        block.call(http)
+      end
+
+      expect(previewer.send(:http_get, "https://ucarecdn.com/#{uuid}/-/preview/")).to eq(success)
+    end
   end
 end

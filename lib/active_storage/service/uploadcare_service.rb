@@ -25,12 +25,17 @@ module ActiveStorage
       end
 
       def upload(key, io, checksum: nil, custom_metadata: {}, **)
+        uploaded_file = nil
+
         instrument :upload, key: key, checksum: checksum do
           uploaded_file = @client.uploads.upload(io, store: true, metadata: custom_metadata)
-
-          persist_uuid_mapping(key, uploaded_file.uuid)
           ensure_integrity(io, checksum) if checksum
+          persist_uuid_mapping(key, uploaded_file.uuid)
         end
+      rescue ::ActiveStorage::IntegrityError
+        @client.files.batch_delete(uuids: [ uploaded_file.uuid ]) if uploaded_file&.uuid.present?
+        delete_uuid_mapping(key)
+        raise
       end
 
       def download(key, &block)
@@ -62,8 +67,10 @@ module ActiveStorage
 
         instrument :delete, key: key do
           @client.files.batch_delete(uuids: [ uuid ])
+          delete_uuid_mapping(key)
         end
       rescue Uploadcare::Exception::NotFoundError
+        delete_uuid_mapping(key)
         nil
       end
 
@@ -92,9 +99,7 @@ module ActiveStorage
       private
 
       def private_url(key, **)
-        uuid = uuid_for!(key)
-        file = @client.files.find(uuid: uuid)
-        file.cdn_url
+        raise NotImplementedError, "Private Uploadcare URLs are not supported; configure the service with public: true"
       end
 
       def public_url(key, **)

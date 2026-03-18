@@ -86,9 +86,7 @@ module Uploadcare
 
       def request_group_info_from_api
         resource = resolve_client.groups.find(group_id: id)
-        resource.class::ATTRIBUTES.each_with_object({}) do |attribute, result|
-          result[attribute.to_s] = resource.public_send(attribute)
-        end
+        resource_to_hash(resource)
       end
 
       def group_file_url(index)
@@ -99,6 +97,23 @@ module Uploadcare
         return [] unless block_given?
 
         Array.new(files_count.to_i, &block)
+      end
+
+      def resource_to_hash(resource)
+        return resource.to_h.transform_keys(&:to_s) if resource.respond_to?(:to_h)
+        return resource.attributes.transform_keys(&:to_s) if resource.respond_to?(:attributes)
+
+        extract_resource_attributes(resource).each_with_object({}) do |attribute, result|
+          result[attribute.to_s] = resource.public_send(attribute)
+        end
+      end
+
+      def extract_resource_attributes(resource)
+        return resource.class::ATTRIBUTES if resource.class.const_defined?(:ATTRIBUTES, false)
+
+        resource.public_methods(false).select do |method_name|
+          resource.method(method_name).arity.zero? && method_name.to_s !~ /[=?!]/
+        end
       end
     end
   end

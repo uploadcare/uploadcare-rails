@@ -11,7 +11,7 @@ module Uploadcare
       discard_on ActiveJob::DeserializationError
 
       def perform(group_id, client_options = {})
-        return unless group_id
+        return if group_id.blank?
 
         client = Uploadcare::Rails.build_client_from_options(client_options)
         group_resource = client.groups.find(group_id: group_id)

@@ -43,20 +43,26 @@ module Uploadcare
         end
 
         def request_streaming(http, request, &block)
+          result = nil
+
           http.request(request) do |response|
-            raise_not_found!(response)
-            block.call(response)
+            raise_for_response!(response)
+            result = block.call(response)
           end
+
+          result
         end
 
         def request_once(http, request)
           response = http.request(request)
-          raise_not_found!(response)
+          raise_for_response!(response)
           response
         end
 
-        def raise_not_found!(response)
+        def raise_for_response!(response)
           raise ::ActiveStorage::FileNotFoundError if response.is_a?(Net::HTTPNotFound)
+
+          response.value unless response.is_a?(Net::HTTPSuccess)
         end
 
         def ensure_integrity(io, checksum)

@@ -70,18 +70,14 @@ module Uploadcare
 
           normalize_key = ->(key) { key.to_s.tr("_", "-").to_sym }
 
-          options = default_options
+          attributes = default_options
             .transform_keys(&normalize_key)
             .merge(options.transform_keys(&normalize_key))
-          options[:'ctx-name'] = ctx_name
-          attrs = []
+            .transform_keys(&:to_s)
+            .transform_values { |value| value.is_a?(TrueClass) || value.is_a?(FalseClass) ? value.to_s : value }
+          attributes["ctx-name"] = ctx_name
 
-          options.each do |key, value|
-            attr_name = key.to_s
-            attrs << %(#{attr_name}="#{ERB::Util.html_escape(value)}")
-          end
-
-          "<uc-config #{attrs.join(' ')}></uc-config>".html_safe
+          "<uc-config#{tag_builder.tag_options(attributes, true)}></uc-config>".html_safe
         end
 
         def uploadcare_uploader_tag(ctx_name:, solution: "regular")

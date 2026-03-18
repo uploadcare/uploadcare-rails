@@ -127,7 +127,7 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
       end
     end
 
-    let(:cdn_url) { 'https://api.uploadcare.com/groups/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/' }
+    let(:cdn_url) { 'https://ucarecdn.com/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/' }
     let(:model) { TestGroupModel.new(cdn_url: cdn_url) }
     let(:group_id) { 'e6c3fb25-0653-454c-9c8e-7e91902bb044~2' }
 
@@ -150,6 +150,12 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
           expect(subject.cdn_url).to eq(cdn_url)
           expect(subject.id).to eq(group_id)
           expect(subject.files_count.to_i).to eq(2)
+          expect(subject.file_urls).to eq(
+            [
+              'https://ucarecdn.com/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/nth/0/',
+              'https://ucarecdn.com/e6c3fb25-0653-454c-9c8e-7e91902bb044~2/nth/1/'
+            ]
+          )
         end
       end
     end

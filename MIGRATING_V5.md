@@ -46,6 +46,32 @@ has_uploadcare_file :picture
 has_uploadcare_files :attachments
 ```
 
+### `do_not_store` is replaced by `store_files_after_save`
+
+The rewrite removes the old `do_not_store:` option. If you previously deferred storage, switch to the positive `store_files_after_save` setting and configure it explicitly.
+
+Before:
+
+```ruby
+class Post < ApplicationRecord
+  mount_uploadcare_file :picture, do_not_store: true
+end
+```
+
+After:
+
+```ruby
+class Post < ApplicationRecord
+  has_uploadcare_file :picture
+end
+
+Uploadcare::Rails.configure do |config|
+  config.store_files_after_save = false
+end
+```
+
+Set `store_files_after_save = true` if you want the rewritten macros to store files automatically after save.
+
 ### Old field helper names are removed
 
 Replace:
@@ -381,4 +407,5 @@ If you were composing uploader components manually, move that code back to the h
 7. Replace `Uploadcare::Rails::Group` with `Uploadcare::Rails::AttachedFiles`.
 8. Move manual Uploadcare API usage to `Uploadcare::Rails.client` or explicit `Uploadcare::Client` instances.
 9. Replace `uploadcare_config:` with `uploadcare_client:` where you need tenant-specific credentials.
-10. Run your full application test suite and exercise any upload forms, background jobs, and Active Storage flows that use Uploadcare.
+10. Replace `do_not_store:` with `store_files_after_save = false` in application configuration.
+11. Run your full application test suite and exercise any upload forms, background jobs, and Active Storage flows that use Uploadcare.

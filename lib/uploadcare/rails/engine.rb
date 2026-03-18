@@ -71,6 +71,7 @@ module Uploadcare
       end
 
       def merge_uploadcare_credentials!(target, source)
+        # config/uploadcare.yml wins; credentials only backfill missing public_key/secret_key values.
         %w[public_key secret_key].each do |key|
           next if target[key].present? || target[key.to_sym].present?
 

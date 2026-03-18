@@ -7,7 +7,7 @@ module ActionView
     class FormBuilder
       def uploadcare_file_field(method, ctx_name: nil, solution: "regular", **options)
         unless options.key?(:multiple)
-          model = object_name.to_s.camelize.safe_constantize
+          model = object&.class || object_name.to_s.camelize.safe_constantize
           if model
             checker = "has_uploadcare_files_for_#{method}?"
             options[:multiple] = true if model.respond_to?(checker) && model.public_send(checker)
@@ -16,6 +16,7 @@ module ActionView
 
         ctx_name ||= SecureRandom.uuid
         field_name = "#{object_name}[#{method}]"
+        options[:value] = object.public_send(method) if !options.key?(:value) && object&.respond_to?(method)
 
         field_html = @template.uploadcare_file_field_tag(
           field_name,

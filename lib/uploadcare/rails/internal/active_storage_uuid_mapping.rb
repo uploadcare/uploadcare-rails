@@ -19,6 +19,11 @@ module Uploadcare
           persist_uuid_to_blob(key, uuid)
         end
 
+        def delete_uuid_mapping(key)
+          @key_uuid_map.delete(key)
+          delete_uuid_from_blob(key)
+        end
+
         def uuid_from_blob(key)
           return unless defined?(::ActiveStorage::Blob)
 
@@ -36,6 +41,19 @@ module Uploadcare
           return if metadata["uploadcare_uuid"] == uuid
 
           metadata["uploadcare_uuid"] = uuid
+          blob.update!(metadata: metadata)
+        end
+
+        def delete_uuid_from_blob(key)
+          return unless defined?(::ActiveStorage::Blob)
+
+          blob = ::ActiveStorage::Blob.find_by(key: key)
+          return unless blob
+
+          metadata = (blob.metadata || {}).dup
+          return unless metadata.key?("uploadcare_uuid")
+
+          metadata.delete("uploadcare_uuid")
           blob.update!(metadata: metadata)
         end
 

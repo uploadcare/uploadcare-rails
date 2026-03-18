@@ -83,4 +83,23 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
 
     expect(host.send(:process)).to eq(:base_process_called)
   end
+
+  it 'resolves relative redirect locations' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+    redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+    success = Net::HTTPOK.new('1.1', '200', 'OK')
+    calls = 0
+
+    allow(redirect).to receive(:[]).with('location').and_return('/variant/final.png')
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      calls += 1
+      expect(use_ssl).to eq(true)
+
+      http = double
+      allow(http).to receive(:request).and_return(calls == 1 ? redirect : success)
+      block.call(http)
+    end
+
+    expect(host.send(:http_get, "https://ucarecdn.com/#{uuid}/-/resize/100x100/")).to eq(success)
+  end
 end

@@ -37,5 +37,11 @@ RSpec.describe Uploadcare::Rails::DeleteFileJob, type: :job do
 
       described_class.new.perform(nil)
     end
+
+    it 'does nothing when uuid is blank' do
+      expect(Uploadcare::Rails).not_to receive(:client)
+
+      described_class.new.perform('')
+    end
   end
 end

@@ -7,7 +7,7 @@ default: &default
   delete_files_async: false
   cache_namespace: uploadcare
   cache_files: true
-  cache_expires_in: 1.day
+  cache_expires_in: <%= 1.day.to_i %>
   locale: en
   cdn_hostname: ucarecdn.com
 

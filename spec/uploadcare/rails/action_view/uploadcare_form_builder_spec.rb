@@ -5,6 +5,9 @@ require 'uploadcare/rails/internal/uploader_field_helpers'
 require 'uploadcare/rails/action_view/form_builder'
 
 RSpec.describe 'ActionView::Helpers::FormBuilder uploadcare helpers', type: :helper do
+  include Uploadcare::Rails::Internal::UploaderFieldHelpers
+  include ActionView::Helpers::FormHelper
+
   let(:public_key) { 'demopublickey' }
   let(:config_attributes) { { pubkey: public_key } }
 
@@ -99,8 +102,29 @@ RSpec.describe 'ActionView::Helpers::FormBuilder uploadcare helpers', type: :hel
 
       tag = builder.uploadcare_file_field(:avatar, multiple: true, img_only: true)
 
-      expect(tag).to include('multiple="true"')
+      expect(tag).to include('multiple="multiple"')
       expect(tag).to include('img-only="true"')
+    end
+
+    it 'uses the bound object class when object_name does not constantize' do
+      klass = Struct.new(:attachments, :errors, keyword_init: true)
+      allow(klass).to receive(:has_uploadcare_files_for_attachments?).and_return(true)
+
+      record = klass.new(attachments: nil, errors: mock_errors_class.new({}))
+      builder = form_builder_for(record, object_name: 'entry')
+
+      tag = builder.uploadcare_file_field(:attachments)
+
+      expect(tag).to include('multiple="multiple"')
+    end
+
+    it 'uses the bound object value by default' do
+      user = model_class.new(avatar: 'https://ucarecdn.com/existing-file/')
+      builder = form_builder_for(user, object_name: 'user')
+
+      tag = builder.uploadcare_file_field(:avatar)
+
+      expect(tag).to include('value="https://ucarecdn.com/existing-file/"')
     end
 
     context 'when object has no errors' do
@@ -186,7 +210,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder uploadcare helpers', type: :hel
 
       tag = builder.uploadcare_files_field(:avatar)
 
-      expect(tag).to include('multiple="true"')
+      expect(tag).to include('multiple="multiple"')
       expect(tag).to include('group-output="true"')
       expect(tag).to include('name="user[avatar]"')
     end
@@ -213,9 +237,4 @@ RSpec.describe 'ActionView::Helpers::FormBuilder uploadcare helpers', type: :hel
       expect(tag).not_to include('field_with_errors')
     end
   end
-end
-
-RSpec.configure do |c|
-  c.include Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper
-  c.include ActionView::Helpers::FormHelper, type: :helper
 end

@@ -63,16 +63,18 @@ describe Uploadcare::Rails::AttachedFiles do
   end
 
   context 'when store is called' do
-    it 'fetches group then batch-stores its files' do
+    it 'fetches group then batch-stores its files with the provided client' do
       group_resource = double(files: [ { 'uuid' => 'file-1' }, { 'uuid' => 'file-2' } ])
       groups_accessor = double
       files_accessor = double
-      client = double(groups: groups_accessor, files: files_accessor)
-      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      client = double('custom-client', groups: groups_accessor, files: files_accessor)
+      instance = described_class.new({ cdn_url: group.cdn_url, id: group.id, files_count: group.files_count }, client: client)
+
+      expect(Uploadcare::Rails).not_to receive(:client)
       allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
       expect(files_accessor).to receive(:batch_store).with(uuids: %w[file-1 file-2])
 
-      group.store
+      instance.store
     end
 
     it 'skips batch_store when group has no files' do
@@ -89,41 +91,44 @@ describe Uploadcare::Rails::AttachedFiles do
   end
 
   context 'when delete is called' do
-    it 'deletes the group via SDK resource' do
+    it 'deletes the group via SDK resource using the provided client' do
       group_resource = double
       groups_accessor = double
-      client = double(groups: groups_accessor)
-      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      client = double('custom-client', groups: groups_accessor)
+      instance = described_class.new({ cdn_url: group.cdn_url, id: group.id, files_count: group.files_count }, client: client)
+
+      expect(Uploadcare::Rails).not_to receive(:client)
       allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
       expect(group_resource).to receive(:delete)
 
-      group.delete
+      instance.delete
     end
   end
 
   context 'when load is forced' do
-    it 'clears the cache before fetching fresh data' do
-      resource_class = Class.new do
-        self::ATTRIBUTES = [ :id, :cdn_url, :datetime_created, :files_count, :files ]
-        attr_accessor(*self::ATTRIBUTES)
-      end
-      group_resource = resource_class.new
-      group_resource.id = group.id
-      group_resource.cdn_url = group.cdn_url
-      group_resource.datetime_created = Time.now
-      group_resource.files_count = group.files_count
-      group_resource.files = []
+    it 'clears the cache before fetching fresh data and uses the provided client' do
+      timestamp = Time.now
+      group_resource = double(
+        to_h: {
+          id: group.id,
+          cdn_url: group.cdn_url,
+          datetime_created: timestamp,
+          files_count: group.files_count,
+          files: []
+        }
+      )
       groups_accessor = double
-      client = double(groups: groups_accessor)
+      client = double('custom-client', groups: groups_accessor)
+      instance = described_class.new({ cdn_url: group.cdn_url, id: group.id, files_count: group.files_count }, client: client)
 
-      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      expect(Uploadcare::Rails).not_to receive(:client)
       allow(groups_accessor).to receive(:find).with(group_id: group.id).and_return(group_resource)
 
-      Rails.cache.write(group.cache_key, { "id" => group.id, "cdn_url" => group.cdn_url, "datetime_created" => nil })
+      Rails.cache.write(instance.cache_key, { "id" => group.id, "cdn_url" => group.cdn_url, "datetime_created" => nil })
 
-      group.load(force: true)
+      instance.load(force: true)
 
-      expect(group.datetime_created).to eq(group_resource.datetime_created)
+      expect(instance.datetime_created).to eq(timestamp)
     end
   end
 end

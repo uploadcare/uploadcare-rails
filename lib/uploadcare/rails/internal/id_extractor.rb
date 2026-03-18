@@ -8,6 +8,8 @@ module Uploadcare
 
         class << self
           def call(input_str, regex = UUID_REGEX)
+            return unless input_str.present?
+
             input_str.match(regex).to_s
           end
         end

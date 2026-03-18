@@ -31,12 +31,6 @@ describe Uploadcare::Rails::AttachedFile do
     expect(f.is_ready).to eq(false)
   end
 
-  it 'accepts a client' do
-    client = double('client')
-    f = described_class.new({ uuid: 'abc' }, client: client)
-    expect(f.uuid).to eq('abc')
-  end
-
   it 'returns cdn_url from to_s' do
     expect(file.to_s).to eq file.cdn_url
   end
@@ -62,56 +56,59 @@ describe Uploadcare::Rails::AttachedFile do
   end
 
   context 'when store is called' do
-    it 'calls client.files.find and store' do
-      resource = double(store: nil, cdn_url: file.cdn_url)
-      allow(resource).to receive(:class).and_return(
-        Class.new { self::ATTRIBUTES = [ :uuid, :cdn_url, :datetime_uploaded ]; attr_accessor(*self::ATTRIBUTES) }
+    it 'uses the provided client and tolerates resources without ATTRIBUTES' do
+      timestamp = Time.now
+      resource = double(
+        store: nil,
+        to_h: { uuid: file.uuid, cdn_url: file.cdn_url, datetime_uploaded: timestamp }
       )
-      allow(resource).to receive_messages(uuid: file.uuid, cdn_url: file.cdn_url, datetime_uploaded: Time.now)
-
       files_accessor = double
-      client = double(files: files_accessor)
-      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      client = double('custom-client', files: files_accessor)
+      instance = described_class.new({ cdn_url: file.cdn_url, uuid: file.uuid }, client: client)
+
+      expect(Uploadcare::Rails).not_to receive(:client)
       allow(files_accessor).to receive(:find).with(uuid: file.uuid).and_return(resource)
 
-      file.store
+      instance.store
+
       expect(resource).to have_received(:store)
+      expect(instance.datetime_uploaded).to eq(timestamp)
     end
   end
 
   context 'when delete is called' do
-    it 'calls client.files.batch_delete' do
+    it 'uses the provided client' do
       files_accessor = double
-      client = double(files: files_accessor)
-      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      client = double('custom-client', files: files_accessor)
+      instance = described_class.new({ cdn_url: file.cdn_url, uuid: file.uuid }, client: client)
+
+      expect(Uploadcare::Rails).not_to receive(:client)
       allow(files_accessor).to receive(:batch_delete).with(uuids: [ file.uuid ])
 
-      file.delete
+      instance.delete
+
       expect(files_accessor).to have_received(:batch_delete).with(uuids: [ file.uuid ])
     end
   end
 
   context 'when load is forced' do
-    it 'clears the cache before fetching fresh data' do
+    it 'clears the cache before fetching fresh data and uses the provided client' do
       files_accessor = double
-      resource_class = Class.new do
-        self::ATTRIBUTES = [ :uuid, :cdn_url, :datetime_uploaded ]
-        attr_accessor(*self::ATTRIBUTES)
-      end
-      resource = resource_class.new
-      resource.uuid = file.uuid
-      resource.cdn_url = file.cdn_url
-      resource.datetime_uploaded = Time.now
-      client = double(files: files_accessor)
+      timestamp = Time.now
+      resource = double(
+        to_h: { uuid: file.uuid, cdn_url: file.cdn_url, datetime_uploaded: timestamp }
+      )
+      client = double('custom-client', files: files_accessor)
+      instance = described_class.new({ cdn_url: file.cdn_url, uuid: file.uuid }, client: client)
 
-      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      expect(Uploadcare::Rails).not_to receive(:client)
       allow(files_accessor).to receive(:find).with(uuid: file.uuid).and_return(resource)
 
-      Rails.cache.write(file.cache_key, { "uuid" => file.uuid, "cdn_url" => file.cdn_url, "datetime_uploaded" => nil })
+      Rails.cache.write(instance.cache_key, { "uuid" => file.uuid, "cdn_url" => file.cdn_url, "datetime_uploaded" => nil })
 
-      file.load(force: true)
+      instance.load(force: true)
 
-      expect(file.datetime_uploaded).to eq(resource.datetime_uploaded)
+      expect(instance.datetime_uploaded).to eq(timestamp)
     end
   end
 end

@@ -41,13 +41,18 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   end
 
   it 'raises integrity error for invalid checksum' do
+    blob = double(metadata: {}, update!: true)
+    allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
+
     io = StringIO.new('test payload')
     bad_checksum = Base64.strict_encode64(Digest::MD5.digest('different payload'))
 
     uploaded_file = double(uuid: uuid)
     allow(service.client.uploads).to receive(:upload).and_return(uploaded_file)
+    expect(service.client.files).to receive(:batch_delete).with(uuids: [ uuid ])
 
     expect { service.upload('blob-key', io, checksum: bad_checksum) }.to raise_error(ActiveStorage::IntegrityError)
+    expect(service.send(:uuid_for, 'blob-key')).to be_nil
   end
 
   it 'downloads file body for mapped key' do
@@ -63,6 +68,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   it 'deletes a mapped file via client.files.batch_delete' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
+    expect(blob).to receive(:update!).with(metadata: {})
     expect(service.client.files).to receive(:batch_delete).with(uuids: [ uuid ])
 
     service.delete('blob-key')
@@ -77,6 +83,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   it 'returns nil when delete gets not found error' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
+    expect(blob).to receive(:update!).with(metadata: {})
     allow(service.client.files).to receive(:batch_delete).and_raise(Uploadcare::Exception::NotFoundError)
 
     expect(service.delete('blob-key')).to be_nil
@@ -117,6 +124,33 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     expect(service.headers_for_direct_upload('key', checksum: 'x')).to eq({})
   end
 
+  it 'returns the response body for request blocks' do
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    allow(response).to receive(:body).and_return('file-body')
+    http = double
+
+    allow(http).to receive(:request) do |_, &block|
+      block.call(response)
+      response
+    end
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+
+    expect(service.send(:request, 'https://ucarecdn.com/file.bin', &:body)).to eq('file-body')
+  end
+
+  it 'raises for non-success download responses' do
+    response = Net::HTTPForbidden.new('1.1', '403', 'Forbidden')
+    http = double
+
+    allow(http).to receive(:request) do |_, &block|
+      block.call(response)
+      response
+    end
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+
+    expect { service.send(:request, 'https://ucarecdn.com/file.bin', &:body) }.to raise_error(Net::HTTPClientException)
+  end
+
   it 'raises for direct upload support' do
     expect do
       service.url_for_direct_upload('key', expires_in: 10, content_type: 'text/plain', content_length: 1, checksum: 'x')
@@ -127,9 +161,18 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   it 'generates url using client.files.find' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    allow(service.client.files).to receive(:find).with(uuid: uuid).and_return(double(cdn_url: 'https://ucarecdn.com/private'))
+    allow(public_service.client.files).to receive(:find).with(uuid: uuid).and_return(double(cdn_url: 'https://ucarecdn.com/private'))
 
-    expect(service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain'))
+    expect(public_service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain'))
       .to eq('https://ucarecdn.com/private')
+  end
+
+  it 'raises when private urls are requested' do
+    blob = double(metadata: { 'uploadcare_uuid' => uuid })
+    allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
+
+    expect do
+      service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain')
+    end.to raise_error(NotImplementedError, /public: true/)
   end
 end
