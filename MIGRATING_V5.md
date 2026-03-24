@@ -1,6 +1,6 @@
-# Migrating to the uploadcare-rails rewrite
+# Migrating to uploadcare-rails 5.0
 
-This guide covers migration from the older `uploadcare-rails` surface to the rewritten, client-first API now used by this branch.
+This guide covers migration from the older `uploadcare-rails` surface to the rewritten, client-first API released in `5.0.0.rc1`.
 
 The short version:
 

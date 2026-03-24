@@ -8,6 +8,8 @@
 
 `uploadcare-rails` is a Rails integration for Uploadcare built on top of the rewritten `uploadcare-ruby` client API.
 
+The current stable branch is shipping as the `5.0.0.rc1` release candidate line.
+
 The gem is centered on:
 
 - `Uploadcare::Rails.client` for the default app-level client
@@ -43,7 +45,7 @@ This version uses the new [Uploadcare File Uploader](https://uploadcare.com/docs
 Add the gem to your Gemfile:
 
 ```ruby
-gem "uploadcare-rails"
+gem "uploadcare-rails", "5.0.0.rc1"
 ```
 
 Then install:
@@ -61,7 +63,7 @@ gem "uploadcare-api_struct"
 You can also install the gem directly:
 
 ```bash
-gem install uploadcare-rails
+gem install uploadcare-rails --pre -v 5.0.0.rc1
 ```
 
 ## Configuration

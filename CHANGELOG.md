@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 5.0.0.rc1 - 2026-03-24
+
+This is the first release candidate for the 5.0 rewrite.
+
+See [MIGRATING_V5.md](https://github.com/uploadcare/uploadcare-rails/blob/5-0-stable/MIGRATING_V5.md) for the migration guide.
+
 ### Changed
 
 * Re-centered the gem around `Uploadcare::Client` and `Uploadcare::Rails.client`
@@ -32,8 +38,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 This is a major release that replaces the legacy jQuery-based widget with the new
 [File Uploader](https://uploadcare.com/docs/file-uploader/) built on Web Components.
-
-See [MIGRATING_V5.md](https://github.com/uploadcare/uploadcare-rails/blob/main/MIGRATING_V5.md) for the current rewrite migration guide.
 
 ### Breaking Changes
 

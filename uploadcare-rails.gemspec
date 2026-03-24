@@ -21,7 +21,7 @@ Gem::Specification.new do |gem|
   gem.metadata = {
     'source_code_uri' => 'https://github.com/uploadcare/uploadcare-rails',
     'bug_tracker_uri' => 'https://github.com/uploadcare/uploadcare-rails/issues',
-    'changelog_uri' => 'https://github.com/uploadcare/uploadcare-rails/blob/main/CHANGELOG.md',
+    'changelog_uri' => 'https://github.com/uploadcare/uploadcare-rails/blob/5-0-stable/CHANGELOG.md',
     'documentation_uri' => 'https://www.rubydoc.info/gems/uploadcare-rails/',
     'homepage_uri' => 'https://uploadcare.com/',
     'rubygems_mfa_required' => 'true'
@@ -36,13 +36,14 @@ Gem::Specification.new do |gem|
     'uploadcare-rails.gemspec',
     'LICENSE.txt',
     'README.md',
-    'CHANGELOG.md'
+    'CHANGELOG.md',
+    'MIGRATING_V5.md'
   ]
 
-  gem.extra_rdoc_files  = %w[README.md LICENSE.txt]
+  gem.extra_rdoc_files  = %w[README.md MIGRATING_V5.md LICENSE.txt]
   gem.rdoc_options      = %w[--line-numbers --title Uploadcare --main README.rdoc --encoding=UTF-8]
 
   gem.version = Uploadcare::Rails::VERSION
   gem.add_dependency 'rails', '>= 7.2'
-  gem.add_dependency 'uploadcare-ruby', '>= 5.0.0'
+  gem.add_dependency 'uploadcare-ruby', '>= 5.0.0.rc1'
 end
