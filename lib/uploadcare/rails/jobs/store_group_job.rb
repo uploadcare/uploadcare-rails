@@ -13,10 +13,10 @@ module Uploadcare
                wait: :polynomially_longer, attempts: 3
       discard_on ActiveJob::DeserializationError
 
-      def perform(group_id, client_options = {})
+      def perform(group_id)
         return if group_id.blank?
 
-        client = Uploadcare::Rails.build_client_from_options(client_options)
+        client = Uploadcare::Rails.client
         group_resource = client.groups.find(group_id: group_id)
         file_uuids = Array(group_resource.files).filter_map { |file| extract_file_uuid(file) }
         client.files.batch_store(uuids: file_uuids) if file_uuids.any?

@@ -15,11 +15,12 @@ module ActiveStorage
       include Uploadcare::Rails::Internal::ActiveStorageServiceHelpers
       include Uploadcare::Rails::Internal::ActiveStorageUuidMapping
 
-      attr_reader :client
+      attr_reader :client, :cdn_hostname
 
       def initialize(public_key:, secret_key:, public: false, **options)
         super()
         @public = public
+        @cdn_hostname = options.delete(:cdn_hostname) || options.delete(:cdn_cname)
         @key_uuid_map = {}
         @client = Uploadcare::Client.new(public_key: public_key, secret_key: secret_key, **options)
       end

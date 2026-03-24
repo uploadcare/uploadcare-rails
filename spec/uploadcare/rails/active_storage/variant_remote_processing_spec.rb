@@ -142,4 +142,61 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
       )
     end.to raise_error(ActiveStorage::IntegrityError, /Net::WriteTimeout/)
   end
+
+  it 'rejects redirects to untrusted hosts' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+    redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+
+    allow(redirect).to receive(:[]).with('location').and_return('https://example.com/final.png')
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      expect(use_ssl).to eq(true)
+
+      http = double
+      allow(http).to receive(:request).and_return(redirect)
+      block.call(http)
+    end
+
+    expect do
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    end.to raise_error(ActiveStorage::IntegrityError, /not trusted/)
+  end
+
+  it 'accepts redirects to trusted custom uploadcare hosts' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+    redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+    success = Net::HTTPOK.new('1.1', '200', 'OK')
+    calls = 0
+
+    allow(service.client.config).to receive(:default_cdn_base).and_return('https://files.example-cdn.test/')
+    allow(redirect).to receive(:[]).with('location').and_return('https://files.example-cdn.test/final.png')
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      calls += 1
+      expect(use_ssl).to eq(true)
+
+      http = double
+      allow(http).to receive(:open_timeout=)
+      allow(http).to receive(:read_timeout=)
+      allow(http).to receive(:write_timeout=)
+      allow(http).to receive(:request).and_return(calls == 1 ? redirect : success)
+      block.call(http)
+    end
+
+    expect(
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    ).to eq(success)
+  end
 end

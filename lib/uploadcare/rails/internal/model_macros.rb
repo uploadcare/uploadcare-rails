@@ -48,8 +48,8 @@ module Uploadcare
 
               client = resolve_uploadcare_client(uploadcare_client)
               if Uploadcare::Rails.configuration.store_files_async
-                client_options = client ? Uploadcare::Rails.serialize_client_options(client) : {}
-                return store_job.perform_later(file.uuid, client_options)
+                ensure_async_default_client!(client)
+                return store_job.perform_later(file.uuid)
               end
 
               (client || Uploadcare::Rails.client).files.batch_store(uuids: [ file.uuid ])
@@ -61,8 +61,8 @@ module Uploadcare
 
               client = resolve_uploadcare_client(uploadcare_client)
               if Uploadcare::Rails.configuration.delete_files_async
-                client_options = client ? Uploadcare::Rails.serialize_client_options(client) : {}
-                return delete_job.perform_later(file.uuid, client_options)
+                ensure_async_default_client!(client)
+                return delete_job.perform_later(file.uuid)
               end
 
               (client || Uploadcare::Rails.client).files.batch_delete(uuids: [ file.uuid ])
@@ -87,8 +87,8 @@ module Uploadcare
 
               client = resolve_uploadcare_client(uploadcare_client)
               if Uploadcare::Rails.configuration.store_files_async
-                client_options = client ? Uploadcare::Rails.serialize_client_options(client) : {}
-                return store_job.perform_later(group.id, client_options)
+                ensure_async_default_client!(client)
+                return store_job.perform_later(group.id)
               end
 
               resolved = client || Uploadcare::Rails.client
@@ -108,6 +108,20 @@ module Uploadcare
           return nil if resolved.nil?
 
           Uploadcare::Rails.resolve_client(resolved)
+        end
+
+        def ensure_async_default_client!(client)
+          return if client.nil? || client_uses_default_credentials?(client)
+
+          raise ArgumentError, "Async Uploadcare callbacks do not support custom uploadcare_client values"
+        end
+
+        def client_uses_default_credentials?(client)
+          normalized_client_config(client.config) == normalized_client_config(Uploadcare.configuration)
+        end
+
+        def normalized_client_config(config)
+          config.to_h.except(:logger, :framework_data)
         end
       end
     end

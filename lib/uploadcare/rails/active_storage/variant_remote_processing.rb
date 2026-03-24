@@ -92,6 +92,24 @@ module Uploadcare
         def raise_integrity_error(response)
           raise ::ActiveStorage::IntegrityError, "Uploadcare variant fetch failed: #{response.code}"
         end
+
+        def fetch_http_response(url, limit:, error_class:, label:, wrap_transport_errors: false, extra_hosts: [])
+          super(
+            url,
+            limit: limit,
+            error_class: error_class,
+            label: label,
+            wrap_transport_errors: wrap_transport_errors,
+            extra_hosts: Array(extra_hosts) + trusted_variant_hosts
+          )
+        end
+
+        def trusted_variant_hosts
+          [
+            service_client.config.default_cdn_base,
+            service_client.config.cdn_base_postfix
+          ]
+        end
       end
     end
   end

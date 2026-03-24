@@ -105,5 +105,60 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
         )
       ).to eq(success)
     end
+
+    it 'rejects redirects to untrusted hosts' do
+      previewer = described_class.new(blob)
+      redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+
+      allow(redirect).to receive(:[]).with('location').and_return('https://example.com/final.png')
+      allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+        expect(use_ssl).to eq(true)
+
+        http = double
+        allow(http).to receive(:request).and_return(redirect)
+        block.call(http)
+      end
+
+      expect do
+        previewer.send(
+          :fetch_http_response,
+          "https://ucarecdn.com/#{uuid}/-/preview/",
+          limit: 5,
+          error_class: ActiveStorage::PreviewError,
+          label: "preview"
+        )
+      end.to raise_error(ActiveStorage::PreviewError, /not trusted/)
+    end
+
+    it 'accepts redirects to trusted custom uploadcare hosts' do
+      previewer = described_class.new(blob)
+      redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+      success = Net::HTTPOK.new('1.1', '200', 'OK')
+      calls = 0
+
+      allow(service.client.config).to receive(:default_cdn_base).and_return('https://files.example-cdn.test/')
+      allow(redirect).to receive(:[]).with('location').and_return('https://files.example-cdn.test/final.png')
+      allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+        calls += 1
+        expect(use_ssl).to eq(true)
+
+        http = double
+        allow(http).to receive(:open_timeout=)
+        allow(http).to receive(:read_timeout=)
+        allow(http).to receive(:write_timeout=)
+        allow(http).to receive(:request).and_return(calls == 1 ? redirect : success)
+        block.call(http)
+      end
+
+      expect(
+        previewer.send(
+          :fetch_http_response,
+          "https://ucarecdn.com/#{uuid}/-/preview/",
+          limit: 5,
+          error_class: ActiveStorage::PreviewError,
+          label: "preview"
+        )
+      ).to eq(success)
+    end
   end
 end

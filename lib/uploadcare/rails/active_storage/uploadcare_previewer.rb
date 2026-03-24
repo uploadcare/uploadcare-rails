@@ -65,6 +65,24 @@ module Uploadcare
         def raise_preview_error(response)
           raise ::ActiveStorage::PreviewError, "Uploadcare preview fetch failed: #{response.code}"
         end
+
+        def fetch_http_response(url, limit:, error_class:, label:, wrap_transport_errors: false, extra_hosts: [])
+          super(
+            url,
+            limit: limit,
+            error_class: error_class,
+            label: label,
+            wrap_transport_errors: wrap_transport_errors,
+            extra_hosts: Array(extra_hosts) + trusted_preview_hosts
+          )
+        end
+
+        def trusted_preview_hosts
+          [
+            service_client.config.default_cdn_base,
+            service_client.config.cdn_base_postfix
+          ]
+        end
       end
     end
   end

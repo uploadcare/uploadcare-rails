@@ -332,7 +332,7 @@ class Asset < ApplicationRecord
 end
 ```
 
-That client is used by mounted objects and background jobs, so instance operations stay scoped to the correct Uploadcare account.
+That client is used by mounted objects and synchronous model callbacks. Async model callbacks use the default `Uploadcare::Rails.client`, so tenant-specific `uploadcare_client:` values should stay synchronous.
 
 ## Attached objects
 

@@ -232,6 +232,7 @@ has_uploadcare_file :picture, uploadcare_client: -> {
 ```
 
 The rewrite expects explicit client objects, not mutable config wrappers.
+Use tenant-specific clients with mounted objects and synchronous model callbacks. Async model callbacks use the default `Uploadcare::Rails.client`.
 
 ## View migration
 

@@ -61,6 +61,18 @@ RSpec.describe Uploadcare::Rails::ActionView::UploadcareIncludeTags, type: :help
         expect(tag).not_to include('import')
       end
     end
+
+    it 'rejects unsupported solutions' do
+      expect do
+        uploadcare_include_tag(solution: 'evil')
+      end.to raise_error(ArgumentError, /solution/)
+    end
+
+    it 'rejects unsupported versions' do
+      expect do
+        uploadcare_include_tag(version: '../evil')
+      end.to raise_error(ArgumentError, /version/)
+    end
   end
 
   describe '#uploadcare_stylesheet_tag' do
@@ -89,6 +101,12 @@ RSpec.describe Uploadcare::Rails::ActionView::UploadcareIncludeTags, type: :help
 
       expect(tag).to include('uc-file-uploader-regular.css')
       expect(tag).not_to include('.min.css')
+    end
+
+    it 'rejects unsupported stylesheet solutions' do
+      expect do
+        uploadcare_stylesheet_tag(solution: 'evil')
+      end.to raise_error(ArgumentError, /solution/)
     end
   end
 end

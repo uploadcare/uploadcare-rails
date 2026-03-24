@@ -10,11 +10,10 @@ module Uploadcare
                wait: :polynomially_longer, attempts: 3
       discard_on ActiveJob::DeserializationError
 
-      def perform(file_uuid, client_options = {})
+      def perform(file_uuid)
         return if file_uuid.blank?
 
-        client = Uploadcare::Rails.build_client_from_options(client_options)
-        client.files.batch_store(uuids: [ file_uuid ])
+        Uploadcare::Rails.client.files.batch_store(uuids: [ file_uuid ])
       end
     end
   end

@@ -90,7 +90,7 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
         end
 
         it 'enqueues StoreFileJob' do
-          expect(Uploadcare::Rails::StoreFileJob).to receive(:perform_later).with('bec49a46-7a5b-453c-836e-acc894e50c83', {})
+          expect(Uploadcare::Rails::StoreFileJob).to receive(:perform_later).with('bec49a46-7a5b-453c-836e-acc894e50c83')
           model.uploadcare_store_cdn_url!
         end
       end
@@ -198,10 +198,49 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
         end
 
         it 'enqueues StoreGroupJob' do
-          expect(Uploadcare::Rails::StoreGroupJob).to receive(:perform_later).with(group_id, {})
+          expect(Uploadcare::Rails::StoreGroupJob).to receive(:perform_later).with(group_id)
           model.uploadcare_store_cdn_url!
         end
       end
+    end
+  end
+
+  describe 'async callbacks with custom clients' do
+    before do
+      stub_const 'TenantModel', Class.new
+      TenantModel.class_eval do
+        include Mongoid::Document
+        include Uploadcare::Rails::Internal::MongoidHooks
+        extend ActiveModel::Callbacks
+
+        field :cdn_url, type: String
+
+        define_model_callbacks :save, only: :after
+
+        has_uploadcare_file :cdn_url, uploadcare_client: -> {
+          { public_key: 'tenant_pk', secret_key: 'tenant_sk' }
+        }
+      end
+    end
+
+    let(:model) do
+      TenantModel.new(cdn_url: 'https://ucarecdn.com/bec49a46-7a5b-453c-836e-acc894e50c83/')
+    end
+
+    it 'raises when async store is used with a custom client' do
+      allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(true)
+
+      expect do
+        model.uploadcare_store_cdn_url!
+      end.to raise_error(ArgumentError, /custom uploadcare_client/)
+    end
+
+    it 'raises when async delete is used with a custom client' do
+      allow(Uploadcare::Rails.configuration).to receive(:delete_files_async).and_return(true)
+
+      expect do
+        model.uploadcare_delete_cdn_url!
+      end.to raise_error(ArgumentError, /custom uploadcare_client/)
     end
   end
 end

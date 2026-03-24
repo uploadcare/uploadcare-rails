@@ -59,7 +59,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
     allow(service.client.files).to receive(:find).with(uuid: uuid)
-                                                 .and_return(double(original_file_url: 'https://ucarecdn.com/file.bin', cdn_url: nil))
+                                                 .and_return(double(cdn_url: 'https://ucarecdn.com/file.bin'))
     allow(service).to receive(:request).with('https://ucarecdn.com/file.bin').and_return('file-body')
 
     expect(service.download('blob-key')).to eq('file-body')
@@ -149,6 +149,32 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     allow(Net::HTTP).to receive(:start).and_yield(http)
 
     expect { service.send(:request, 'https://ucarecdn.com/file.bin', &:body) }.to raise_error(Net::HTTPClientException)
+  end
+
+  it 'rejects untrusted download hosts' do
+    expect do
+      service.send(:request, 'https://example.com/file.bin')
+    end.to raise_error(ActiveStorage::IntegrityError, /not trusted/)
+  end
+
+  it 'accepts trusted custom download hosts from service config' do
+    custom_service = described_class.new(
+      public_key: 'demopublickey',
+      secret_key: 'demosecretkey',
+      cdn_hostname: 'files.example-cdn.test',
+      default_cdn_base: 'https://files.example-cdn.test/'
+    )
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    allow(response).to receive(:body).and_return('file-body')
+    http = double
+
+    allow(http).to receive(:open_timeout=)
+    allow(http).to receive(:read_timeout=)
+    allow(http).to receive(:write_timeout=)
+    allow(http).to receive(:request).and_return(response)
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+
+    expect(custom_service.send(:request, 'https://files.example-cdn.test/file.bin').body).to eq('file-body')
   end
 
   it 'raises for direct upload support' do
