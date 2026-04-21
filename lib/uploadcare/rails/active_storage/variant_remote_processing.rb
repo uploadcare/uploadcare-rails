@@ -46,7 +46,9 @@ module Uploadcare
         end
 
         def variant_source_url
-          file = Uploadcare::Rails::AttachedFile.new({ uuid: uploadcare_uuid, cdn_url: uploadcare_cdn_url }, client: service_client)
+          uuid = uploadcare_uuid
+          cdn_url = service.send(:file_cdn_url, uuid)
+          file = Uploadcare::Rails::AttachedFile.new({ uuid: uuid, cdn_url: cdn_url }, client: service_client)
           file.transform_url(uploadcare_transformations)
         end
 
@@ -56,10 +58,6 @@ module Uploadcare
 
         def uploadcare_uuid
           service.send(:uuid_for, blob.key)
-        end
-
-        def uploadcare_cdn_url
-          service.send(:file_cdn_url, uploadcare_uuid)
         end
 
         def uploadcare_transformations

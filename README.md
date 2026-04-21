@@ -479,6 +479,7 @@ config.active_storage.service = :uploadcare
 Private signed URLs are not supported by `UploadcareService`; configure the service with `public: true`.
 `UploadcareService` defaults to `public: true`; keeping it explicit in `storage.yml` is recommended.
 Active Storage direct uploads (`url_for_direct_upload`) are not supported by `UploadcareService`. Use `uploadcare_file_field` / `uploadcare_files_field` for direct uploads.
+Download and redirect validation use a trusted-host allowlist. This is hostname-based validation and assumes trusted DNS control for those hosts.
 
 The service:
 

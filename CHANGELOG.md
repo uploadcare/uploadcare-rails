@@ -21,6 +21,23 @@ See [MIGRATING_V5.md](https://github.com/uploadcare/uploadcare-rails/blob/5-0-st
   `Uploadcare::Rails::AttachedFiles`
 * Rewrote the README and migration documentation to describe the actual rewrite surface
   instead of the old wrapper-based API
+* Active Storage service now defaults to public URL mode and supports configurable
+  HTTP timeouts (`open_timeout`, `read_timeout`, `write_timeout`)
+* Mongoid hooks now prefer `after_commit` callbacks when available, with fallback
+  to `after_save`/`after_destroy`
+
+### Fixed
+
+* Edit-form uploader prefill now binds `value` to `<uc-form-input>` instead of
+  leaking into `<uc-config>`
+* Active Storage blob-key to UUID cache writes are synchronized for thread safety
+* Variant and preview remote-processing paths avoid redundant API roundtrips for
+  CDN URL resolution
+* `AttachedFile#store` avoids a redundant file pre-fetch before storing
+* Uploadcare uploader helper options now warn on unknown keys and support
+  Rails-style `data: { ... }` passthrough attributes
+* Added regression coverage for SQL wildcard escaping in `delete_prefixed`
+  and nil-key SDK configuration synchronization
 
 ### Removed
 

@@ -63,11 +63,9 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     mapped_blob = double(metadata: {}, key: 'mapped-key', service: service)
     host = variant_host_class.new(service: service, blob: mapped_blob, variation: variation)
 
-    allow(service).to receive(:uuid_for).with('mapped-key').and_return(uuid)
+    expect(service).to receive(:uuid_for).with('mapped-key').once.and_return(uuid)
 
     host.send(:variant_source_url)
-
-    expect(service).to have_received(:uuid_for).with('mapped-key').at_least(:once)
   end
 
   it 'maps resize_to_fill into uploadcare scale_crop operation' do
