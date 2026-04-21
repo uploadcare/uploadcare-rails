@@ -37,11 +37,15 @@ module ActionView
           method,
           ctx_name: ctx_name,
           solution: solution,
-          **{ multiple: true, group_output: true }.merge(options)
+          **uploadcare_group_field_options(options)
         )
       end
 
       private
+
+      def uploadcare_group_field_options(options)
+        { multiple: true, group_output: true }.merge(options)
+      end
 
       def uploadcare_object_has_errors?(method)
         return false unless object.respond_to?(:errors)

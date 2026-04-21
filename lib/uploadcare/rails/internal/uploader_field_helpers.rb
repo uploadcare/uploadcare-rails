@@ -42,7 +42,7 @@ module Uploadcare
             method_name,
             ctx_name: ctx_name,
             solution: solution,
-            **{ multiple: true, group_output: true }.merge(options)
+            **uploadcare_group_field_options(options)
           )
         end
 
@@ -51,7 +51,7 @@ module Uploadcare
             name,
             ctx_name: ctx_name,
             solution: solution,
-            **{ multiple: true, group_output: true }.merge(options)
+            **uploadcare_group_field_options(options)
           )
         end
 
@@ -110,6 +110,10 @@ module Uploadcare
 
         def uploadcare_uploader_tag(ctx_name:, solution: "regular")
           content_tag("uc-file-uploader-#{solution}", "", "ctx-name": ctx_name)
+        end
+
+        def uploadcare_group_field_options(options)
+          { multiple: true, group_output: true }.merge(options)
         end
 
         def uploadcare_ctx_provider_tag(ctx_name:)
