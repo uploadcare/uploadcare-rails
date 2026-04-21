@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gemspec path: ".."
 
-gem "uploadcare-ruby", github: "uploadcare/uploadcare-ruby", branch: "gem-rewrite-3"
+gem "uploadcare-ruby", git: "https://github.com/uploadcare/uploadcare-ruby.git", branch: "5-0-stable"
 
 gem "rails", "~> 8.0.0"
 
