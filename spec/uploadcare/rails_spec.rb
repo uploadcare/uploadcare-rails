@@ -40,6 +40,21 @@ RSpec.describe Uploadcare::Rails do
     expect(Uploadcare.configuration.secret_key).to eq('new_sk')
   end
 
+  it 'does not overwrite SDK credentials with nil values when configuration is reassigned' do
+    Uploadcare::Rails.configure do |config|
+      config.public_key = 'existing_pk'
+      config.secret_key = 'existing_sk'
+    end
+
+    described_class.configuration = Uploadcare::Rails::Configuration.new(
+      public_key: nil,
+      secret_key: nil
+    )
+
+    expect(Uploadcare.configuration.public_key).to eq('existing_pk')
+    expect(Uploadcare.configuration.secret_key).to eq('existing_sk')
+  end
+
   describe '.client' do
     before do
       Uploadcare::Rails.configure do |config|

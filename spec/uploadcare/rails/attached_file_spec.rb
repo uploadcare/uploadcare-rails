@@ -56,18 +56,19 @@ describe Uploadcare::Rails::AttachedFile do
   end
 
   context 'when store is called' do
-    it 'uses the provided client and tolerates resources without ATTRIBUTES' do
+    it 'stores using a uuid-backed resource without pre-fetching file info' do
       timestamp = Time.now
       resource = double(
         store: nil,
         to_h: { uuid: file.uuid, cdn_url: file.cdn_url, datetime_uploaded: timestamp }
       )
-      files_accessor = double
-      client = double('custom-client', files: files_accessor)
+      client = double('custom-client')
       instance = described_class.new({ cdn_url: file.cdn_url, uuid: file.uuid }, client: client)
 
       expect(Uploadcare::Rails).not_to receive(:client)
-      allow(files_accessor).to receive(:find).with(uuid: file.uuid).and_return(resource)
+      expect(Uploadcare::Resources::File).to receive(:new)
+        .with({ "uuid" => file.uuid }, client)
+        .and_return(resource)
 
       instance.store
 

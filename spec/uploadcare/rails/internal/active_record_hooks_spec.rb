@@ -105,4 +105,34 @@ describe Uploadcare::Rails::Internal::ActiveRecordHooks do
       )
     end
   end
+
+  describe 'macro definition validation for async callbacks' do
+    it 'raises when async store is enabled with custom uploadcare_client' do
+      allow(Uploadcare::Rails).to receive(:configuration).and_return(
+        OpenStruct.new(
+          store_files_async: true,
+          delete_files_async: false,
+          store_files_after_save: false,
+          delete_files_after_destroy: false
+        )
+      )
+
+      expect do
+        Class.new do
+          include Uploadcare::Rails::Internal::ActiveRecordHooks
+          extend ActiveModel::Callbacks
+
+          def self.after_commit(*); end
+
+          def attributes
+            { 'picture' => '' }
+          end
+
+          has_uploadcare_file :picture, uploadcare_client: -> {
+            { public_key: 'tenant_pk', secret_key: 'tenant_sk' }
+          }
+        end
+      end.to raise_error(ArgumentError, /custom uploadcare_client/)
+    end
+  end
 end

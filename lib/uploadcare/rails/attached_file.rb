@@ -34,7 +34,7 @@ module Uploadcare
       end
 
       def store
-        resource = resolve_client.files.find(uuid: uuid)
+        resource = Uploadcare::Resources::File.new({ "uuid" => uuid }, resolve_client)
         resource.store
         file_info = file_info_from_resource(resource)
         ::Rails.cache.write(cache_key, file_info, expires_in: cache_expires_in) if caching_enabled?

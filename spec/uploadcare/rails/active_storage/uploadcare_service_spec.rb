@@ -98,6 +98,15 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     expect(service).to have_received(:delete).with('prefix-2')
   end
 
+  it 'escapes SQL wildcard characters in delete_prefixed prefix' do
+    allow(ActiveStorage::Blob).to receive(:where).with('key LIKE ?',
+                                                       'prefix\\%\\_%').and_return(double(pluck: []))
+
+    service.delete_prefixed('prefix%_')
+
+    expect(ActiveStorage::Blob).to have_received(:where).with('key LIKE ?', 'prefix\\%\\_%')
+  end
+
   it 'keeps in-memory uuid mappings stable under concurrent writes' do
     threads = Array.new(20) do |index|
       Thread.new do
