@@ -279,4 +279,38 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
       end.to raise_error(ArgumentError, /custom uploadcare_client/)
     end
   end
+
+  describe 'callback registration strategy' do
+    it 'prefers after_commit callbacks when available' do
+      allow(Uploadcare::Rails.configuration).to receive(:store_files_after_save).and_return(true)
+      allow(Uploadcare::Rails.configuration).to receive(:delete_files_after_destroy).and_return(true)
+
+      klass = Class.new do
+        include Uploadcare::Rails::Internal::MongoidHooks
+
+        class << self
+          attr_reader :after_commit_calls, :set_callback_calls
+
+          def after_commit(*args, **kwargs)
+            @after_commit_calls ||= []
+            @after_commit_calls << [ args, kwargs ]
+          end
+
+          def set_callback(*args, **kwargs)
+            @set_callback_calls ||= []
+            @set_callback_calls << [ args, kwargs ]
+          end
+        end
+
+        def read_attribute(*)
+          nil
+        end
+
+        has_uploadcare_file :cdn_url
+      end
+
+      expect(klass.after_commit_calls.size).to eq(2)
+      expect(klass.set_callback_calls).to be_nil
+    end
+  end
 end
