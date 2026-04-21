@@ -1,3 +1,5 @@
+# This file is ERB-evaluated at boot via Rails config loading.
+# Keep expressions lightweight (credentials/env lookups are fine).
 default: &default
   public_key: <%= Rails.application.credentials.dig(:uploadcare, :public_key) %>
   secret_key: <%= Rails.application.credentials.dig(:uploadcare, :secret_key) %>
