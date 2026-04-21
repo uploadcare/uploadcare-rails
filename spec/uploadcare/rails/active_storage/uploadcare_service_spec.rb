@@ -10,7 +10,7 @@ require 'active_storage/service/uploadcare_service'
 
 RSpec.describe ActiveStorage::Service::UploadcareService do
   let(:service) { described_class.new(public_key: 'demopublickey', secret_key: 'demosecretkey') }
-  let(:public_service) { described_class.new(public_key: 'demopublickey', secret_key: 'demosecretkey', public: true) }
+  let(:private_service) { described_class.new(public_key: 'demopublickey', secret_key: 'demosecretkey', public: false) }
   let(:uuid) { '2d33999d-c74a-4ff9-99ea-abc23496b052' }
 
   before do
@@ -58,9 +58,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
   it 'downloads file body for mapped key' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    allow(service.client.files).to receive(:find).with(uuid: uuid)
-                                                 .and_return(double(cdn_url: 'https://ucarecdn.com/file.bin'))
-    allow(service).to receive(:request).with('https://ucarecdn.com/file.bin').and_return('file-body')
+    allow(service).to receive(:request).with("https://ucarecdn.com/#{uuid}/").and_return('file-body')
 
     expect(service.download('blob-key')).to eq('file-body')
   end
@@ -98,6 +96,23 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
 
     expect(service).to have_received(:delete).with('prefix-1')
     expect(service).to have_received(:delete).with('prefix-2')
+  end
+
+  it 'keeps in-memory uuid mappings stable under concurrent writes' do
+    threads = Array.new(20) do |index|
+      Thread.new do
+        key = "blob-key-#{index}"
+        uuid_value = "00000000-0000-0000-0000-#{format('%012d', index)}"
+        service.send(:persist_uuid_mapping, key, uuid_value)
+      end
+    end
+    threads.each(&:join)
+
+    20.times do |index|
+      key = "blob-key-#{index}"
+      expected_uuid = "00000000-0000-0000-0000-#{format('%012d', index)}"
+      expect(service.send(:uuid_for, key)).to eq(expected_uuid)
+    end
   end
 
   it 'supports existence check using mapped uuid' do
@@ -177,6 +192,27 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     expect(custom_service.send(:request, 'https://files.example-cdn.test/file.bin').body).to eq('file-body')
   end
 
+  it 'uses configured HTTP timeouts' do
+    custom_service = described_class.new(
+      public_key: 'demopublickey',
+      secret_key: 'demosecretkey',
+      open_timeout: 1,
+      read_timeout: 2,
+      write_timeout: 3
+    )
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    allow(response).to receive(:body).and_return('file-body')
+    http = double
+
+    expect(http).to receive(:open_timeout=).with(1)
+    expect(http).to receive(:read_timeout=).with(2)
+    expect(http).to receive(:write_timeout=).with(3)
+    allow(http).to receive(:request).and_return(response)
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+
+    expect(custom_service.send(:request, "https://ucarecdn.com/#{uuid}/").body).to eq('file-body')
+  end
+
   it 'raises for direct upload support' do
     expect do
       service.url_for_direct_upload('key', expires_in: 10, content_type: 'text/plain', content_length: 1, checksum: 'x')
@@ -184,13 +220,12 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
       .to raise_error(NotImplementedError)
   end
 
-  it 'generates url using client.files.find' do
+  it 'generates url from the mapped uuid and configured cdn base' do
     blob = double(metadata: { 'uploadcare_uuid' => uuid })
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
-    allow(public_service.client.files).to receive(:find).with(uuid: uuid).and_return(double(cdn_url: 'https://ucarecdn.com/private'))
 
-    expect(public_service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain'))
-      .to eq('https://ucarecdn.com/private')
+    expect(service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain'))
+      .to eq("https://ucarecdn.com/#{uuid}/")
   end
 
   it 'raises when private urls are requested' do
@@ -198,7 +233,7 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     allow(ActiveStorage::Blob).to receive(:find_by).with(key: 'blob-key').and_return(blob)
 
     expect do
-      service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain')
+      private_service.url('blob-key', expires_in: 60, filename: 'a.txt', disposition: :inline, content_type: 'text/plain')
     end.to raise_error(NotImplementedError, /public: true/)
   end
 end

@@ -55,4 +55,13 @@ RSpec.describe Uploadcare::Rails::Internal::AttachmentLoading do
       expect(instance.caching_enabled?).to eq(true)
     end
   end
+
+  describe '#resource_to_hash' do
+    it 'raises for unsupported resource contracts' do
+      unsupported_resource = Object.new
+
+      expect { instance.send(:resource_to_hash, unsupported_resource) }
+        .to raise_error(ArgumentError, /Unsupported Uploadcare resource/)
+    end
+  end
 end

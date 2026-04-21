@@ -243,4 +243,40 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
       end.to raise_error(ArgumentError, /custom uploadcare_client/)
     end
   end
+
+  describe 'macro definition validation for async callbacks' do
+    it 'raises when async store is enabled with custom uploadcare_client' do
+      allow(Uploadcare::Rails.configuration).to receive(:store_files_async).and_return(true)
+
+      expect do
+        Class.new do
+          include Mongoid::Document
+          include Uploadcare::Rails::Internal::MongoidHooks
+
+          field :cdn_url, type: String
+
+          has_uploadcare_file :cdn_url, uploadcare_client: -> {
+            { public_key: 'tenant_pk', secret_key: 'tenant_sk' }
+          }
+        end
+      end.to raise_error(ArgumentError, /custom uploadcare_client/)
+    end
+
+    it 'raises when async delete is enabled with custom uploadcare_client' do
+      allow(Uploadcare::Rails.configuration).to receive(:delete_files_async).and_return(true)
+
+      expect do
+        Class.new do
+          include Mongoid::Document
+          include Uploadcare::Rails::Internal::MongoidHooks
+
+          field :cdn_url, type: String
+
+          has_uploadcare_file :cdn_url, uploadcare_client: -> {
+            { public_key: 'tenant_pk', secret_key: 'tenant_sk' }
+          }
+        end
+      end.to raise_error(ArgumentError, /custom uploadcare_client/)
+    end
+  end
 end

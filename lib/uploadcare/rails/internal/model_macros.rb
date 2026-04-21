@@ -37,6 +37,12 @@ module Uploadcare
 
         class_methods do
           def has_uploadcare_file(attribute, uploadcare_client: nil)
+            validate_async_uploadcare_client_configuration!(
+              uploadcare_client: uploadcare_client,
+              stores: true,
+              deletes: true
+            )
+
             define_method attribute do
               client = resolve_uploadcare_client(uploadcare_client)
               build_uploadcare_file(attribute, client: client)
@@ -72,6 +78,12 @@ module Uploadcare
           end
 
           def has_uploadcare_files(attribute, uploadcare_client: nil)
+            validate_async_uploadcare_client_configuration!(
+              uploadcare_client: uploadcare_client,
+              stores: true,
+              deletes: false
+            )
+
             define_singleton_method "has_uploadcare_files_for_#{attribute}?" do
               true
             end
@@ -82,22 +94,31 @@ module Uploadcare
             end
 
             define_method "uploadcare_store_#{attribute}!" do |store_job = StoreGroupJob|
-              group = public_send(attribute)
+              client = resolve_uploadcare_client(uploadcare_client)
+              group = build_uploadcare_file_group(attribute, client: client)
               return unless group&.id
 
-              client = resolve_uploadcare_client(uploadcare_client)
               if Uploadcare::Rails.configuration.store_files_async
                 ensure_async_default_client!(client)
                 return store_job.perform_later(group.id)
               end
 
-              resolved = client || Uploadcare::Rails.client
-              group_resource = resolved.groups.find(group_id: group.id)
-              file_uuids = Array(group_resource.files).filter_map { |file| extract_file_uuid(file) }
-              resolved.files.batch_store(uuids: file_uuids) if file_uuids.any?
+              group.store
             end
 
             register_uploadcare_group_callbacks(attribute)
+          end
+
+          private
+
+          def validate_async_uploadcare_client_configuration!(uploadcare_client:, stores:, deletes:)
+            return if uploadcare_client.nil?
+
+            async_store_enabled = stores && Uploadcare::Rails.configuration.store_files_async
+            async_delete_enabled = deletes && Uploadcare::Rails.configuration.delete_files_async
+            return unless async_store_enabled || async_delete_enabled
+
+            raise ArgumentError, "Async Uploadcare callbacks do not support custom uploadcare_client values"
           end
         end
 

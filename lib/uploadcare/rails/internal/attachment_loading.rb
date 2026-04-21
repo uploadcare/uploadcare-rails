@@ -53,17 +53,14 @@ module Uploadcare
           return resource.to_h.transform_keys(&:to_s) if resource.respond_to?(:to_h)
           return resource.attributes.transform_keys(&:to_s) if resource.respond_to?(:attributes)
 
-          extract_resource_attributes(resource).each_with_object({}) do |attribute, result|
-            result[attribute.to_s] = resource.public_send(attribute)
+          if resource.class.const_defined?(:ATTRIBUTES, false)
+            return resource.class::ATTRIBUTES.each_with_object({}) do |attribute, result|
+              result[attribute.to_s] = resource.public_send(attribute)
+            end
           end
-        end
 
-        def extract_resource_attributes(resource)
-          return resource.class::ATTRIBUTES if resource.class.const_defined?(:ATTRIBUTES, false)
-
-          resource.public_methods(false).select do |method_name|
-            resource.method(method_name).arity.zero? && method_name.to_s !~ /[=?!]/
-          end
+          raise ArgumentError,
+                "Unsupported Uploadcare resource #{resource.class}. Expected #to_h, #attributes, or class ATTRIBUTES."
         end
       end
     end

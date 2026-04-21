@@ -36,8 +36,7 @@ module Uploadcare
         private
 
         def preview_url
-          file = service_client.files.find(uuid: uploadcare_uuid)
-          "#{file.cdn_url}-/document/-/format/png/-/page/1/"
+          "#{blob.service.send(:file_cdn_url, uploadcare_uuid)}-/document/-/format/png/-/page/1/"
         end
 
         def service_client

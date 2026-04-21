@@ -46,7 +46,7 @@ module Uploadcare
             **options
           )
         else
-          @client_mutex.synchronize do
+          client_mutex.synchronize do
             @default_client ||= Uploadcare::Client.new(
               public_key: configuration.public_key,
               secret_key: configuration.secret_key
@@ -56,10 +56,14 @@ module Uploadcare
       end
 
       def reset_default_client!
-        @client_mutex.synchronize { @default_client = nil }
+        client_mutex.synchronize { @default_client = nil }
       end
 
       private
+
+      def client_mutex
+        @client_mutex ||= Mutex.new
+      end
 
       def sync_sdk_configuration
         Uploadcare.configure do |config|
@@ -69,7 +73,5 @@ module Uploadcare
         reset_default_client!
       end
     end
-
-    @client_mutex = Mutex.new
   end
 end

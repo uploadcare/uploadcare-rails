@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 require "active_job"
-require "uploadcare/rails/internal/file_uuid_extraction"
+require "uploadcare/rails/attached_files"
 
 module Uploadcare
   module Rails
     class StoreGroupJob < ActiveJob::Base
-      include Internal::FileUuidExtraction
-
       queue_as { Uploadcare::Rails.configuration.job_queue || :default }
       retry_on Uploadcare::Exception::RequestError, Uploadcare::Exception::ThrottleError,
                wait: :polynomially_longer, attempts: 3
@@ -17,9 +15,7 @@ module Uploadcare
         return if group_id.blank?
 
         client = Uploadcare::Rails.client
-        group_resource = client.groups.find(group_id: group_id)
-        file_uuids = Array(group_resource.files).filter_map { |file| extract_file_uuid(file) }
-        client.files.batch_store(uuids: file_uuids) if file_uuids.any?
+        AttachedFiles.new({ id: group_id }, client: client).store
       end
     end
   end

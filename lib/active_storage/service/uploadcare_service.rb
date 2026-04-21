@@ -17,11 +17,15 @@ module ActiveStorage
 
       attr_reader :client, :cdn_hostname
 
-      def initialize(public_key:, secret_key:, public: false, **options)
+      def initialize(public_key:, secret_key:, public: true, **options)
         super()
         @public = public
         @cdn_hostname = options.delete(:cdn_hostname) || options.delete(:cdn_cname)
+        @http_open_timeout = options.delete(:open_timeout) || 5
+        @http_read_timeout = options.delete(:read_timeout) || 30
+        @http_write_timeout = options.delete(:write_timeout) || 30
         @key_uuid_map = {}
+        @key_uuid_map_mutex = Mutex.new
         @client = Uploadcare::Client.new(public_key: public_key, secret_key: secret_key, **options)
       end
 
@@ -90,7 +94,8 @@ module ActiveStorage
       end
 
       def url_for_direct_upload(*)
-        raise NotImplementedError, "Direct uploads are not supported for UploadcareService yet"
+        raise NotImplementedError,
+              "Active Storage direct uploads are not supported by UploadcareService; use uploadcare_file_field/uploadcare_files_field instead"
       end
 
       def headers_for_direct_upload(*)
@@ -105,8 +110,19 @@ module ActiveStorage
 
       def public_url(key, **)
         uuid = uuid_for!(key)
-        file = @client.files.find(uuid: uuid)
-        file.cdn_url
+        file_cdn_url(uuid)
+      end
+
+      def http_open_timeout
+        @http_open_timeout
+      end
+
+      def http_read_timeout
+        @http_read_timeout
+      end
+
+      def http_write_timeout
+        @http_write_timeout
       end
     end
   end

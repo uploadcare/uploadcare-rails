@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "action_view"
+require "set"
 
 module Uploadcare
   module Rails
@@ -15,6 +16,7 @@ module Uploadcare
 
           ctx_name ||= SecureRandom.uuid
           field_name = "#{object_name}[#{method_name}]"
+          options[:value] = object.public_send(method_name) if !options.key?(:value) && object&.respond_to?(method_name)
           field_html = uploadcare_file_field_tag(field_name, ctx_name: ctx_name, solution: solution, **options)
 
           if uploadcare_object_has_errors?(object, method_name)
@@ -26,8 +28,9 @@ module Uploadcare
 
         def uploadcare_file_field_tag(name, ctx_name: nil, solution: "regular", **options)
           ctx_name ||= SecureRandom.uuid
+          value = options.delete(:value)
 
-          form_input = uploadcare_form_input_tag(name: name, ctx_name: ctx_name)
+          form_input = uploadcare_form_input_tag(name: name, ctx_name: ctx_name, value: value)
           uploader = uploadcare_uploader(ctx_name: ctx_name, solution: solution, **options)
 
           safe_join([ form_input, uploader ])
@@ -68,15 +71,41 @@ module Uploadcare
           default_options = Uploadcare::Rails.configuration.uploader_config_attributes
 
           normalize_key = ->(key) { key.to_s.tr("_", "-").to_sym }
+          normalized_options = options.transform_keys(&normalize_key)
+          filtered_options = filter_uploader_config_options(normalized_options)
 
           attributes = default_options
             .transform_keys(&normalize_key)
-            .merge(options.transform_keys(&normalize_key))
+            .merge(filtered_options)
             .transform_keys(&:to_s)
             .transform_values { |value| value.is_a?(TrueClass) || value.is_a?(FalseClass) ? value.to_s : value }
           attributes["ctx-name"] = ctx_name
 
           "<uc-config#{tag_builder.tag_options(attributes, true)}></uc-config>".html_safe
+        end
+
+        def filter_uploader_config_options(options)
+          allowed = Uploadcare::Rails::Configuration::FILE_UPLOADER_PARAMS.to_set do |param|
+            param.to_s.tr("_", "-").to_sym
+          end
+          allowed << :pubkey
+
+          data_attributes = options.select { |key, _| key.to_s.start_with?("data-") }
+          unknown_keys = options.keys - allowed.to_a - data_attributes.keys
+          warn_unknown_uploader_options(unknown_keys) if unknown_keys.any?
+
+          options.slice(*allowed.to_a).merge(data_attributes)
+        end
+
+        def warn_unknown_uploader_options(keys)
+          message = "Uploadcare::Rails uploader ignored unknown options: #{keys.map(&:to_s).sort.join(', ')}"
+          logger = defined?(::Rails) && ::Rails.respond_to?(:logger) ? ::Rails.logger : nil
+
+          if logger
+            logger.warn(message)
+          else
+            warn(message)
+          end
         end
 
         def uploadcare_uploader_tag(ctx_name:, solution: "regular")
@@ -87,9 +116,10 @@ module Uploadcare
           content_tag("uc-upload-ctx-provider", "", "ctx-name": ctx_name)
         end
 
-        def uploadcare_form_input_tag(name: nil, ctx_name:)
+        def uploadcare_form_input_tag(name: nil, ctx_name:, value: nil)
           options = { "ctx-name": ctx_name }
           options[:name] = name if name
+          options[:value] = value if value.present?
           content_tag("uc-form-input", "", options)
         end
 

@@ -213,10 +213,7 @@ Before:
 
 ```ruby
 mount_uploadcare_file :picture, uploadcare_config: -> {
-  Uploadcare::Rails.client_config(
-    public_key: tenant_public_key,
-    secret_key: tenant_secret_key
-  )
+  { public_key: tenant_public_key, secret_key: tenant_secret_key }
 }
 ```
 
@@ -304,6 +301,13 @@ post.attachments.class
 # => Uploadcare::Rails::AttachedFiles
 ```
 
+## Utility constants
+
+These constants are part of the public surface in 5.x:
+
+- `Uploadcare::Rails::IdExtractor` (alias of `Uploadcare::Rails::Internal::IdExtractor`)
+- `Uploadcare::Rails::Transformations::ImageTransformations` (alias of `Uploadcare::Rails::Internal::ImageTransformations`)
+
 ## Manual API migration
 
 ### Default app client
@@ -377,6 +381,11 @@ What changed conceptually:
 - the service owns an `Uploadcare::Client`
 - previews and variants stay scoped to that service client
 - multiple Uploadcare services can coexist safely
+
+Important behavior to account for:
+
+- Active Storage direct uploads are not supported by `UploadcareService` (`url_for_direct_upload` raises `NotImplementedError`)
+- use Uploadcare uploader helpers (`uploadcare_file_field` / `uploadcare_files_field`) for direct-to-Uploadcare uploads instead
 
 ## Removed public helpers with no direct replacement
 

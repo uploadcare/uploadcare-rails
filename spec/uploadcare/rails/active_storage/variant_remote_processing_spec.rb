@@ -48,8 +48,7 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
 
     allow(service).to receive(:upload)
     allow(service).to receive(:uuid_for).with('blob-key').and_return(uuid)
-    allow(service.client.files).to receive(:find).with(uuid: uuid)
-                                                 .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
+    expect(service.client.files).not_to receive(:find)
 
     response = Net::HTTPOK.new('1.1', '200', 'OK')
     allow(response).to receive(:body).and_return('transformed-bytes')
@@ -65,8 +64,6 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
     host = variant_host_class.new(service: service, blob: mapped_blob, variation: variation)
 
     allow(service).to receive(:uuid_for).with('mapped-key').and_return(uuid)
-    allow(service.client.files).to receive(:find).with(uuid: uuid)
-                                                 .and_return(double(cdn_url: "https://ucarecdn.com/#{uuid}/"))
 
     host.send(:variant_source_url)
 

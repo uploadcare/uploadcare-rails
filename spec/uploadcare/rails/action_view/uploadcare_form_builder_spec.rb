@@ -124,7 +124,8 @@ RSpec.describe 'ActionView::Helpers::FormBuilder uploadcare helpers', type: :hel
 
       tag = builder.uploadcare_file_field(:avatar)
 
-      expect(tag).to include('value="https://ucarecdn.com/existing-file/"')
+      expect(tag).to match(%r{<uc-form-input[^>]*value="https://ucarecdn.com/existing-file/"})
+      expect(tag).not_to match(%r{<uc-config[^>]*value="https://ucarecdn.com/existing-file/"})
     end
 
     context 'when object has no errors' do

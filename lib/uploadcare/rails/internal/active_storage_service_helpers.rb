@@ -18,8 +18,16 @@ module Uploadcare
         end
 
         def file_download_url(uuid)
-          file = @client.files.find(uuid: uuid)
-          file.cdn_url
+          file_cdn_url(uuid)
+        end
+
+        def file_cdn_url(uuid)
+          base = @client.config.default_cdn_base.presence ||
+                 @client.config.cdn_base_postfix.presence ||
+                 "https://ucarecdn.com/"
+          base = "#{base}/" unless base.end_with?("/")
+
+          "#{base}#{uuid}/"
         end
 
         def file_exists?(key)
@@ -85,9 +93,13 @@ module Uploadcare
         end
 
         def configure_http_timeouts(http)
-          http.open_timeout = 5 if http.respond_to?(:open_timeout=)
-          http.read_timeout = 30 if http.respond_to?(:read_timeout=)
-          http.write_timeout = 30 if http.respond_to?(:write_timeout=)
+          open_timeout = respond_to?(:http_open_timeout, true) ? send(:http_open_timeout) : 5
+          read_timeout = respond_to?(:http_read_timeout, true) ? send(:http_read_timeout) : 30
+          write_timeout = respond_to?(:http_write_timeout, true) ? send(:http_write_timeout) : 30
+
+          http.open_timeout = open_timeout if http.respond_to?(:open_timeout=) && !open_timeout.nil?
+          http.read_timeout = read_timeout if http.respond_to?(:read_timeout=) && !read_timeout.nil?
+          http.write_timeout = write_timeout if http.respond_to?(:write_timeout=) && !write_timeout.nil?
         end
 
         def trusted_active_storage_hosts

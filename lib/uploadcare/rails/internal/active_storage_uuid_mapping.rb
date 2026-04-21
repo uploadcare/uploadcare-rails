@@ -11,16 +11,16 @@ module Uploadcare
         end
 
         def uuid_for(key)
-          @key_uuid_map[key] || uuid_from_blob(key) || key_if_uuid(key)
+          uuid_from_map(key) || uuid_from_blob(key) || key_if_uuid(key)
         end
 
         def persist_uuid_mapping(key, uuid)
-          @key_uuid_map[key] = uuid
+          with_uuid_map_lock { @key_uuid_map[key] = uuid }
           persist_uuid_to_blob(key, uuid)
         end
 
         def delete_uuid_mapping(key)
-          @key_uuid_map.delete(key)
+          with_uuid_map_lock { @key_uuid_map.delete(key) }
           delete_uuid_from_blob(key)
         end
 
@@ -63,7 +63,7 @@ module Uploadcare
             return ::ActiveStorage::Blob.where("key LIKE ?", "#{sanitized_prefix}%").pluck(:key)
           end
 
-          @key_uuid_map.keys.select { |key| key.start_with?(prefix) }
+          with_uuid_map_lock { @key_uuid_map.keys.dup }.select { |key| key.start_with?(prefix) }
         end
 
         def sanitize_sql_like_prefix(prefix)
@@ -76,6 +76,18 @@ module Uploadcare
 
         def key_if_uuid(key)
           key if key.to_s.match?(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i)
+        end
+
+        def uuid_from_map(key)
+          with_uuid_map_lock { @key_uuid_map[key] }
+        end
+
+        def with_uuid_map_lock(&block)
+          if defined?(@key_uuid_map_mutex) && @key_uuid_map_mutex
+            @key_uuid_map_mutex.synchronize(&block)
+          else
+            yield
+          end
         end
       end
     end

@@ -59,8 +59,7 @@ module Uploadcare
         end
 
         def uploadcare_cdn_url
-          file = service_client.files.find(uuid: uploadcare_uuid)
-          file.cdn_url
+          service.send(:file_cdn_url, uploadcare_uuid)
         end
 
         def uploadcare_transformations

@@ -78,9 +78,27 @@ module Uploadcare
       def apply(source)
         return if source.nil?
 
+        unknown_keys = []
         source.each do |key, value|
           setter = "#{key}="
-          public_send(setter, value) if respond_to?(setter)
+          if respond_to?(setter)
+            public_send(setter, value)
+          else
+            unknown_keys << key
+          end
+        end
+
+        warn_unknown_keys(unknown_keys)
+      end
+
+      def warn_unknown_keys(keys)
+        return if keys.empty?
+
+        message = "Uploadcare::Rails::Configuration ignored unknown keys: #{keys.map(&:to_s).sort.join(', ')}"
+        if defined?(::Rails) && ::Rails.respond_to?(:logger) && ::Rails.logger
+          ::Rails.logger.warn(message)
+        else
+          warn(message)
         end
       end
 

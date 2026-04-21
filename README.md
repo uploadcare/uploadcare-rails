@@ -477,6 +477,8 @@ config.active_storage.service = :uploadcare
 ```
 
 Private signed URLs are not supported by `UploadcareService`; configure the service with `public: true`.
+`UploadcareService` defaults to `public: true`; keeping it explicit in `storage.yml` is recommended.
+Active Storage direct uploads (`url_for_direct_upload`) are not supported by `UploadcareService`. Use `uploadcare_file_field` / `uploadcare_files_field` for direct uploads.
 
 The service:
 
@@ -515,6 +517,11 @@ post.attachments.transform_file_urls(quality: "better")
 See the Uploadcare transformation reference for the available operations:
 
 https://uploadcare.com/docs/transformations/image/
+
+Public utility constants:
+
+- `Uploadcare::Rails::IdExtractor`
+- `Uploadcare::Rails::Transformations::ImageTransformations`
 
 ## Useful links
 

@@ -58,8 +58,21 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
     tag = uploadcare_file_field_tag(:title, value: 'https://ucarecdn.com/file/', multiple: true)
 
     expect(tag).to include('multiple="multiple"')
-    expect(tag).to include('value="https://ucarecdn.com/file/"')
+    expect(tag).to match(%r{<uc-form-input[^>]*value="https://ucarecdn.com/file/"})
+    expect(tag).not_to match(%r{<uc-config[^>]*value="https://ucarecdn.com/file/"})
     expect(tag).not_to include('data-value=')
+  end
+
+  it 'filters unknown config options and keeps custom data-* attributes' do
+    logger = double('logger')
+    allow(logger).to receive(:warn)
+    allow(Rails).to receive(:logger).and_return(logger)
+
+    tag = uploadcare_file_field_tag(:title, **{ unknown_option: 'bad', 'data-qa': 'ok' })
+
+    expect(tag).to include('data-qa="ok"')
+    expect(tag).not_to include('unknown-option=')
+    expect(logger).to have_received(:warn).with(/unknown-option/)
   end
 
   describe 'uploadcare_files_field' do
