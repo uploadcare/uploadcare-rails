@@ -90,11 +90,26 @@ module Uploadcare
           end
           allowed << :pubkey
 
-          data_attributes = options.select { |key, _| key.to_s.start_with?("data-") }
-          unknown_keys = options.keys - allowed.to_a - data_attributes.keys
+          data_attributes = extract_data_attributes(options)
+          unknown_keys = options.keys - allowed.to_a - data_attributes[:consumed_keys]
           warn_unknown_uploader_options(unknown_keys) if unknown_keys.any?
 
-          options.slice(*allowed.to_a).merge(data_attributes)
+          options.slice(*allowed.to_a).merge(data_attributes[:attributes])
+        end
+
+        def extract_data_attributes(options)
+          attributes = options.select { |key, _| key.to_s.start_with?("data-") }
+          consumed_keys = attributes.keys.dup
+
+          raw_data = options[:data]
+          if raw_data.is_a?(Hash)
+            raw_data.each do |key, value|
+              attributes[:"data-#{key.to_s.tr('_', '-')}"] = value
+            end
+            consumed_keys << :data
+          end
+
+          { attributes: attributes, consumed_keys: consumed_keys }
         end
 
         def warn_unknown_uploader_options(keys)

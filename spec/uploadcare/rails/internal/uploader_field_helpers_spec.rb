@@ -75,6 +75,13 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
     expect(logger).to have_received(:warn).with(/unknown-option/)
   end
 
+  it 'accepts Rails-style data hash and renders data-* attributes' do
+    tag = uploadcare_file_field_tag(:title, data: { qa: 'hook', some_value: '123' })
+
+    expect(tag).to include('data-qa="hook"')
+    expect(tag).to include('data-some-value="123"')
+  end
+
   describe 'uploadcare_files_field' do
     it 'passes multiple and group_output automatically' do
       tag = uploadcare_files_field(:post, :photos)
