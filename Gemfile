@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in uploadcare-rails.gemspec
 gemspec
 
-gem "uploadcare-ruby", git: "https://github.com/uploadcare/uploadcare-ruby.git", branch: "5-0-stable"
+gem "uploadcare-ruby", "5.0.0.rc1"
 
 gem "http-parser", "~> 1.2", ">= 1.2.3"
 gem "rake", "~> 13.0.6"
