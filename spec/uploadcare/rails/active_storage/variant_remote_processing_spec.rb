@@ -194,4 +194,39 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
       )
     ).to eq(success)
   end
+
+  it 'uses service-configured HTTP timeouts for variant fetches' do
+    timeout_service = ActiveStorage::Service::UploadcareService.new(
+      public_key: 'demopublickey',
+      secret_key: 'demosecretkey',
+      open_timeout: 13,
+      read_timeout: 43,
+      write_timeout: 73
+    )
+    timeout_blob = double(metadata: { 'uploadcare_uuid' => uuid }, key: 'blob-key', service: timeout_service)
+    host = variant_host_class.new(service: timeout_service, blob: timeout_blob, variation: variation)
+    success = Net::HTTPOK.new('1.1', '200', 'OK')
+
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      expect(use_ssl).to eq(true)
+
+      http = double
+      expect(http).to receive(:open_timeout=).with(13)
+      expect(http).to receive(:read_timeout=).with(43)
+      expect(http).to receive(:write_timeout=).with(73)
+      allow(http).to receive(:request).and_return(success)
+      block.call(http)
+    end
+
+    expect(
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    ).to eq(success)
+  end
 end

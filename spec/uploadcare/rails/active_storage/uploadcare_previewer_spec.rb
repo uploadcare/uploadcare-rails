@@ -157,5 +157,45 @@ RSpec.describe Uploadcare::Rails::ActiveStorage::UploadcarePreviewer do
         )
       ).to eq(success)
     end
+
+    it 'uses service-configured HTTP timeouts for preview fetches' do
+      timeout_service = ActiveStorage::Service::UploadcareService.new(
+        public_key: 'demopublickey',
+        secret_key: 'demosecretkey',
+        open_timeout: 11,
+        read_timeout: 41,
+        write_timeout: 61
+      )
+      timeout_blob = double(
+        service: timeout_service,
+        content_type: 'application/pdf',
+        metadata: { 'uploadcare_uuid' => uuid },
+        key: 'fallback-key',
+        filename: filename
+      )
+      previewer = described_class.new(timeout_blob)
+      success = Net::HTTPOK.new('1.1', '200', 'OK')
+
+      allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+        expect(use_ssl).to eq(true)
+
+        http = double
+        expect(http).to receive(:open_timeout=).with(11)
+        expect(http).to receive(:read_timeout=).with(41)
+        expect(http).to receive(:write_timeout=).with(61)
+        allow(http).to receive(:request).and_return(success)
+        block.call(http)
+      end
+
+      expect(
+        previewer.send(
+          :fetch_http_response,
+          "https://ucarecdn.com/#{uuid}/-/preview/",
+          limit: 5,
+          error_class: ActiveStorage::PreviewError,
+          label: "preview"
+        )
+      ).to eq(success)
+    end
   end
 end

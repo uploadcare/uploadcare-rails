@@ -107,6 +107,24 @@ module Uploadcare
             service_client.config.cdn_base_postfix
           ]
         end
+
+        def http_open_timeout
+          uploadcare_service_timeout(:http_open_timeout)
+        end
+
+        def http_read_timeout
+          uploadcare_service_timeout(:http_read_timeout)
+        end
+
+        def http_write_timeout
+          uploadcare_service_timeout(:http_write_timeout)
+        end
+
+        def uploadcare_service_timeout(name)
+          return unless service.respond_to?(name, true)
+
+          service.send(name)
+        end
       end
     end
   end

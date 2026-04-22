@@ -13,7 +13,7 @@ jobs:
 
       - name: Release Gem
         if: contains(github.ref, 'refs/tags/v')
-        uses: discourse/publish-rubygems-action@main
+        uses: discourse/publish-rubygems-action@4bd305c65315cb691bad1e8de97a87aaf29a0a85
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}

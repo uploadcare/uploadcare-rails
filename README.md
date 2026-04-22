@@ -374,6 +374,15 @@ post.attachments.store
 post.attachments.delete
 ```
 
+### Utility APIs
+
+The following utility constants are part of the supported public API:
+
+```ruby
+Uploadcare::Rails::IdExtractor.call("https://ucarecdn.com/<uuid>/")
+Uploadcare::Rails::Transformations::ImageTransformations.new(resize: "200x200").call
+```
+
 ## Manual API usage
 
 The Rails gem no longer provides a second API wrapper layer. For manual Uploadcare operations, use `Uploadcare::Rails.client` or build your own `Uploadcare::Client`.

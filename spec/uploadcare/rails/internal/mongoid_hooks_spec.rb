@@ -312,5 +312,42 @@ describe Uploadcare::Rails::Internal::MongoidHooks do
       expect(klass.after_commit_calls.size).to eq(2)
       expect(klass.set_callback_calls).to be_nil
     end
+
+    it 'registers store callback condition against changed attributes only' do
+      allow(Uploadcare::Rails.configuration).to receive(:store_files_after_save).and_return(true)
+      allow(Uploadcare::Rails.configuration).to receive(:delete_files_after_destroy).and_return(false)
+
+      klass = Class.new do
+        include Uploadcare::Rails::Internal::MongoidHooks
+
+        class << self
+          attr_reader :after_commit_calls
+
+          def after_commit(*args, **kwargs)
+            @after_commit_calls ||= []
+            @after_commit_calls << [ args, kwargs ]
+          end
+        end
+
+        def read_attribute(*)
+          nil
+        end
+
+        has_uploadcare_file :cdn_url
+      end
+
+      store_callback = klass.after_commit_calls.find { |(args, _)| args.first == :uploadcare_store_cdn_url! }
+      condition = store_callback.last[:if]
+
+      changed_record = Struct.new(:previous_changes, :destroyed?) do
+        def evaluate_condition(&block)
+          instance_exec(&block)
+        end
+      end
+
+      expect(changed_record.new({ "cdn_url" => [ "old", "new" ] }, false).evaluate_condition(&condition)).to eq(true)
+      expect(changed_record.new({}, false).evaluate_condition(&condition)).to eq(false)
+      expect(changed_record.new({ "cdn_url" => [ "old", "new" ] }, true).evaluate_condition(&condition)).to eq(false)
+    end
   end
 end

@@ -146,6 +146,11 @@ If your application code used wrapper classes such as:
 
 Move that code to `Uploadcare::Rails.client` or explicit `Uploadcare::Client` instances.
 
+### Utility extractor and transformation constants are public
+
+`Uploadcare::Rails::IdExtractor` and `Uploadcare::Rails::Transformations::ImageTransformations`
+remain available as public utility APIs in v5.
+
 ## Replacement table
 
 | Old surface | New surface |
