@@ -75,6 +75,13 @@ describe Uploadcare::Rails::AttachedFile do
       expect(resource).to have_received(:store)
       expect(instance.datetime_uploaded).to eq(timestamp)
     end
+
+    it 'raises when uuid is blank' do
+      instance = described_class.new({ cdn_url: file.cdn_url, uuid: '' })
+
+      expect(Uploadcare::Resources::File).not_to receive(:new)
+      expect { instance.store }.to raise_error(ArgumentError, /uuid is required to store file/)
+    end
   end
 
   context 'when delete is called' do
@@ -89,6 +96,13 @@ describe Uploadcare::Rails::AttachedFile do
       instance.delete
 
       expect(files_accessor).to have_received(:batch_delete).with(uuids: [ file.uuid ])
+    end
+
+    it 'raises when uuid is blank' do
+      instance = described_class.new({ cdn_url: file.cdn_url, uuid: '' })
+
+      expect(Uploadcare::Rails).not_to receive(:client)
+      expect { instance.delete }.to raise_error(ArgumentError, /uuid is required to delete file/)
     end
   end
 
@@ -110,6 +124,13 @@ describe Uploadcare::Rails::AttachedFile do
       instance.load(force: true)
 
       expect(instance.datetime_uploaded).to eq(timestamp)
+    end
+
+    it 'raises when uuid is blank' do
+      instance = described_class.new({ cdn_url: file.cdn_url, uuid: '' })
+
+      expect(Uploadcare::Rails).not_to receive(:client)
+      expect { instance.load }.to raise_error(ArgumentError, /uuid is required to load file/)
     end
   end
 

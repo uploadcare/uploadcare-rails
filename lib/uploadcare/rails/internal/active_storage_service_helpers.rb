@@ -57,8 +57,19 @@ module Uploadcare
 
         def build_request(uri, range)
           request = Net::HTTP::Get.new(uri)
-          request["Range"] = "bytes=#{range.begin}-#{range.end}" if range
+          request["Range"] = range_header(range) if range
           request
+        end
+
+        def range_header(range)
+          range_end = range.end
+          range_end -= 1 if range_end && range.exclude_end?
+
+          if range_end && range.begin && range_end < range.begin
+            raise ArgumentError, "range end must be greater than or equal to range begin"
+          end
+
+          range_end ? "bytes=#{range.begin}-#{range_end}" : "bytes=#{range.begin}-"
         end
 
         def request_streaming(http, request, &block)

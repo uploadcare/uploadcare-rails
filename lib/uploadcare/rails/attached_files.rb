@@ -42,6 +42,8 @@ module Uploadcare
       end
 
       def file_urls
+        return [] if cdn_url.blank?
+
         map_file_urls do |index|
           group_file_url(index)
         end
@@ -96,7 +98,11 @@ module Uploadcare
       end
 
       def group_file_url(index)
-        "#{cdn_url}nth/#{index}/"
+        "#{normalized_cdn_url}nth/#{index}/"
+      end
+
+      def normalized_cdn_url
+        cdn_url.end_with?("/") ? cdn_url : "#{cdn_url}/"
       end
 
       def map_file_urls(&block)

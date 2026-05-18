@@ -109,5 +109,11 @@ RSpec.describe Uploadcare::Rails do
     it 'returns default client for nil' do
       expect(described_class.resolve_client(nil)).to equal(described_class.client)
     end
+
+    it 'raises for unsupported client sources' do
+      expect do
+        described_class.resolve_client('bad-client')
+      end.to raise_error(ArgumentError, /String/)
+    end
   end
 end

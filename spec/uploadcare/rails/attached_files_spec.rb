@@ -42,6 +42,26 @@ describe Uploadcare::Rails::AttachedFiles do
     it 'returns file urls of a group' do
       expect(group.file_urls).to contain_exactly(*expected_urls)
     end
+
+    it 'normalizes group urls without a trailing slash' do
+      group = described_class.new(
+        {
+          cdn_url: 'https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2',
+          files_count: '2'
+        }
+      )
+
+      expect(group.file_urls).to contain_exactly(
+        'https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/nth/0/',
+        'https://ucarecdn.com/6053b054-b8d4-4f57-992d-94b8f1d6ba65~2/nth/1/'
+      )
+    end
+
+    it 'returns an empty list when cdn_url is blank' do
+      group = described_class.new({ cdn_url: '', files_count: '2' })
+
+      expect(group.file_urls).to eq([])
+    end
   end
 
   context 'when checking file urls transformations' do

@@ -161,7 +161,7 @@ module Uploadcare
         end
 
         def uploadcare_file_group_attribute?(object_name, method_name, object: nil)
-          model = object_name.to_s.camelize.safe_constantize || object&.class
+          model = object&.class || object_name.to_s.camelize.safe_constantize
           return false unless model
 
           checker = "has_uploadcare_files_for_#{method_name}?"

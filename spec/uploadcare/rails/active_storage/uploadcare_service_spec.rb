@@ -162,6 +162,32 @@ RSpec.describe ActiveStorage::Service::UploadcareService do
     expect(service.send(:request, 'https://ucarecdn.com/file.bin', &:body)).to eq('file-body')
   end
 
+  it 'uses inclusive HTTP byte ranges for exclusive Ruby ranges' do
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    http = double
+
+    expect(http).to receive(:request) do |request|
+      expect(request['Range']).to eq('bytes=0-99')
+      response
+    end
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+
+    service.send(:request, 'https://ucarecdn.com/file.bin', range: 0...100)
+  end
+
+  it 'supports open-ended HTTP byte ranges' do
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    http = double
+
+    expect(http).to receive(:request) do |request|
+      expect(request['Range']).to eq('bytes=100-')
+      response
+    end
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+
+    service.send(:request, 'https://ucarecdn.com/file.bin', range: (100..))
+  end
+
   it 'raises for non-success download responses' do
     response = Net::HTTPForbidden.new('1.1', '403', 'Forbidden')
     http = double

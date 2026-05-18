@@ -14,7 +14,7 @@ There are no breaking API changes from `5.0.0.rc1`. This release promotes the
 rewrite to the stable line, removes prerelease dependency pins, and hardens the
 release workflow for tag-based RubyGems publishing.
 
-See [MIGRATING_V5.md](https://github.com/uploadcare/uploadcare-rails/blob/5-0-stable/MIGRATING_V5.md)
+See [MIGRATING_V5.md](MIGRATING_V5.md)
 for the migration guide and [docs/release-notes-5.0.0.md](docs/release-notes-5.0.0.md)
 for release notes and examples.
 

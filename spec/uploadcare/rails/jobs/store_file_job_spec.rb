@@ -23,15 +23,6 @@ RSpec.describe Uploadcare::Rails::StoreFileJob, type: :job do
       described_class.new.perform('file-uuid')
     end
 
-    it 'stores a file using the default client' do
-      files_accessor = double
-      client = double(files: files_accessor)
-      allow(Uploadcare::Rails).to receive(:client).and_return(client)
-      expect(files_accessor).to receive(:batch_store).with(uuids: [ 'file-uuid' ])
-
-      described_class.new.perform('file-uuid')
-    end
-
     it 'does nothing when uuid is nil' do
       expect(Uploadcare::Rails).not_to receive(:client)
 

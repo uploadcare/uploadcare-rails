@@ -108,6 +108,12 @@ RSpec.describe Uploadcare::Rails::ActionView::UploadcareIncludeTags, type: :help
         uploadcare_stylesheet_tag(solution: 'evil')
       end.to raise_error(ArgumentError, /solution/)
     end
+
+    it 'rejects unsupported stylesheet versions' do
+      expect do
+        uploadcare_stylesheet_tag(version: '../evil')
+      end.to raise_error(ArgumentError, /version/)
+    end
   end
 end
 

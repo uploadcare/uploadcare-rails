@@ -23,4 +23,11 @@ describe Uploadcare::Rails::IdExtractor, type: :service do
       end
     end
   end
+
+  context 'when no UUID matches' do
+    let(:cdn_url) { 'https://ucarecdn.com/not-a-uuid/' }
+    let(:regex) { described_class::UUID_REGEX }
+
+    it { is_expected.to be_nil }
+  end
 end

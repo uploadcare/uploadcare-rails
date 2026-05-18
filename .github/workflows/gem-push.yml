@@ -34,6 +34,7 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: |
+          set -euo pipefail
           gem_version="$(ruby -r rubygems -e "puts Gem::Specification.load('uploadcare-rails.gemspec').version")"
           if [ "v${gem_version}" != "${RELEASE_TAG}" ]; then
             echo "Release tag (${RELEASE_TAG}) does not match gem version (v${gem_version})"
@@ -46,6 +47,11 @@ jobs:
         env:
           RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         run: |
+          set -euo pipefail
+          if [ -z "${RUBYGEMS_API_KEY}" ]; then
+            echo "RUBYGEMS_API_KEY is not set"
+            exit 1
+          fi
           mkdir -p ~/.gem
           printf -- "---\n:rubygems_api_key: %s\n" "${RUBYGEMS_API_KEY}" > ~/.gem/credentials
           chmod 0600 ~/.gem/credentials

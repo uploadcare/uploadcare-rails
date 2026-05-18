@@ -34,6 +34,7 @@ module Uploadcare
       end
 
       def store
+        ensure_uuid!("store file")
         resource = Uploadcare::Resources::File.new({ "uuid" => uuid }, resolve_client)
         resource.store
         file_info = file_info_from_resource(resource)
@@ -42,10 +43,12 @@ module Uploadcare
       end
 
       def delete
+        ensure_uuid!("delete file")
         resolve_client.files.batch_delete(uuids: [ uuid ])
       end
 
       def load(force: false)
+        ensure_uuid!("load file")
         ::Rails.cache.delete(cache_key) if force && caching_enabled?
 
         file_info = if caching_enabled?
@@ -85,6 +88,12 @@ module Uploadcare
         resource_hash = resource_to_hash(resource)
         resolved_cdn_url = cdn_url.presence || resource_hash["cdn_url"].presence || resource_hash["url"]
         resource_hash.merge("cdn_url" => resolved_cdn_url)
+      end
+
+      def ensure_uuid!(action)
+        return if uuid.present?
+
+        raise ArgumentError, "uuid is required to #{action}"
       end
     end
   end
