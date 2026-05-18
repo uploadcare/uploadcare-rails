@@ -75,7 +75,7 @@ for release notes and examples.
 
 This is the first release candidate for the 5.0 rewrite.
 
-See [MIGRATING_V5.md](https://github.com/uploadcare/uploadcare-rails/blob/5-0-stable/MIGRATING_V5.md) for the migration guide.
+See [MIGRATING_V5.md](MIGRATING_V5.md) for the migration guide.
 
 ### Changed
 

@@ -21,7 +21,7 @@ Gem::Specification.new do |gem|
   gem.metadata = {
     'source_code_uri' => 'https://github.com/uploadcare/uploadcare-rails',
     'bug_tracker_uri' => 'https://github.com/uploadcare/uploadcare-rails/issues',
-    'changelog_uri' => 'https://github.com/uploadcare/uploadcare-rails/blob/5-0-stable/CHANGELOG.md',
+    'changelog_uri' => 'https://github.com/uploadcare/uploadcare-rails/blob/main/CHANGELOG.md',
     'documentation_uri' => 'https://www.rubydoc.info/gems/uploadcare-rails/',
     'homepage_uri' => 'https://uploadcare.com/',
     'rubygems_mfa_required' => 'true'
