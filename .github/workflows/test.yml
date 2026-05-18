@@ -3,7 +3,6 @@ on: [push, pull_request]
 jobs:
   test:
     needs: code-analysis
-    continue-on-error: ${{ matrix.allow_failure == true }}
     strategy:
       fail-fast: false
       matrix:
@@ -38,14 +37,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: ruby/setup-ruby@v1
+        continue-on-error: ${{ matrix.allow_failure == true }}
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # runs bundle install and caches installed gems automatically
       - run: bundle exec rake
+        continue-on-error: ${{ matrix.allow_failure == true }}
 
   code-analysis:
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.allow_failure == true }}
     strategy:
       matrix:
         include:
@@ -58,8 +58,10 @@ jobs:
     - uses: actions/checkout@v5
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
+      continue-on-error: ${{ matrix.allow_failure == true }}
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Check code
       run: bundle exec rubocop
+      continue-on-error: ${{ matrix.allow_failure == true }}
