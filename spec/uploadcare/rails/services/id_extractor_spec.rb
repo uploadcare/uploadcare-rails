@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/services/id_extractor'
+require 'uploadcare/rails/internal/id_extractor'
 
 describe Uploadcare::Rails::IdExtractor, type: :service do
   subject { described_class.call(cdn_url, regex) }
@@ -22,5 +22,12 @@ describe Uploadcare::Rails::IdExtractor, type: :service do
         expect(subject).to eq uuid
       end
     end
+  end
+
+  context 'when no UUID matches' do
+    let(:cdn_url) { 'https://ucarecdn.com/not-a-uuid/' }
+    let(:regex) { described_class::UUID_REGEX }
+
+    it { is_expected.to be_nil }
   end
 end

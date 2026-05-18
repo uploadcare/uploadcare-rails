@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'uploadcare/rails/action_view/uploadcare_uploader_tags'
-require 'uploadcare/rails/action_view/uploadcare_form_builder'
+require 'uploadcare/rails/internal/uploader_field_helpers'
+require 'uploadcare/rails/action_view/form_builder'
 
-RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper do
+RSpec.describe 'ActionView::Helpers::FormBuilder uploadcare helpers', type: :helper do
+  include Uploadcare::Rails::Internal::UploaderFieldHelpers
+  include ActionView::Helpers::FormHelper
+
   let(:public_key) { 'demopublickey' }
   let(:config_attributes) { { pubkey: public_key } }
 
-  # Mock errors class
   let(:mock_errors_class) do
     Class.new do
       def initialize(errors = {})
@@ -21,7 +23,6 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
     end
   end
 
-  # Mock model class
   let(:model_class) do
     errors_class = mock_errors_class
     Struct.new(:avatar, :errors, keyword_init: true) do
@@ -34,22 +35,20 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
   before do
     allow(Uploadcare::Rails).to receive_message_chain(:configuration, :uploader_config_attributes)
       .and_return(config_attributes)
-    # Use a fixed UUID for predictable test output
     allow(SecureRandom).to receive(:uuid).and_return('test-uuid-1234')
   end
 
-  # Helper to create a FormBuilder instance
   def form_builder_for(object, object_name: nil)
     object_name ||= object.class.name.underscore rescue 'object'
     ActionView::Helpers::FormBuilder.new(object_name, object, self, {})
   end
 
-  describe '#uploadcare_file' do
+  describe '#uploadcare_file_field' do
     it 'generates all uploader components' do
       user = model_class.new
       builder = form_builder_for(user, object_name: 'user')
 
-      tag = builder.uploadcare_file(:avatar)
+      tag = builder.uploadcare_file_field(:avatar)
 
       expect(tag).to include('<uc-form-input')
       expect(tag).to include('<uc-config')
@@ -61,7 +60,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
       user = model_class.new
       builder = form_builder_for(user, object_name: 'user')
 
-      tag = builder.uploadcare_file(:avatar)
+      tag = builder.uploadcare_file_field(:avatar)
 
       expect(tag).to include('name="user[avatar]"')
     end
@@ -70,7 +69,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
       user = model_class.new
       builder = form_builder_for(user, object_name: 'user')
 
-      tag = builder.uploadcare_file(:avatar)
+      tag = builder.uploadcare_file_field(:avatar)
 
       expect(tag).to include('ctx-name="test-uuid-1234"')
     end
@@ -79,7 +78,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
       user = model_class.new
       builder = form_builder_for(user, object_name: 'user')
 
-      tag = builder.uploadcare_file(:avatar, ctx_name: 'custom-uploader')
+      tag = builder.uploadcare_file_field(:avatar, ctx_name: 'custom-uploader')
 
       expect(tag).to include('ctx-name="custom-uploader"')
     end
@@ -90,7 +89,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
           user = model_class.new
           builder = form_builder_for(user, object_name: 'user')
 
-          tag = builder.uploadcare_file(:avatar, solution: solution)
+          tag = builder.uploadcare_file_field(:avatar, solution: solution)
 
           expect(tag).to include("<uc-file-uploader-#{solution}")
         end
@@ -101,10 +100,32 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
       user = model_class.new
       builder = form_builder_for(user, object_name: 'user')
 
-      tag = builder.uploadcare_file(:avatar, multiple: true, img_only: true)
+      tag = builder.uploadcare_file_field(:avatar, multiple: true, img_only: true)
 
-      expect(tag).to include('multiple="true"')
+      expect(tag).to include('multiple="multiple"')
       expect(tag).to include('img-only="true"')
+    end
+
+    it 'uses the bound object class when object_name does not constantize' do
+      klass = Struct.new(:attachments, :errors, keyword_init: true)
+      allow(klass).to receive(:has_uploadcare_files_for_attachments?).and_return(true)
+
+      record = klass.new(attachments: nil, errors: mock_errors_class.new({}))
+      builder = form_builder_for(record, object_name: 'entry')
+
+      tag = builder.uploadcare_file_field(:attachments)
+
+      expect(tag).to include('multiple="multiple"')
+    end
+
+    it 'uses the bound object value by default' do
+      user = model_class.new(avatar: 'https://ucarecdn.com/existing-file/')
+      builder = form_builder_for(user, object_name: 'user')
+
+      tag = builder.uploadcare_file_field(:avatar)
+
+      expect(tag).to match(%r{<uc-form-input[^>]*value="https://ucarecdn.com/existing-file/"})
+      expect(tag).not_to match(%r{<uc-config[^>]*value="https://ucarecdn.com/existing-file/"})
     end
 
     context 'when object has no errors' do
@@ -112,7 +133,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
         user = model_class.new(errors: mock_errors_class.new({}))
         builder = form_builder_for(user, object_name: 'user')
 
-        tag = builder.uploadcare_file(:avatar)
+        tag = builder.uploadcare_file_field(:avatar)
 
         expect(tag).not_to include('field_with_errors')
       end
@@ -123,7 +144,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
         user = model_class.new(errors: mock_errors_class.new(avatar: [ "can't be blank" ]))
         builder = form_builder_for(user, object_name: 'user')
 
-        tag = builder.uploadcare_file(:avatar)
+        tag = builder.uploadcare_file_field(:avatar)
 
         expect(tag).to include('field_with_errors')
         expect(tag).to include('<uc-form-input')
@@ -133,9 +154,8 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
         user = model_class.new(errors: mock_errors_class.new(avatar: [ "can't be blank" ]))
         builder = form_builder_for(user, object_name: 'user')
 
-        tag = builder.uploadcare_file(:avatar)
+        tag = builder.uploadcare_file_field(:avatar)
 
-        # The entire output should be wrapped
         expect(tag).to start_with('<div class="field_with_errors">')
         expect(tag).to include('<uc-config')
         expect(tag).to include('<uc-file-uploader-regular')
@@ -147,7 +167,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
         user = model_class.new(errors: mock_errors_class.new(email: [ 'is invalid' ]))
         builder = form_builder_for(user, object_name: 'user')
 
-        tag = builder.uploadcare_file(:avatar)
+        tag = builder.uploadcare_file_field(:avatar)
 
         expect(tag).not_to include('field_with_errors')
       end
@@ -157,7 +177,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
       it 'does not wrap the field with error markup' do
         builder = ActionView::Helpers::FormBuilder.new('user', nil, self, {})
 
-        tag = builder.uploadcare_file(:avatar)
+        tag = builder.uploadcare_file_field(:avatar)
 
         expect(tag).not_to include('field_with_errors')
       end
@@ -165,7 +185,7 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
       it 'still generates uploader components' do
         builder = ActionView::Helpers::FormBuilder.new('user', nil, self, {})
 
-        tag = builder.uploadcare_file(:avatar)
+        tag = builder.uploadcare_file_field(:avatar)
 
         expect(tag).to include('<uc-form-input')
         expect(tag).to include('<uc-file-uploader-regular')
@@ -177,10 +197,23 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
         plain_object = Object.new
         builder = form_builder_for(plain_object, object_name: 'item')
 
-        tag = builder.uploadcare_file(:avatar)
+        tag = builder.uploadcare_file_field(:avatar)
 
         expect(tag).not_to include('field_with_errors')
       end
+    end
+  end
+
+  describe '#uploadcare_files_field' do
+    it 'passes multiple and group_output automatically' do
+      user = model_class.new
+      builder = form_builder_for(user, object_name: 'user')
+
+      tag = builder.uploadcare_files_field(:avatar)
+
+      expect(tag).to include('multiple="multiple"')
+      expect(tag).to include('group-output="true"')
+      expect(tag).to include('name="user[avatar]"')
     end
   end
 
@@ -199,15 +232,10 @@ RSpec.describe 'ActionView::Helpers::FormBuilder#uploadcare_file', type: :helper
       user = model_class.new(errors: mock_errors_class.new(avatar: [ "can't be blank" ]))
       builder = form_builder_for(user, object_name: 'user')
 
-      tag = builder.uploadcare_file(:avatar)
+      tag = builder.uploadcare_file_field(:avatar)
 
       expect(tag).to include('<span class="custom-error">')
       expect(tag).not_to include('field_with_errors')
     end
   end
-end
-
-RSpec.configure do |c|
-  c.include Uploadcare::Rails::ActionView::UploadcareUploaderTags, type: :helper
-  c.include ActionView::Helpers::FormHelper, type: :helper
 end

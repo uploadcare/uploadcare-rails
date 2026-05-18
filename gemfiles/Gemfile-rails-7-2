@@ -2,6 +2,8 @@ source "https://rubygems.org"
 
 gemspec path: ".."
 
+gem "uploadcare-ruby", "5.0.0"
+
 gem "rails", "~> 7.2.0"
 
 gem "http-parser", "~> 1.2", ">= 1.2.3"

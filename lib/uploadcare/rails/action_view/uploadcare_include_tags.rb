@@ -10,6 +10,8 @@ module Uploadcare
       module UploadcareIncludeTags
         CDN_HOST = "cdn.jsdelivr.net"
         FILE_UPLOADER_PATH = "/npm/@uploadcare/file-uploader@v1/web"
+        SOLUTIONS = %w[regular inline minimal].freeze
+        VERSION_FORMAT = /\Av\d+(?:\.\d+)*\z/.freeze
 
         # A view helper to include the Uploadcare File Uploader JS and CSS from CDN.
         # See https://uploadcare.com/docs/file-uploader/ for more info.
@@ -35,6 +37,8 @@ module Uploadcare
         #   importmap: (true/false, default: false) - if true, only includes CSS (JS loaded via importmap)
 
         def uploadcare_include_tag(version: "v1", solution: "regular", min: true, importmap: false)
+          version = validate_uploader_version!(version)
+          solution = validate_uploader_solution!(solution)
           min_suffix = min ? ".min" : ""
           base_path = FILE_UPLOADER_PATH.sub("@v1", "@#{version}")
 
@@ -69,6 +73,8 @@ module Uploadcare
         #   min: (true/false, default: true) - sets which version to get, minified or not
 
         def uploadcare_stylesheet_tag(version: "v1", solution: "regular", min: true)
+          version = validate_uploader_version!(version)
+          solution = validate_uploader_solution!(solution)
           min_suffix = min ? ".min" : ""
           base_path = FILE_UPLOADER_PATH.sub("@v1", "@#{version}")
           css_path = "#{base_path}/uc-file-uploader-#{solution}#{min_suffix}.css"
@@ -76,9 +82,23 @@ module Uploadcare
 
           stylesheet_link_tag(css_uri.to_s)
         end
+
+        private
+
+        def validate_uploader_solution!(solution)
+          value = solution.to_s
+          return value if SOLUTIONS.include?(value)
+
+          raise ArgumentError, "Unsupported Uploadcare uploader solution: #{solution.inspect}"
+        end
+
+        def validate_uploader_version!(version)
+          value = version.to_s
+          return value if VERSION_FORMAT.match?(value)
+
+          raise ArgumentError, "Unsupported Uploadcare uploader version: #{version.inspect}"
+        end
       end
     end
   end
 end
-
-ActionView::Base.include Uploadcare::Rails::ActionView::UploadcareIncludeTags

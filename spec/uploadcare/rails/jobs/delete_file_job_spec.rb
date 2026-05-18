@@ -5,11 +5,34 @@ require 'uploadcare/rails/jobs/delete_file_job'
 
 RSpec.describe Uploadcare::Rails::DeleteFileJob, type: :job do
   describe '#perform_later' do
-    it 'performs a delete file job' do
+    it 'enqueues a delete file job' do
       ActiveJob::Base.queue_adapter = :test
       expect do
         described_class.perform_later(SecureRandom.uuid)
       end.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
+    end
+  end
+
+  describe '#perform' do
+    it 'deletes a file using default client' do
+      files_accessor = double
+      client = double(files: files_accessor)
+      allow(Uploadcare::Rails).to receive(:client).and_return(client)
+      expect(files_accessor).to receive(:batch_delete).with(uuids: [ 'file-uuid' ])
+
+      described_class.new.perform('file-uuid')
+    end
+
+    it 'does nothing when uuid is nil' do
+      expect(Uploadcare::Rails).not_to receive(:client)
+
+      described_class.new.perform(nil)
+    end
+
+    it 'does nothing when uuid is blank' do
+      expect(Uploadcare::Rails).not_to receive(:client)
+
+      described_class.new.perform('')
     end
   end
 end

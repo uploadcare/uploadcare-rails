@@ -40,9 +40,8 @@ class UploadcareImportmapGenerator < Rails::Generators::Base
     say "2. Import the initializer in your application.js:"
     say '   import "uploadcare"', :cyan
     say ""
-    say "3. Add the config and uploader to your views:"
-    say '   <%= uploadcare_config_tag(ctx_name: "my-uploader") %>', :cyan
-    say '   <%= uploadcare_uploader_field :post, :image, ctx_name: "my-uploader" %>', :cyan
+    say "3. Add an uploader field to your views:"
+    say "   <%= uploadcare_file_field :post, :image %>", :cyan
     say ""
     say "4. (Optional) Customize the JavaScript in app/javascript/uploadcare.js"
     say ""

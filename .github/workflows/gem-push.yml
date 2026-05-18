@@ -4,19 +4,60 @@ on:
   push:
     tags:
       - v*
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (for example: v5.0.0)"
+        required: true
+        type: string
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
+        if: github.event_name != 'workflow_dispatch'
 
-      - name: Release Gem
-        if: contains(github.ref, 'refs/tags/v')
-        uses: discourse/publish-rubygems-action@main
+      - uses: actions/checkout@v5
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Resolve release tag and gem version
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
-          RELEASE_COMMAND: rake release
-          GIT_EMAIL: hello@uploadcare.com
-          GIT_NAME: Uploadcare Developers
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          gem_version="$(ruby -r rubygems -e "puts Gem::Specification.load('uploadcare-rails.gemspec').version")"
+          if [ "v${gem_version}" != "${RELEASE_TAG}" ]; then
+            echo "Release tag (${RELEASE_TAG}) does not match gem version (v${gem_version})"
+            exit 1
+          fi
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> "$GITHUB_ENV"
+          echo "GEM_VERSION=${gem_version}" >> "$GITHUB_ENV"
+
+      - name: Configure RubyGems credentials
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${RUBYGEMS_API_KEY}" ]; then
+            echo "RUBYGEMS_API_KEY is not set"
+            exit 1
+          fi
+          mkdir -p ~/.gem
+          printf -- "---\n:rubygems_api_key: %s\n" "${RUBYGEMS_API_KEY}" > ~/.gem/credentials
+          chmod 0600 ~/.gem/credentials
+
+      - name: Build gem
+        run: bundle exec rake build
+
+      - name: Push gem to RubyGems
+        run: gem push "pkg/uploadcare-rails-${GEM_VERSION}.gem"

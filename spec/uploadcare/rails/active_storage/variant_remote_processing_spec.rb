@@ -1,0 +1,232 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+require 'active_storage/errors'
+require 'active_storage/service/uploadcare_service'
+require 'uploadcare/rails/active_storage/variant_remote_processing'
+
+RSpec.describe Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing do
+  let(:service) do
+    ActiveStorage::Service::UploadcareService.new(
+      public_key: 'demopublickey',
+      secret_key: 'demosecretkey'
+    )
+  end
+  let(:uuid) { '2d33999d-c74a-4ff9-99ea-abc23496b052' }
+
+  let(:variant_host_class) do
+    Class.new do
+      prepend Uploadcare::Rails::ActiveStorage::VariantRemoteProcessing
+
+      attr_reader :service, :blob, :variation
+
+      def initialize(service:, blob:, variation:)
+        @service = service
+        @blob = blob
+        @variation = variation
+      end
+
+      def key
+        'variant-key'
+      end
+
+      def content_type
+        'image/png'
+      end
+
+      def process
+        :base_process_called
+      end
+    end
+  end
+
+  let(:blob) { double(metadata: { 'uploadcare_uuid' => uuid }, key: 'blob-key', service: service) }
+  let(:variation) { double(format: 'png', transformations: { resize_to_limit: [ 320, 320 ], quality: 'smart' }) }
+
+  it 'downloads transformed image from uploadcare and uploads variant to service' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+
+    allow(service).to receive(:upload)
+    allow(service).to receive(:uuid_for).with('blob-key').and_return(uuid)
+    expect(service.client.files).not_to receive(:find)
+
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    allow(response).to receive(:body).and_return('transformed-bytes')
+    allow(host).to receive(:fetch_http_response).and_return(response)
+
+    host.send(:process)
+
+    expect(service).to have_received(:upload).with('variant-key', anything, content_type: 'image/png')
+  end
+
+  it 'resolves the uploadcare uuid through the service mapping' do
+    mapped_blob = double(metadata: {}, key: 'mapped-key', service: service)
+    host = variant_host_class.new(service: service, blob: mapped_blob, variation: variation)
+
+    expect(service).to receive(:uuid_for).with('mapped-key').once.and_return(uuid)
+
+    host.send(:variant_source_url)
+  end
+
+  it 'maps resize_to_fill into uploadcare scale_crop operation' do
+    fill_variation = double(format: 'png', transformations: { resize_to_fill: [ 200, 100 ] })
+    host = variant_host_class.new(service: service, blob: blob, variation: fill_variation)
+
+    mapped = host.send(:uploadcare_transformations)
+
+    expect(mapped[:scale_crop]).to eq({ dimensions: '200x100', offsets: '50%,50%' })
+  end
+
+  it 'maps resize_to_fit into uploadcare resize operation' do
+    fit_variation = double(format: 'png', transformations: { resize_to_fit: [ 640, 480 ] })
+    host = variant_host_class.new(service: service, blob: blob, variation: fit_variation)
+
+    mapped = host.send(:uploadcare_transformations)
+
+    expect(mapped[:resize]).to eq('640x480')
+  end
+
+  it 'falls back to base process when service is not uploadcare service' do
+    non_uploadcare_service = Object.new
+    host = variant_host_class.new(service: non_uploadcare_service, blob: blob, variation: variation)
+
+    expect(host.send(:process)).to eq(:base_process_called)
+  end
+
+  it 'resolves relative redirect locations' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+    redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+    success = Net::HTTPOK.new('1.1', '200', 'OK')
+    calls = 0
+
+    allow(redirect).to receive(:[]).with('location').and_return('/variant/final.png')
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      calls += 1
+      expect(use_ssl).to eq(true)
+
+      http = double
+      allow(http).to receive(:request).and_return(calls == 1 ? redirect : success)
+      block.call(http)
+    end
+
+    expect(
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    ).to eq(success)
+  end
+
+  it 'wraps write timeouts as integrity errors' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+
+    allow(Net::HTTP).to receive(:start).and_raise(Net::WriteTimeout)
+
+    expect do
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    end.to raise_error(ActiveStorage::IntegrityError, /Net::WriteTimeout/)
+  end
+
+  it 'rejects redirects to untrusted hosts' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+    redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+
+    allow(redirect).to receive(:[]).with('location').and_return('https://example.com/final.png')
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      expect(use_ssl).to eq(true)
+
+      http = double
+      allow(http).to receive(:request).and_return(redirect)
+      block.call(http)
+    end
+
+    expect do
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    end.to raise_error(ActiveStorage::IntegrityError, /not trusted/)
+  end
+
+  it 'accepts redirects to trusted custom uploadcare hosts' do
+    host = variant_host_class.new(service: service, blob: blob, variation: variation)
+    redirect = Net::HTTPFound.new('1.1', '302', 'Found')
+    success = Net::HTTPOK.new('1.1', '200', 'OK')
+    calls = 0
+
+    allow(service.client.config).to receive(:default_cdn_base).and_return('https://files.example-cdn.test/')
+    allow(redirect).to receive(:[]).with('location').and_return('https://files.example-cdn.test/final.png')
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      calls += 1
+      expect(use_ssl).to eq(true)
+
+      http = double
+      allow(http).to receive(:open_timeout=)
+      allow(http).to receive(:read_timeout=)
+      allow(http).to receive(:write_timeout=)
+      allow(http).to receive(:request).and_return(calls == 1 ? redirect : success)
+      block.call(http)
+    end
+
+    expect(
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    ).to eq(success)
+  end
+
+  it 'uses service-configured HTTP timeouts for variant fetches' do
+    timeout_service = ActiveStorage::Service::UploadcareService.new(
+      public_key: 'demopublickey',
+      secret_key: 'demosecretkey',
+      open_timeout: 13,
+      read_timeout: 43,
+      write_timeout: 73
+    )
+    timeout_blob = double(metadata: { 'uploadcare_uuid' => uuid }, key: 'blob-key', service: timeout_service)
+    host = variant_host_class.new(service: timeout_service, blob: timeout_blob, variation: variation)
+    success = Net::HTTPOK.new('1.1', '200', 'OK')
+
+    allow(Net::HTTP).to receive(:start) do |_, _, use_ssl:, &block|
+      expect(use_ssl).to eq(true)
+
+      http = double
+      expect(http).to receive(:open_timeout=).with(13)
+      expect(http).to receive(:read_timeout=).with(43)
+      expect(http).to receive(:write_timeout=).with(73)
+      allow(http).to receive(:request).and_return(success)
+      block.call(http)
+    end
+
+    expect(
+      host.send(
+        :fetch_http_response,
+        "https://ucarecdn.com/#{uuid}/-/resize/100x100/",
+        limit: 5,
+        error_class: ActiveStorage::IntegrityError,
+        label: "variant",
+        wrap_transport_errors: true
+      )
+    ).to eq(success)
+  end
+end

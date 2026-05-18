@@ -1,26 +1,16 @@
 # frozen_string_literal: true
 
-require "singleton"
-
 module Uploadcare
   module Rails
-    # A class for storing config parameters
     class Configuration
-      include Singleton
-
-      # Global gem configuration parameters
-      CONFIG_GLOBAL_PARAMS = %w[
-        public_key secret_key cache_files cache_expires_in cache_namespace cdn_hostname
+      RAILS_PARAMS = %w[
+        public_key secret_key
+        cache_files cache_expires_in cache_namespace cdn_hostname
         store_files_after_save store_files_async
         delete_files_after_destroy delete_files_async
+        job_queue
       ].freeze
 
-      # File Uploader configuration parameters
-      # See https://uploadcare.com/docs/file-uploader/configuration/ for details
-      #
-      # These parameters map to uc-config attributes:
-      #   Ruby snake_case => HTML kebab-case
-      #   Example: img_only => img-only, source_list => source-list
       FILE_UPLOADER_PARAMS = %w[
         public_key
         multiple
@@ -52,19 +42,18 @@ module Uploadcare
         image_shrink
       ].freeze
 
-      # Legacy widget parameters (deprecated, kept for backward compatibility)
-      WIDGET_PARAMS = %w[
-        public_key images_only preview_step crop image_shrink
-        clearable tabs input_accept_types preferred_types system_dialog multipart_min_size
-        preview_proxy cdn_base do_not_store audio_bits_per_second video_preferred_mime_types
-        video_bits_per_second camera_mirror_default live manual_start
-        locale locale_translations locale_pluralize
-      ].freeze
+      attr_accessor(*(RAILS_PARAMS + FILE_UPLOADER_PARAMS).uniq)
 
-      attr_accessor(*(CONFIG_GLOBAL_PARAMS + FILE_UPLOADER_PARAMS + WIDGET_PARAMS).uniq)
+      def initialize(source = nil)
+        @cache_files = false
+        @cache_expires_in = 300
+        @store_files_after_save = false
+        @store_files_async = false
+        @delete_files_after_destroy = false
+        @delete_files_async = false
+        apply(source)
+      end
 
-      # Returns configuration attributes for the uc-config element
-      # All parameters are converted from snake_case to kebab-case
       def uploader_config_attributes
         attrs = {}
 
@@ -72,8 +61,6 @@ module Uploadcare
           param_value = instance_variable_get("@#{param_name}")
           next if param_value.nil?
 
-          # Convert snake_case to kebab-case for HTML attributes
-          # Special case: public_key => pubkey
           attr_name = if param_name == "public_key"
                         :pubkey
           else
@@ -86,26 +73,34 @@ module Uploadcare
         attrs
       end
 
-      # Legacy method for backward compatibility with old widget
-      # @deprecated Use uploader_config_attributes instead
-      def uploader_parameters
-        WIDGET_PARAMS.map do |param_name|
-          param_value = instance_variable_get("@#{param_name}")
-          next if param_value.nil?
-
-          param_value = handle_param_value(param_value)
-          "UPLOADCARE_#{param_name.upcase} = #{param_value};"
-        end.compact.join("\n")
-      end
-
-      # @deprecated Use uploader_config_attributes instead
-      def widget
-        Struct
-          .new(*WIDGET_PARAMS.map(&:to_sym))
-          .new(*WIDGET_PARAMS.map { |param| public_send(param) })
-      end
-
       private
+
+      def apply(source)
+        return if source.nil?
+
+        unknown_keys = []
+        source.each do |key, value|
+          setter = "#{key}="
+          if respond_to?(setter)
+            public_send(setter, value)
+          else
+            unknown_keys << key
+          end
+        end
+
+        warn_unknown_keys(unknown_keys)
+      end
+
+      def warn_unknown_keys(keys)
+        return if keys.empty?
+
+        message = "Uploadcare::Rails::Configuration ignored unknown keys: #{keys.map(&:to_s).sort.join(', ')}"
+        if defined?(::Rails) && ::Rails.respond_to?(:logger) && ::Rails.logger
+          ::Rails.logger.warn(message)
+        else
+          warn(message)
+        end
+      end
 
       def format_config_value(param_value)
         case param_value
@@ -117,20 +112,6 @@ module Uploadcare
           param_value
         else
           param_value.to_s
-        end
-      end
-
-      # Legacy method for backward compatibility
-      def handle_param_value(param_value)
-        case param_value
-        when Hash
-          param_value.deep_stringify_keys.to_json
-        when Array
-          "'#{param_value.join(' ')}'"
-        when TrueClass, FalseClass
-          param_value
-        else
-          "'#{param_value}'"
         end
       end
     end

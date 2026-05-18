@@ -4,40 +4,64 @@ jobs:
   test:
     needs: code-analysis
     strategy:
+      fail-fast: false
       matrix:
-        gemfile:
-          - gemfiles/Gemfile-rails-7-2
-          - gemfiles/Gemfile-rails-8-0
-          - gemfiles/Gemfile-rails-8-1
-        ruby:
-          - "3.3"
-          - "3.4"
-          - "4.0"
+        include:
+          - gemfile: gemfiles/Gemfile-rails-7-2
+            ruby: "3.3"
+          - gemfile: gemfiles/Gemfile-rails-7-2
+            ruby: "3.4"
+          - gemfile: gemfiles/Gemfile-rails-8-0
+            ruby: "3.3"
+          - gemfile: gemfiles/Gemfile-rails-8-0
+            ruby: "3.4"
+          - gemfile: gemfiles/Gemfile-rails-8-1
+            ruby: "3.3"
+          - gemfile: gemfiles/Gemfile-rails-8-1
+            ruby: "3.4"
+          # Keep Ruby 4 allowed to fail until the ecosystem support is stable.
+          - gemfile: gemfiles/Gemfile-rails-7-2
+            ruby: "4.0"
+            allow_failure: true
+          - gemfile: gemfiles/Gemfile-rails-8-0
+            ruby: "4.0"
+            allow_failure: true
+          - gemfile: gemfiles/Gemfile-rails-8-1
+            ruby: "4.0"
+            allow_failure: true
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       UPLOADCARE_PUBLIC_KEY: demopublickey
       UPLOADCARE_SECRET_KEY: demoprivatekey
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ruby/setup-ruby@v1
+        continue-on-error: ${{ matrix.allow_failure == true }}
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # runs bundle install and caches installed gems automatically
       - run: bundle exec rake
+        continue-on-error: ${{ matrix.allow_failure == true }}
 
   code-analysis:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version:
-          - 3.3
+        include:
+          - ruby: "3.3"
+          - ruby: "3.4"
+          # Keep Ruby 4 allowed to fail until the ecosystem support is stable.
+          - ruby: "4.0"
+            allow_failure: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
+      continue-on-error: ${{ matrix.allow_failure == true }}
       with:
-        ruby-version: ${{ matrix.ruby-version }}
+        ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Check code
       run: bundle exec rubocop
+      continue-on-error: ${{ matrix.allow_failure == true }}

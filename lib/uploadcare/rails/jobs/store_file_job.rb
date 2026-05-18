@@ -4,10 +4,16 @@ require "active_job"
 
 module Uploadcare
   module Rails
-    # A job storing files to Uploadcare
     class StoreFileJob < ActiveJob::Base
+      queue_as { Uploadcare::Rails.configuration.job_queue || :default }
+      retry_on Uploadcare::Exception::RequestError, Uploadcare::Exception::ThrottleError,
+               wait: :polynomially_longer, attempts: 3
+      discard_on ActiveJob::DeserializationError
+
       def perform(file_uuid)
-        Uploadcare::FileApi.store_file(file_uuid) if file_uuid
+        return if file_uuid.blank?
+
+        Uploadcare::Rails.client.files.batch_store(uuids: [ file_uuid ])
       end
     end
   end

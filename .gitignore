@@ -4,6 +4,7 @@
 /coverage/
 /doc/
 /pkg/
+/checksums/
 /spec/reports/
 /tmp/
 
@@ -14,6 +15,7 @@ spec/tmp
 
 .idea
 Gemfile.lock
+gemfiles/*.lock
 
 .ruby-version
 project_files
