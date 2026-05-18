@@ -1,24 +1,39 @@
 # uploadcare-rails 5.0.0 release notes
 
-Release v5.0.0: built on `uploadcare-ruby` 5.x.
+Release v5.0.0: stable rewrite on `uploadcare-ruby` 5.x.
 
-Do this before tagging:
+Must: publish `uploadcare-ruby` 5.0.0 first. CI/install will fail otherwise.
 
-- Publish `uploadcare-ruby` 5.0.0.
-- Run Rails matrix: 7.2, 8.0, 8.1.
+Before tagging:
+
+- Verify CI: Rails 7.2, 8.0, 8.1 plus Active Storage.
 - Smoke-test one 4.x to 5.0 migration using [MIGRATING_V5.md](../MIGRATING_V5.md).
+- Tag and publish `uploadcare-rails` 5.0.0.
 
-There are no breaking API changes from `5.0.0.rc1`. Applications moving from
-4.x or older should follow [MIGRATING_V5.md](../MIGRATING_V5.md).
+Migration priority: test in this order.
+
+- Manual API wrappers: `Uploadcare::FileApi`, `Uploadcare::GroupApi`, `Uploadcare::UploadApi`
+- `mount_uploadcare_file` or `mount_uploadcare_file_group`
+- Removed uploader helper aliases
+- Active Storage
+
+Quick scan:
+
+```sh
+git grep -n "mount_uploadcare_file\|Uploadcare::FileApi\|Uploadcare::GroupApi\|Uploadcare::UploadApi\|uploadcare_uploader_field"
+```
+
+No API changes since `5.0.0.rc1`. Applications moving from 4.x or older should
+follow [MIGRATING_V5.md](../MIGRATING_V5.md).
 
 ## Highlights
 
-- New client-first API through `Uploadcare::Rails.client` and `Uploadcare::Client`
-- New model macros: `has_uploadcare_file` and `has_uploadcare_files`
-- New uploader helpers: `uploadcare_file_field`, `uploadcare_files_field`, and FormBuilder equivalents
-- New wrapper objects: `Uploadcare::Rails::AttachedFile` and `Uploadcare::Rails::AttachedFiles`
-- Active Storage service support through `ActiveStorage::Service::UploadcareService`
-- Active Storage preview and remote variant processing support for Uploadcare-backed blobs
+- Client-first API: `Uploadcare::Rails.client` and `Uploadcare::Client`
+- Model macros: `has_uploadcare_file` and `has_uploadcare_files`
+- Uploader helpers: `uploadcare_file_field`, `uploadcare_files_field`, and FormBuilder equivalents
+- Wrapper objects: `Uploadcare::Rails::AttachedFile` and `Uploadcare::Rails::AttachedFiles`
+- Active Storage service: `ActiveStorage::Service::UploadcareService`
+- Active Storage preview and remote variant processing for Uploadcare-backed blobs
 - Rails 7.2+ and Ruby 3.3+ runtime baseline
 
 ## Breaking changes
@@ -89,7 +104,11 @@ config.active_storage.service = :uploadcare
 
 - Must: publish `uploadcare-ruby` 5.0.0 first. CI/install will fail otherwise.
 - Verify: Rails 7.2, 8.0, 8.1 plus Active Storage specs are green before tagging.
-- Active Storage caveat: `UploadcareService` does not support direct uploads or signed private URLs. Set service `public: true` and use uploader field helpers.
+- Risk: `UploadcareService` does not support direct uploads or signed private URLs. Private blobs and direct client uploads will break.
+- Mitigation before tagging:
+  - Set service `public: true` for affected apps.
+  - Prefer uploader field helpers, not direct service calls.
+  - Smoke-test previews and remote variants end-to-end.
 - Per-tenant clients: use `uploadcare_client:` for mounted objects and synchronous callbacks. Async callbacks use `Uploadcare::Rails.client`.
 - Migration priority: test apps that use manual API wrappers, `mount_*` macros, uploader helper aliases, or Active Storage first.
 

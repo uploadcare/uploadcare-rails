@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "action_view"
+require "json"
 require "set"
 
 module Uploadcare
@@ -70,7 +71,10 @@ module Uploadcare
         def uploadcare_config_tag(ctx_name:, **options)
           default_options = Uploadcare::Rails.configuration.uploader_config_attributes
 
-          normalize_key = ->(key) { key.to_s.tr("_", "-").to_sym }
+          normalize_key = lambda do |key|
+            attr_name = key.to_s.tr("_", "-")
+            attr_name == "public-key" ? :pubkey : attr_name.to_sym
+          end
           normalized_options = options.transform_keys(&normalize_key)
           filtered_options = filter_uploader_config_options(normalized_options)
 
@@ -94,7 +98,21 @@ module Uploadcare
           unknown_keys = options.keys - allowed.to_a - data_attributes[:consumed_keys]
           warn_unknown_uploader_options(unknown_keys) if unknown_keys.any?
 
-          options.slice(*allowed.to_a).merge(data_attributes[:attributes])
+          options
+            .slice(*allowed.to_a)
+            .transform_values { |value| format_uploader_config_value(value) }
+            .merge(data_attributes[:attributes])
+        end
+
+        def format_uploader_config_value(value)
+          case value
+          when Hash
+            JSON.generate(value)
+          when Array
+            value.join(",")
+          else
+            value
+          end
         end
 
         def extract_data_attributes(options)

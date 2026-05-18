@@ -82,6 +82,24 @@ describe Uploadcare::Rails::Internal::UploaderFieldHelpers, type: :helper do
     expect(tag).to include('data-some-value="123"')
   end
 
+  it 'formats hash and array config options for uc-config attributes' do
+    tag = uploadcare_file_field_tag(
+      :title,
+      metadata: { foo: 'bar' },
+      source_list: %w[local url]
+    )
+
+    expect(tag).to include('metadata="{&quot;foo&quot;:&quot;bar&quot;}"')
+    expect(tag).to include('source-list="local,url"')
+  end
+
+  it 'maps public_key config option to the uploader pubkey attribute' do
+    tag = uploadcare_file_field_tag(:title, public_key: 'demopublickey')
+
+    expect(tag).to include('pubkey="demopublickey"')
+    expect(tag).not_to include('public-key=')
+  end
+
   describe 'uploadcare_files_field' do
     it 'passes multiple and group_output automatically' do
       tag = uploadcare_files_field(:post, :photos)

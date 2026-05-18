@@ -5,6 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in uploadcare-rails.gemspec
 gemspec
 
+# Pin the released SDK for local and CI release validation.
 gem "uploadcare-ruby", "5.0.0"
 
 gem "http-parser", "~> 1.2", ">= 1.2.3"
