@@ -15,8 +15,8 @@ Gem::Specification.new do |gem|
   gem.email         = [ 'hello@uploadcare.com' ]
   gem.summary       = 'Rails gem for Uploadcare'
   gem.description   = <<~DESCRIPTION
-    Rails API client (based on uploadcare-ruby) that handles uploads
-    and further operations with files by wrapping Uploadcare Upload and REST APIs.
+    Rails integration for Uploadcare built on uploadcare-ruby, with uploader
+    helpers, model macros, and Active Storage support.
   DESCRIPTION
   gem.metadata = {
     'source_code_uri' => 'https://github.com/uploadcare/uploadcare-rails',
@@ -37,13 +37,14 @@ Gem::Specification.new do |gem|
     'LICENSE.txt',
     'README.md',
     'CHANGELOG.md',
-    'MIGRATING_V5.md'
+    'MIGRATING_V5.md',
+    'docs/**/*.md'
   ]
 
   gem.extra_rdoc_files  = %w[README.md MIGRATING_V5.md LICENSE.txt]
-  gem.rdoc_options      = %w[--line-numbers --title Uploadcare --main README.rdoc --encoding=UTF-8]
+  gem.rdoc_options      = %w[--line-numbers --title Uploadcare --main README.md --encoding=UTF-8]
 
   gem.version = Uploadcare::Rails::VERSION
   gem.add_dependency 'rails', '>= 7.2'
-  gem.add_dependency 'uploadcare-ruby', '>= 5.0.0.rc1'
+  gem.add_dependency 'uploadcare-ruby', '>= 5.0.0'
 end

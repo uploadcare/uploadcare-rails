@@ -6,6 +6,71 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 5.0.0 - 2026-05-17
+
+This is the stable release of the v5 rewrite.
+
+There are no breaking API changes from `5.0.0.rc1`. This release promotes the
+rewrite to the stable line, removes prerelease dependency pins, and hardens the
+release workflow for tag-based RubyGems publishing.
+
+See [MIGRATING_V5.md](https://github.com/uploadcare/uploadcare-rails/blob/5-0-stable/MIGRATING_V5.md)
+for the migration guide and [docs/release-notes-5.0.0.md](docs/release-notes-5.0.0.md)
+for release notes and examples.
+
+### Added
+
+* Active Storage service integration through `ActiveStorage::Service::UploadcareService`
+* Uploadcare-backed Active Storage preview and remote variant processing support
+* `Uploadcare::Rails.client` as the default Rails client entry point
+* explicit multi-account usage through `Uploadcare::Client`
+* `has_uploadcare_file` and `has_uploadcare_files` model macros
+* `uploadcare_file_field`, `uploadcare_files_field`, and matching FormBuilder helpers
+* `Uploadcare::Rails::AttachedFile` and `Uploadcare::Rails::AttachedFiles` wrappers
+* `rails g uploadcare_config` support for `config/uploadcare.yml`
+* Rails 7.2, 8.0, and 8.1 test matrix coverage
+* Ruby 3.3, 3.4, and experimental Ruby 4.0 CI coverage
+
+### Changed
+
+* Re-centered the gem around `uploadcare-ruby` 5.x instead of maintaining a
+  second API wrapper layer in `uploadcare-rails`
+* Simplified the documented public API to the Rails integration surface
+* Configuration now loads from `config/uploadcare.yml` when present and still
+  supports `Uploadcare::Rails.configure`
+* Active Storage service defaults to public URL mode and supports configurable
+  HTTP timeouts (`open_timeout`, `read_timeout`, `write_timeout`)
+* Mongoid hooks prefer `after_commit` callbacks when available, with fallback
+  to `after_save`/`after_destroy`
+* README and migration docs now describe the v5 client-first API and upgrade path
+
+### Fixed
+
+* Edit-form uploader prefill now binds `value` to `<uc-form-input>` instead of
+  leaking into `<uc-config>`
+* Active Storage blob-key to UUID cache writes are synchronized for thread safety
+* Variant and preview remote-processing paths avoid redundant API roundtrips for
+  CDN URL resolution
+* `AttachedFile#store` avoids a redundant file pre-fetch before storing
+* Uploadcare uploader helper options now warn on unknown keys and support
+  Rails-style `data: { ... }` passthrough attributes
+* SQL wildcard escaping in `delete_prefixed`
+* nil-key SDK configuration synchronization
+* tag-based gem publishing now validates the release tag against the gem version
+  before pushing to RubyGems
+
+### Removed
+
+* `mount_uploadcare_file`
+* `mount_uploadcare_file_group`
+* `uploadcare_uploader_field`
+* `uploadcare_uploader_field_tag`
+* `f.uploadcare_file`
+* `Uploadcare::Rails::File`
+* `Uploadcare::Rails::Group`
+* low-level uploader composition helpers from the documented public API
+* stale migration guides that described the pre-rewrite compatibility surface
+
 ## 5.0.0.rc1 - 2026-03-24
 
 This is the first release candidate for the 5.0 rewrite.

@@ -1,6 +1,14 @@
 # Migrating to uploadcare-rails 5.0
 
-This guide covers migration from the older `uploadcare-rails` surface to the rewritten, client-first API released in `5.0.0.rc1`.
+This guide covers migration from the older `uploadcare-rails` surface to the rewritten, client-first API released in `5.0.0`.
+
+## Compatibility summary
+
+- Runtime minimums are Ruby 3.3+ and Rails 7.2+.
+- This is a breaking major upgrade from the pre-v5 API.
+- API usage now goes through `Uploadcare::Rails.client` or explicit `Uploadcare::Client` instances.
+- Active Storage direct uploads are not supported by `ActiveStorage::Service::UploadcareService`; use the Uploadcare uploader field helpers for browser direct uploads.
+- Custom per-tenant clients work with mounted objects and synchronous callbacks. Async callbacks use the default `Uploadcare::Rails.client`.
 
 The short version:
 

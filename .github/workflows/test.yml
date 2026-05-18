@@ -28,14 +28,15 @@ jobs:
 
   code-analysis:
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental || false }}
+    continue-on-error: ${{ matrix.allow_failure || false }}
     strategy:
       matrix:
         include:
           - ruby-version: "3.3"
           - ruby-version: "3.4"
+          # Keep Ruby 4 allowed to fail until the ecosystem support is stable.
           - ruby-version: "4.0"
-            experimental: true
+            allow_failure: true
     steps:
     - uses: actions/checkout@v5
     - name: Set up Ruby

@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag to publish (for example: v5.0.0.rc1)"
+        description: "Tag to publish (for example: v5.0.0)"
         required: true
         type: string
 jobs:
@@ -18,8 +18,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        if: github.event_name != 'workflow_dispatch'
+
+      - uses: actions/checkout@v5
+        if: github.event_name == 'workflow_dispatch'
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
+          ref: refs/tags/${{ inputs.tag }}
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -27,14 +31,15 @@ jobs:
           bundler-cache: true
 
       - name: Resolve release tag and gem version
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: |
-          release_tag="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
           gem_version="$(ruby -r rubygems -e "puts Gem::Specification.load('uploadcare-rails.gemspec').version")"
-          if [ "v${gem_version}" != "${release_tag}" ]; then
-            echo "Release tag (${release_tag}) does not match gem version (v${gem_version})"
+          if [ "v${gem_version}" != "${RELEASE_TAG}" ]; then
+            echo "Release tag (${RELEASE_TAG}) does not match gem version (v${gem_version})"
             exit 1
           fi
-          echo "RELEASE_TAG=${release_tag}" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> "$GITHUB_ENV"
           echo "GEM_VERSION=${gem_version}" >> "$GITHUB_ENV"
 
       - name: Configure RubyGems credentials
@@ -42,10 +47,7 @@ jobs:
           RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         run: |
           mkdir -p ~/.gem
-          cat << EOF > ~/.gem/credentials
-          ---
-          :rubygems_api_key: ${RUBYGEMS_API_KEY}
-          EOF
+          printf -- "---\n:rubygems_api_key: %s\n" "${RUBYGEMS_API_KEY}" > ~/.gem/credentials
           chmod 0600 ~/.gem/credentials
 
       - name: Build gem
