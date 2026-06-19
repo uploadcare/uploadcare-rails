@@ -22,8 +22,8 @@ module Uploadcare
           require "uploadcare/rails/internal/uploader_field_helpers"
           require "uploadcare/rails/action_view/form_builder"
 
-          ActionView::Base.include Uploadcare::Rails::ActionView::UploadcareIncludeTags
-          ActionView::Base.include Uploadcare::Rails::Internal::UploaderFieldHelpers
+          ::ActionView::Base.include Uploadcare::Rails::ActionView::UploadcareIncludeTags
+          ::ActionView::Base.include Uploadcare::Rails::Internal::UploaderFieldHelpers
         end
 
         ActiveSupport.on_load :active_record do
@@ -77,6 +77,8 @@ module Uploadcare
       end
 
       def merge_uploadcare_settings!(target, source)
+        return if source.nil?
+
         source.each do |key, value|
           target[key] = value
         end
