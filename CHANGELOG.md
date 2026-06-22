@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 5.0.1 - 2026-06-22
+
+### Fixed
+
+* Fixed Rails engine helper loading by qualifying top-level `ActionView::Base`
+* Fixed configuration loading when `config/uploadcare.yml` exists but
+  `config_for(:uploadcare)` returns no settings for the current environment
+
 ## 5.0.0 - 2026-05-17
 
 This is the stable release of the v5 rewrite.
